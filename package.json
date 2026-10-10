@@ -1,0 +1,19 @@
+{
+  "name": "athletiq",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd client && npm run serve",
+    "server": "cd server && node app.js",
+    "dev": "concurrently --kill-others \"npm run server\" \"npm run client\""
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
