@@ -6,15 +6,15 @@ import { RouterLink } from "vue-router";
 const email = ref("");
 const password = ref("");
 const error = ref("");
-
+// Login validation
 function handleSubmit() {
   error.value = "";
-
+  // Required fields
   if (!email.value || !password.value) {
     error.value = "Please fill in all fields.";
     return;
   }
-
+  // Missing backend
   error.value = "Login is not connected to the server yet.";
 }
 </script>

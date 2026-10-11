@@ -1,5 +1,5 @@
-
 <script setup>
+// Component props definition (received from parent component)
 import { defineProps } from 'vue'
 defineProps({
   title: {
@@ -22,7 +22,9 @@ defineProps({
 </script>
 
 <template>
+  <!-- Card component container -->
   <article class="feature-card">
+    <!-- Conditional rendering: display image if available, else placeholder -->
     <img
       v-if="image"
       :src="image"
@@ -31,7 +33,7 @@ defineProps({
     />
 
     <div v-else class="feature-placeholder"></div>
-
+<!-- Content section: title, description, and navigation button -->
     <div class="feature-content">
       <h2>{{ title }}</h2>
       <p>{{ description }}</p>

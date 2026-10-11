@@ -23,7 +23,7 @@ import FeatureCard from "../components/FeatureCard.vue";
         </RouterLink>
       </div>
     </section>
-
+<!-- Features section: grid of reusable FeatureCard components -->
     <section class="features">
       <FeatureCard
         title="Injury Prevention"

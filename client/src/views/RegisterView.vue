@@ -10,25 +10,25 @@ const confirmPassword = ref("");
 const role = ref("Athlete");
 const specialty = ref("");
 const error = ref("");
-
+// Form validation
 function handleSubmit() {
+  // Reset error
   error.value = "";
-
+  // Check required fields
   if (!name.value || !email.value || !password.value || !confirmPassword.value) {
     error.value = "Please fill in all required fields.";
     return;
   }
-
+  // Password length (min 8 chars)
   if (password.value.length < 8) {
     error.value = "Password must contain at least 8 characters.";
     return;
   }
-
+  // Passwords match
   if (password.value !== confirmPassword.value) {
     error.value = "Passwords do not match.";
     return;
   }
-
   error.value = "Registration is not connected to the server yet.";
 }
 </script>
