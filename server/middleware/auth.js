@@ -21,4 +21,20 @@ function verifyToken(req, res, next) {
   }
 }
 
-module.exports = verifyToken;
+function requireRole(role) {
+  return (req, res, next) => {
+    // Sécurité : si pas connecté, on refuse
+    if (!req.user) {
+      return res.status(401).json({ error: "Pas connecté" });
+    }
+
+    // Vérification du rôle
+    if (req.user.role !== role) {
+      return res.status(403).json({ error: "Accès refusé" });
+    }
+
+    next();
+  };
+}
+
+module.exports = { verifyToken, requireRole };
