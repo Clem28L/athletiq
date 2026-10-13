@@ -10,6 +10,7 @@ client/dist/
 .env
 .env.local
 .env.*.local
+ca.pem
 
 # Logs
 npm-debug.log*
