@@ -148,6 +148,7 @@ async function handleSubmit() {
         <label for="role">Role</label>
         <select id="role" v-model="role">
           <option value="Athlete">Athlete</option>
+          <option value="expert">Expert</option>
         </select>
       </div>
 
