@@ -14,4 +14,10 @@ router.get(
 // GET /api/quizzes/published → quiz publiés (athlète)
 router.get("/published", verifyToken, quizController.getPublishedQuizzes);
 
+router.get("/:id", verifyToken, quizController.getQuizById);
+router.post("/", verifyToken, requireRole("expert"), quizController.createQuiz);
+router.put("/:id", verifyToken, requireRole("expert"), quizController.updateQuiz);
+router.delete("/:id", verifyToken, requireRole("expert"), quizController.deleteQuiz);
+router.patch("/:id/publish", verifyToken, requireRole("expert"), quizController.publishQuiz);
+
 module.exports = router;
