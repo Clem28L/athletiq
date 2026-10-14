@@ -31,6 +31,18 @@ const routes = [
     component: QuizForm,
     meta: { role: "expert" },
   },
+  {
+    path: "/expert/quizzes/:id/edit",
+    name: "expert-quiz-edit",
+    component: QuizForm,
+    meta: { role: "expert" },
+  },
+  {
+    path: "/athlete/quizzes",
+    name: "athlete-quizzes",
+    component: () => import("../views/athlete/Quizzes.vue"),
+    meta: { role: "athlete" },
+  },
 ];
 
 const router = createRouter({

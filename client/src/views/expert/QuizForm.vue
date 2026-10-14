@@ -1,19 +1,70 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
+const route = useRoute();
 
+// Get the quiz ID from the URL (undefined if we are on /new)
+const quizId = route.params.id;
+
+// We are in edit mode if the URL contains an ID
+let isEditMode_bool = false;
+if (quizId !== undefined) {
+  isEditMode_bool = true;
+}
+
+// Wrap it in ref() so Vue can react to changes
+const isEditMode = ref(isEditMode_bool);
 // Form fields
 const title = ref("");
 const description = ref("");
 const type = ref("");
 const module = ref("");
 const category = ref("");
+const published = ref(false);
 
 // UI state
 const error = ref("");
 const loading = ref(false);
+const loadingQuiz = ref(false);
+
+// Load the quiz data if we are in edit mode
+async function loadQuiz() {
+  if (!isEditMode.value) return;
+
+  loadingQuiz.value = true;
+
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/quizzes/" + quizId,
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      error.value = data.error || "Failed to load quiz.";
+      return;
+    }
+
+    // Fill the form with existing values
+    title.value = data.title;
+    description.value = data.description;
+    type.value = data.type;
+    module.value = data.module;
+    category.value = data.category;
+    published.value = Boolean(data.published);
+  } catch (err) {
+    error.value = "Cannot reach the server.";
+  } finally {
+    loadingQuiz.value = false;
+  }
+}
 
 // Submit the form
 async function handleSubmit() {
@@ -34,8 +85,17 @@ async function handleSubmit() {
   loading.value = true;
 
   try {
-    const response = await fetch("http://localhost:3000/api/quizzes", {
-      method: "POST",
+    // Build the URL and method depending on the mode
+    let url = "http://localhost:3000/api/quizzes";
+    let method = "POST";
+
+    if (isEditMode.value) {
+      url = url + "/" + quizId;
+      method = "PUT";
+    }
+
+    const response = await fetch(url, {
+      method: method,
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -46,18 +106,19 @@ async function handleSubmit() {
         type: type.value,
         module: module.value,
         category: category.value,
+        published: published.value,
       }),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      error.value = data.error || "Failed to create quiz.";
+      error.value = data.error || "Failed to save quiz.";
       return;
     }
 
-    // Success → go to the questions page of the new quiz
-    router.push("/expert/quizzes/" + data.quizId + "/questions");
+    // Success → go back to the list
+    router.push("/expert/quizzes");
   } catch (err) {
     error.value = "Cannot reach the server.";
   } finally {
@@ -69,6 +130,8 @@ async function handleSubmit() {
 function goBack() {
   router.push("/expert/quizzes");
 }
+
+onMounted(loadQuiz);
 </script>
 
 <template>
@@ -77,15 +140,22 @@ function goBack() {
     <header class="page-header">
       <div>
         <button class="btn-back" @click="goBack">← Retour</button>
-        <h1>Nouveau quiz</h1>
+        <h1>{{ isEditMode ? "Modifier le quiz" : "Nouveau quiz" }}</h1>
         <p class="subtitle">
-          Remplis les informations de base. Tu ajouteras les questions après.
+          {{
+            isEditMode
+              ? "Modifie les informations du quiz."
+              : "Remplis les informations de base."
+          }}
         </p>
       </div>
     </header>
 
+    <!-- Loading -->
+    <div v-if="loadingQuiz" class="state-msg">Chargement du quiz...</div>
+
     <!-- Form -->
-    <form class="quiz-form" @submit.prevent="handleSubmit">
+    <form v-else class="quiz-form" @submit.prevent="handleSubmit">
       <!-- Title -->
       <div class="form-group">
         <label for="title">Titre</label>
@@ -108,7 +178,7 @@ function goBack() {
         ></textarea>
       </div>
 
-      <!-- Two columns: type + module -->
+      <!-- Type + Module -->
       <div class="form-row">
         <div class="form-group">
           <label for="type">Type</label>
@@ -143,7 +213,15 @@ function goBack() {
         />
       </div>
 
-      <!-- Error message -->
+      <!-- Published (only in edit mode) -->
+      <div v-if="isEditMode" class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" v-model="published" />
+          Publier ce quiz (visible pour les athlètes)
+        </label>
+      </div>
+
+      <!-- Error -->
       <p v-if="error" class="error-msg">{{ error }}</p>
 
       <!-- Actions -->
@@ -152,7 +230,13 @@ function goBack() {
           Annuler
         </button>
         <button type="submit" class="btn-primary" :disabled="loading">
-          {{ loading ? "Création..." : "Créer le quiz" }}
+          {{
+            loading
+              ? "Sauvegarde..."
+              : isEditMode
+              ? "Enregistrer"
+              : "Créer le quiz"
+          }}
         </button>
       </div>
     </form>
@@ -160,6 +244,8 @@ function goBack() {
 </template>
 
 <style scoped>
+/* Reprends exactement le CSS du QuizForm.vue précédent + ces ajouts */
+
 .quiz-form-page {
   padding: 40px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
@@ -170,7 +256,6 @@ function goBack() {
   max-width: 700px;
 }
 
-/* Header */
 .page-header {
   margin-bottom: 40px;
 }
@@ -197,7 +282,6 @@ function goBack() {
   margin-top: 8px;
 }
 
-/* Form */
 .quiz-form {
   display: flex;
   flex-direction: column;
@@ -240,21 +324,31 @@ function goBack() {
   line-height: 1.5;
 }
 
-/* Two columns */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
-/* Error */
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
 .error-msg {
   color: #ff3b30;
   font-size: 14px;
   margin: 0;
 }
 
-/* Actions */
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -293,5 +387,11 @@ function goBack() {
 }
 .btn-secondary:hover {
   background: #f5f5f7;
+}
+
+.state-msg {
+  text-align: center;
+  padding: 60px 20px;
+  color: #86868b;
 }
 </style>
