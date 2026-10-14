@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { getCurrentUser, hasRole } from "../stores/auth";
+import NotFound from "../views/NotFound.vue";
 
 // Route components imports
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import QuizzesManager from "../views/expert/QuizzesManager.vue";
+import QuizForm from "../views/expert/QuizForm.vue";
 
 // Route definitions
 const routes = [
@@ -21,12 +23,12 @@ const routes = [
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
-    component: () => import("../views/NotFound.vue"),
+    component: NotFound,
   },
   {
     path: "/expert/quizzes/new",
     name: "expert-quiz-new",
-    component: () => import("../views/expert/QuizForm.vue"),
+    component: QuizForm,
     meta: { role: "expert" },
   },
 ];
