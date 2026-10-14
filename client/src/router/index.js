@@ -40,7 +40,7 @@ const routes = [
   {
     path: "/athlete/quizzes",
     name: "athlete-quizzes",
-    component: () => import("../views/athlete/Quizzes.vue"),
+    component: () => import("../views/athlete/AthleteQuizzes.vue"),
     meta: { role: "athlete" },
   },
 ];
