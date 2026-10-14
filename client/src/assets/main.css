@@ -30,6 +30,8 @@ a {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  margin-left: 72px;
+  transition: margin-left 0.25s ease;
 }
 
 .main-content {
@@ -309,6 +311,10 @@ a {
   .header {
     min-height: 60px;
     padding: 12px 16px;
+  }
+
+  .app {
+    margin-left: 0;
   }
 
   .logo {
