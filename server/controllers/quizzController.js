@@ -281,3 +281,107 @@ exports.publishQuiz = (req, res) => {
     });
   });
 };
+exports.unpublishQuiz = (req, res) => {
+  // Get the quiz ID from the URL
+  const quizId = req.params.id;
+
+  // Check if the quiz exists
+  const checkQuery = `
+    SELECT id_quiz
+    FROM quizzes
+    WHERE id_quiz = ?
+  `;
+
+  db.query(checkQuery, [quizId], (err, results) => {
+    // Handle database errors
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    // Check if the quiz was found
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Quiz non trouvé" });
+    }
+
+    // Unpublish the quiz
+    const query = `
+      UPDATE quizzes
+      SET published = FALSE
+      WHERE id_quiz = ?
+    `;
+
+    db.query(query, [quizId], (err) => {
+      // Handle database errors
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      // Return the success message
+      return res.json({ message: "Quiz dépublié avec succès" });
+    });
+  });
+};  
+
+exports.addQuestionToQuiz = (req, res) => {
+  // Get the quiz ID from the URL
+  const quizId = req.params.id;
+
+  // Get the question information from the request body
+  const { text, type_answer, points } = req.body;
+
+  // Check if required fields are provided
+  if (!text || !type_answer) {
+    return res.status(400).json({
+      error: "Le texte et le type de réponse sont requis",
+    });
+  }
+
+  // Check if points are valid
+  if (points !== undefined && (!Number.isInteger(points) || points < 0)) {
+    return res.status(400).json({
+      error: "Les points doivent être un entier positif ou nul",
+    });
+  }
+
+  // Check if the quiz exists
+  const checkQuery = `
+    SELECT id_quiz
+    FROM quizzes
+    WHERE id_quiz = ?
+  `;
+
+  db.query(checkQuery, [quizId], (err, results) => {
+    // Handle database errors
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    // Check if the quiz was found
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Quiz non trouvé" });
+    }
+
+    // Insert the new question into the database
+    const query = `
+      INSERT INTO questions (text, type_answer, points, id_quiz)
+      VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(
+      query,
+      [text, type_answer, points ?? 1, quizId],
+      (err, result) => {
+        // Handle database errors
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+
+        // Return the success message and the new question ID
+        res.status(201).json({
+          message: "Question ajoutée avec succès",
+          questionId: result.insertId,
+        });
+      },
+    );
+  });
+};

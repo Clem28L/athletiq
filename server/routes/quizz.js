@@ -19,5 +19,7 @@ router.post("/", verifyToken, requireRole("expert"), quizController.createQuiz);
 router.put("/:id", verifyToken, requireRole("expert"), quizController.updateQuiz);
 router.delete("/:id", verifyToken, requireRole("expert"), quizController.deleteQuiz);
 router.patch("/:id/publish", verifyToken, requireRole("expert"), quizController.publishQuiz);
+router.patch("/:id/unpublish", verifyToken, requireRole("expert"), quizController.unpublishQuiz);
+router.post("/:id/questions", verifyToken, requireRole("expert"), quizController.addQuestionToQuiz);
 
 module.exports = router;
