@@ -20,10 +20,9 @@
         <span class="sidebar-icon">⌂</span>
         <span class="sidebar-label">Accueil</span>
       </RouterLink>
-
-      <RouterLink to="/quizzes" class="sidebar-link" title="Quiz">
+      <RouterLink :to="quizLink" class="sidebar-link" :title="quizLabel">
         <span class="sidebar-icon">▤</span>
-        <span class="sidebar-label">Quiz</span>
+        <span class="sidebar-label">{{ quizLabel }}</span>
       </RouterLink>
 
       <RouterLink to="/nutrition" class="sidebar-link" title="Nutrition">
@@ -43,10 +42,7 @@
     </nav>
 
     <div class="sidebar-bottom">
-      <button
-        class="sidebar-link bottom-button"
-        @click="isOpen = !isOpen"
-      >
+      <button class="sidebar-link bottom-button" @click="isOpen = !isOpen">
         <span class="sidebar-icon">⇔</span>
         <span class="sidebar-label">
           {{ isOpen ? "Réduire le menu" : "Agrandir le menu" }}
@@ -57,10 +53,35 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
+import { getCurrentUser } from "@/stores/auth";
 
 const isOpen = ref(false);
+
+// Récupère l'utilisateur connecté (ou null si non connecté)
+const user = computed(() => getCurrentUser());
+
+// Le lien "Quiz" change selon le rôle
+const quizLink = computed(() => {
+  if (!user.value) {
+    // Pas connecté → redirige vers login
+    return "/login";
+  }
+  if (user.value.role === "expert") {
+    return "/expert/quizzes";
+  }
+  // Athlète (ou autre rôle) → placeholder à changer plus tard
+  return "/athlete/quizzes";
+});
+
+// Le label du lien Quiz change aussi
+const quizLabel = computed(() => {
+  if (user.value && user.value.role === "expert") {
+    return "Gérer les quiz";
+  }
+  return "Quiz";
+});
 </script>
 
 <style scoped>
