@@ -1,55 +1,88 @@
+```vue
 <template>
-  <aside class="sidebar" :class="{ 'sidebar-open': isOpen }">
-    <div class="sidebar-top">
-      <RouterLink to="/" class="sidebar-logo">
-        <span class="logo-icon">A</span>
-        <span class="sidebar-label">AthletiQ</span>
-      </RouterLink>
+  <div>
+    <!-- Fond assombri sur mobile -->
+    <div
+      v-if="isMobileOpen"
+      class="sidebar-overlay"
+      @click="isMobileOpen = false"
+    ></div>
 
-      <button
-        class="toggle-button"
-        @click="isOpen = !isOpen"
-        :aria-label="isOpen ? 'Réduire le menu' : 'Ouvrir le menu'"
-      >
-        {{ isOpen ? "‹" : "☰" }}
-      </button>
-    </div>
+    <aside
+      class="sidebar"
+      :class="{ 'mobile-open': isMobileOpen }"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
+    >
+      <div class="sidebar-top">
+        <RouterLink to="/" class="sidebar-logo" @click="closeMobile">
+          <span class="logo-icon">A</span>
+          <span class="sidebar-label">AthletiQ</span>
+        </RouterLink>
 
-    <nav class="sidebar-nav">
-      <RouterLink to="/" class="sidebar-link" title="Accueil">
-        <span class="sidebar-icon">⌂</span>
-        <span class="sidebar-label">Accueil</span>
-      </RouterLink>
-      <RouterLink :to="quizLink" class="sidebar-link" :title="quizLabel">
-        <span class="sidebar-icon">▤</span>
-        <span class="sidebar-label">{{ quizLabel }}</span>
-      </RouterLink>
+        <!-- Bouton d'ouverture uniquement sur mobile -->
+        <button
+          class="mobile-toggle"
+          @click="isMobileOpen = !isMobileOpen"
+          :aria-label="isMobileOpen ? 'Fermer le menu' : 'Ouvrir le menu'"
+        >
+          {{ isMobileOpen ? "‹" : "☰" }}
+        </button>
+      </div>
 
-      <RouterLink to="/nutrition" class="sidebar-link" title="Nutrition">
-        <span class="sidebar-icon">◉</span>
-        <span class="sidebar-label">Nutrition</span>
-      </RouterLink>
+      <nav class="sidebar-nav">
+        <RouterLink
+          to="/"
+          class="sidebar-link"
+          title="Accueil"
+          @click="closeMobile"
+        >
+          <span class="sidebar-icon">⌂</span>
+          <span class="sidebar-label">Accueil</span>
+        </RouterLink>
 
-      <RouterLink to="/prevention" class="sidebar-link" title="Prévention">
-        <span class="sidebar-icon">✚</span>
-        <span class="sidebar-label">Prévention</span>
-      </RouterLink>
+        <RouterLink
+          :to="quizLink"
+          class="sidebar-link"
+          :title="quizLabel"
+          @click="closeMobile"
+        >
+          <span class="sidebar-icon">▤</span>
+          <span class="sidebar-label">{{ quizLabel }}</span>
+        </RouterLink>
 
-      <RouterLink to="/equipment" class="sidebar-link" title="Équipement">
-        <span class="sidebar-icon">⚙</span>
-        <span class="sidebar-label">Équipement</span>
-      </RouterLink>
-    </nav>
+        <RouterLink
+          to="/nutrition"
+          class="sidebar-link"
+          title="Nutrition"
+          @click="closeMobile"
+        >
+          <span class="sidebar-icon">◉</span>
+          <span class="sidebar-label">Nutrition</span>
+        </RouterLink>
 
-    <div class="sidebar-bottom">
-      <button class="sidebar-link bottom-button" @click="isOpen = !isOpen">
-        <span class="sidebar-icon">⇔</span>
-        <span class="sidebar-label">
-          {{ isOpen ? "Réduire le menu" : "Agrandir le menu" }}
-        </span>
-      </button>
-    </div>
-  </aside>
+        <RouterLink
+          to="/prevention"
+          class="sidebar-link"
+          title="Prévention"
+          @click="closeMobile"
+        >
+          <span class="sidebar-icon">✚</span>
+          <span class="sidebar-label">Prévention</span>
+        </RouterLink>
+
+        <RouterLink
+          to="/equipment"
+          class="sidebar-link"
+          title="Équipement"
+          @click="closeMobile"
+        >
+          <span class="sidebar-icon">⚙</span>
+          <span class="sidebar-label">Équipement</span>
+        </RouterLink>
+      </nav>
+    </aside>
+  </div>
 </template>
 
 <script setup>
@@ -57,31 +90,42 @@ import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
 import { getCurrentUser } from "@/stores/auth";
 
-const isOpen = ref(false);
+const isMobileOpen = ref(false);
 
-// Récupère l'utilisateur connecté (ou null si non connecté)
+// Utilisateur connecté
 const user = computed(() => getCurrentUser());
 
-// Le lien "Quiz" change selon le rôle
+// Lien Quiz selon le rôle
 const quizLink = computed(() => {
-  if (!user.value) {
-    // Pas connecté → redirige vers login
-    return "/login";
-  }
-  if (user.value.role === "expert") {
-    return "/expert/quizzes";
-  }
-  // Athlète (ou autre rôle) → placeholder à changer plus tard
+  if (!user.value) return "/login";
+  if (user.value.role === "expert") return "/expert/quizzes";
   return "/athlete/quizzes";
 });
 
-// Le label du lien Quiz change aussi
+// Texte du lien Quiz selon le rôle
 const quizLabel = computed(() => {
-  if (user.value && user.value.role === "expert") {
-    return "Gérer les quiz";
-  }
+  if (user.value?.role === "expert") return "Gérer les quiz";
   return "Quiz";
 });
+
+// Détecte si on est sur mobile
+const isMobile = () => window.matchMedia("(max-width: 560px)").matches;
+
+// Gestion du survol sur ordinateur
+const handleMouseEnter = () => {
+  // Sur ordinateur, le CSS gère l'ouverture
+};
+
+const handleMouseLeave = () => {
+  // Sur ordinateur, le CSS gère la fermeture
+};
+
+// Ferme le menu après une navigation sur mobile
+const closeMobile = () => {
+  if (isMobile()) {
+    isMobileOpen.value = false;
+  }
+};
 </script>
 
 <style scoped>
@@ -90,21 +134,38 @@ const quizLabel = computed(() => {
   top: 0;
   left: 0;
   z-index: 1000;
+  box-sizing: border-box;
   width: 72px;
   height: 100vh;
+  height: 100dvh;
   padding: 18px 10px;
   display: flex;
   flex-direction: column;
   background: #f7f7f4;
   border-right: 1px solid #d6d5d1;
-  transition: width 0.25s ease;
   overflow: hidden;
+  transition:
+    width 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-.sidebar-open {
-  width: 240px;
+/* Ordinateur : ouverture uniquement au survol */
+@media (min-width: 561px) {
+  .sidebar:hover {
+    width: 240px;
+    box-shadow: 8px 0 24px rgb(0 0 0 / 8%);
+  }
+
+  .sidebar:hover .sidebar-label {
+    opacity: 1;
+  }
+
+  .mobile-toggle {
+    display: none;
+  }
 }
 
+/* En-tête */
 .sidebar-top {
   display: flex;
   align-items: center;
@@ -135,22 +196,13 @@ const quizLabel = computed(() => {
   color: white;
 }
 
-.toggle-button {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  border: none;
-  border-radius: 5px;
-  background: transparent;
-  color: #373631;
-  font-size: 22px;
-  cursor: pointer;
+.sidebar-label {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
 }
 
-.toggle-button:hover {
-  background: #e9e8e3;
-}
-
+/* Navigation */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -159,6 +211,7 @@ const quizLabel = computed(() => {
 
 .sidebar-link {
   min-height: 44px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -171,7 +224,7 @@ const quizLabel = computed(() => {
   white-space: nowrap;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .sidebar-link:hover,
@@ -187,29 +240,60 @@ const quizLabel = computed(() => {
   font-size: 21px;
 }
 
-.sidebar-label {
-  opacity: 0;
-  transition: opacity 0.15s;
-  white-space: nowrap;
+/* Bouton réservé aux petits écrans */
+.mobile-toggle {
+  display: none;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #373631;
+  font-size: 22px;
+  cursor: pointer;
 }
 
-.sidebar-open .sidebar-label {
-  opacity: 1;
+.sidebar-overlay {
+  display: none;
 }
 
-.sidebar-bottom {
-  margin-top: auto;
-}
-
-.bottom-button {
-  width: 100%;
-  text-align: left;
-}
-
+/* Mobile et petits écrans tactiles */
 @media (max-width: 560px) {
-  .sidebar-open {
-    width: 240px;
-    box-shadow: 8px 0 24px rgb(0 0 0 / 10%);
+  .sidebar {
+    width: 72px;
+    box-shadow: none;
+  }
+
+  .sidebar.mobile-open {
+    width: min(260px, 85vw);
+    box-shadow: 8px 0 24px rgb(0 0 0 / 12%);
+  }
+
+  .sidebar.mobile-open .sidebar-label {
+    opacity: 1;
+  }
+
+  .mobile-toggle {
+    display: block;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgb(0 0 0 / 35%);
+  }
+}
+
+/* Respecte les préférences de réduction des animations */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebar-label,
+  .sidebar-link {
+    transition: none;
   }
 }
 </style>
+```
