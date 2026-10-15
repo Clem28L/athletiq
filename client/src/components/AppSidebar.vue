@@ -1,4 +1,3 @@
-```vue
 <template>
   <div>
     <!-- Fond assombri sur mobile -->
@@ -296,4 +295,3 @@ const closeMobile = () => {
   }
 }
 </style>
-```
