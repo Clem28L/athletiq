@@ -38,6 +38,12 @@ const routes = [
     meta: { role: "expert" },
   },
   {
+    path: "/expert/quizzes/:id/questions",
+    name: "expert-quiz-questions",
+    component: () => import("../views/expert/QuizQuestions.vue"),
+    meta: { role: "expert" },
+  },
+  {
     path: "/athlete/quizzes",
     name: "athlete-quizzes",
     component: () => import("../views/athlete/AthleteQuizzes.vue"),

@@ -4,6 +4,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const testRoutes = require("./routes/test");
 const quizRoutes = require("./routes/quizz");
+const optionRoutes = require("./routes/options");
 const questionRoutes = require("./routes/questions");
 require("dotenv").config();
 require("./config/db");
@@ -19,6 +20,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/questions", questionRoutes);
+app.use("/api", optionRoutes);
 
 //Démarrage
 app.listen(port, () => {
