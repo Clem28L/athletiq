@@ -5,16 +5,14 @@ import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
 const router = useRouter();
 
-// Quiz ID from the URL
 const quizId = route.params.id;
 
-// Quiz info + questions list
 const quiz = ref(null);
 const questions = ref([]);
 const loading = ref(true);
 const error = ref("");
 
-// New question form
+// Form fields
 const newQuestionText = ref("");
 const newQuestionType = ref("single_choice");
 const newQuestionPoints = ref(1);
@@ -24,6 +22,10 @@ const newOptions = ref([
 ]);
 const formError = ref("");
 const saving = ref(false);
+
+// Edit mode
+const editingQuestionId = ref(null);
+const editingOriginalOptions = ref([]);
 
 // Load quiz + questions
 async function loadQuiz() {
@@ -66,26 +68,56 @@ function removeOptionField(index) {
   newOptions.value.splice(index, 1);
 }
 
-// Add a new question
+// Start editing a question
+function startEdit(question) {
+  editingQuestionId.value = question.id_question;
+  newQuestionText.value = question.text;
+  newQuestionType.value = question.type_answer;
+  newQuestionPoints.value = question.points;
+
+  // Load options into the form
+  newOptions.value = question.options.map((o) => ({
+    text: o.text,
+    is_correct: o.is_correct === 1 || o.is_correct === true,
+  }));
+
+  // Remember the IDs of the original options (to delete them on update)
+  editingOriginalOptions.value = question.options.map((o) => o.id_option);
+
+  // Scroll to the form
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Cancel editing mode
+function cancelEdit() {
+  editingQuestionId.value = null;
+  newQuestionText.value = "";
+  newQuestionType.value = "single_choice";
+  newQuestionPoints.value = 1;
+  newOptions.value = [
+    { text: "", is_correct: false },
+    { text: "", is_correct: false },
+  ];
+  editingOriginalOptions.value = [];
+  formError.value = "";
+}
+
+// Submit the form (create OR update)
 async function handleAddQuestion() {
   formError.value = "";
 
-  // Check that the question text is filled
   if (!newQuestionText.value) {
     formError.value = "Question text is required.";
     return;
   }
 
-  // Keep only options that have text
   const filledOptions = newOptions.value.filter((o) => o.text.trim() !== "");
 
-  // Need at least 2 options for a quiz question
   if (filledOptions.length < 2) {
     formError.value = "You need at least 2 options.";
     return;
   }
 
-  // Need at least 1 correct answer
   const hasCorrect = filledOptions.some((o) => o.is_correct);
   if (!hasCorrect) {
     formError.value = "You must mark at least one option as correct.";
@@ -95,9 +127,52 @@ async function handleAddQuestion() {
   saving.value = true;
 
   try {
-    // STEP 1 — Create the question
-    const response = await fetch(
-      "http://localhost:3000/api/quizzes/" + quizId + "/questions",
+    if (editingQuestionId.value) {
+      // ===== UPDATE MODE =====
+      await updateQuestion(editingQuestionId.value, filledOptions);
+    } else {
+      // ===== CREATE MODE =====
+      await createQuestion(filledOptions);
+    }
+
+    cancelEdit();
+    await loadQuiz();
+  } catch (err) {
+    formError.value = err.message || "Cannot reach the server.";
+  } finally {
+    saving.value = false;
+  }
+}
+
+// Create a new question + its options
+async function createQuestion(filledOptions) {
+  const response = await fetch(
+    "http://localhost:3000/api/quizzes/" + quizId + "/questions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      body: JSON.stringify({
+        text: newQuestionText.value,
+        type_answer: newQuestionType.value,
+        points: newQuestionPoints.value,
+      }),
+    },
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to add question.");
+  }
+
+  const newQuestionId = data.questionId;
+
+  for (const option of filledOptions) {
+    await fetch(
+      "http://localhost:3000/api/questions/" + newQuestionId + "/options",
       {
         method: "POST",
         headers: {
@@ -105,55 +180,63 @@ async function handleAddQuestion() {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
         body: JSON.stringify({
-          text: newQuestionText.value,
-          type_answer: newQuestionType.value,
-          points: newQuestionPoints.value,
+          text: option.text,
+          is_correct: option.is_correct,
         }),
       },
     );
+  }
+}
 
+// Update an existing question + its options
+async function updateQuestion(questionId, filledOptions) {
+  // 1. Update the question
+  const response = await fetch(
+    "http://localhost:3000/api/questions/" + questionId,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      body: JSON.stringify({
+        text: newQuestionText.value,
+        type_answer: newQuestionType.value,
+      }),
+    },
+  );
+
+  if (!response.ok) {
     const data = await response.json();
+    throw new Error(data.error || "Failed to update question.");
+  }
 
-    if (!response.ok) {
-      formError.value = data.error || "Failed to add question.";
-      return;
-    }
+  // 2. Delete old options
+  for (const optionId of editingOriginalOptions.value) {
+    await fetch("http://localhost:3000/api/options/" + optionId, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    });
+  }
 
-    const newQuestionId = data.questionId;
-
-    // STEP 2 — Create the options for this question
-    for (const option of filledOptions) {
-      await fetch(
-        "http://localhost:3000/api/questions/" + newQuestionId + "/options",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-          body: JSON.stringify({
-            text: option.text,
-            is_correct: option.is_correct,
-          }),
+  // 3. Create the new options
+  for (const option of filledOptions) {
+    await fetch(
+      "http://localhost:3000/api/questions/" + questionId + "/options",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token"),
         },
-      );
-    }
-
-    // Reset the form
-    newQuestionText.value = "";
-    newQuestionType.value = "single_choice";
-    newQuestionPoints.value = 1;
-    newOptions.value = [
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-    ];
-
-    // Reload the quiz to show the new question
-    await loadQuiz();
-  } catch (err) {
-    formError.value = "Cannot reach the server.";
-  } finally {
-    saving.value = false;
+        body: JSON.stringify({
+          text: option.text,
+          is_correct: option.is_correct,
+        }),
+      },
+    );
   }
 }
 
@@ -177,7 +260,6 @@ async function deleteQuestion(questionId) {
       return;
     }
 
-    // Remove from local list
     questions.value = questions.value.filter(
       (q) => q.id_question !== questionId,
     );
@@ -208,12 +290,15 @@ onMounted(loadQuiz);
     <div v-else-if="error" class="state-msg error">{{ error }}</div>
 
     <div v-else class="content">
-      <!-- ADD QUESTION FORM -->
+      <!-- ADD / EDIT QUESTION FORM -->
       <section class="add-question-section">
-        <h2>Ajouter une question</h2>
+        <h2>
+          {{
+            editingQuestionId ? "Modifier la question" : "Ajouter une question"
+          }}
+        </h2>
 
         <form class="question-form" @submit.prevent="handleAddQuestion">
-          <!-- Question text -->
           <div class="form-group">
             <label>Texte de la question</label>
             <textarea
@@ -223,7 +308,6 @@ onMounted(loadQuiz);
             ></textarea>
           </div>
 
-          <!-- Type + points -->
           <div class="form-row">
             <div class="form-group">
               <label>Type de réponse</label>
@@ -234,11 +318,15 @@ onMounted(loadQuiz);
             </div>
             <div class="form-group">
               <label>Points</label>
-              <input v-model.number="newQuestionPoints" type="number" min="1" />
+              <input
+                v-model.number="newQuestionPoints"
+                type="number"
+                min="1"
+                :disabled="editingQuestionId !== null"
+              />
             </div>
           </div>
 
-          <!-- Options -->
           <div class="form-group">
             <label>Options de réponse</label>
 
@@ -276,13 +364,27 @@ onMounted(loadQuiz);
             </button>
           </div>
 
-          <!-- Error -->
           <p v-if="formError" class="error-msg">{{ formError }}</p>
 
-          <!-- Submit -->
           <div class="form-actions">
+            <button
+              v-if="editingQuestionId"
+              type="button"
+              class="btn-secondary"
+              @click="cancelEdit"
+            >
+              Annuler
+            </button>
             <button type="submit" class="btn-primary" :disabled="saving">
-              {{ saving ? "Ajout..." : "Ajouter la question" }}
+              {{
+                saving
+                  ? editingQuestionId
+                    ? "Modification..."
+                    : "Ajout..."
+                  : editingQuestionId
+                  ? "Enregistrer"
+                  : "Ajouter la question"
+              }}
             </button>
           </div>
         </form>
@@ -304,6 +406,13 @@ onMounted(loadQuiz);
           <div class="question-header">
             <span class="question-number">Q{{ qIndex + 1 }}</span>
             <span class="question-points">{{ question.points }} pt</span>
+            <button
+              class="btn-icon"
+              @click="startEdit(question)"
+              title="Modifier"
+            >
+              ✎
+            </button>
             <button
               class="btn-icon danger"
               @click="deleteQuestion(question.id_question)"
@@ -386,7 +495,6 @@ onMounted(loadQuiz);
   margin: 0 0 20px 0;
 }
 
-/* Form */
 .question-form {
   display: flex;
   flex-direction: column;
@@ -422,6 +530,10 @@ onMounted(loadQuiz);
   outline: none;
   border-color: #1d1d1f;
 }
+.form-group input:disabled {
+  background: #f5f5f7;
+  cursor: not-allowed;
+}
 
 .form-row {
   display: grid;
@@ -429,7 +541,6 @@ onMounted(loadQuiz);
   gap: 16px;
 }
 
-/* Options */
 .option-row {
   display: flex;
   align-items: center;
@@ -480,17 +591,16 @@ onMounted(loadQuiz);
   color: white;
 }
 
-/* Error */
 .error-msg {
   color: #ff3b30;
   font-size: 14px;
   margin: 0;
 }
 
-/* Submit */
 .form-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
   padding-top: 12px;
 }
 .btn-primary {
@@ -510,15 +620,26 @@ onMounted(loadQuiz);
   opacity: 0.5;
   cursor: not-allowed;
 }
+.btn-secondary {
+  background: white;
+  color: #1d1d1f;
+  border: 1px solid #d2d2d7;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  background: #f5f5f7;
+}
 
-/* Empty */
 .empty-msg {
   color: #86868b;
   font-size: 14px;
   padding: 20px 0;
 }
 
-/* Questions list */
 .question-card {
   padding: 20px;
   border: 1px solid #d2d2d7;
@@ -544,7 +665,7 @@ onMounted(loadQuiz);
   padding: 2px 8px;
   border-radius: 20px;
 }
-.question-header .btn-icon {
+.question-header .btn-icon:first-of-type {
   margin-left: auto;
 }
 .question-text {
@@ -584,7 +705,6 @@ onMounted(loadQuiz);
   margin: 0;
 }
 
-/* States */
 .state-msg {
   text-align: center;
   padding: 60px 20px;
