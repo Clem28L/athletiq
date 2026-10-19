@@ -7,7 +7,7 @@ const name = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
-const role = ref("Athlete");
+const role = ref("athlete");
 const error = ref("");
 const success = ref("");
 const loading = ref(false);
@@ -147,7 +147,7 @@ async function handleSubmit() {
       <div class="form-group">
         <label for="role">Role</label>
         <select id="role" v-model="role">
-          <option value="Athlete">Athlete</option>
+          <option value="athlete">Athlete</option>
           <option value="expert">Expert</option>
         </select>
       </div>

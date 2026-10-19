@@ -11,7 +11,8 @@ import {
 onMounted(async () => {
   const token = localStorage.getItem("token");
 
-  if (!token) return;
+  // Keep the user already set by loginUser
+  if (!token || user.value) return;
 
   try {
     const response = await fetch(

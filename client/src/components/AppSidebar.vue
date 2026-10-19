@@ -87,12 +87,12 @@
 <script setup>
 import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
-import { getCurrentUser } from "@/stores/auth";
+import { user } from "@/stores/auth";
 
 const isMobileOpen = ref(false);
 
 // Utilisateur connecté
-const user = computed(() => getCurrentUser());
+// Reactive user state updates the sidebar immediately after login
 
 // Lien Quiz selon le rôle
 const quizLink = computed(() => {
