@@ -3,7 +3,7 @@ const db = require("../config/db");
 // LISTE DES QUIZ
 exports.getAllQuizzes = (req, res) => {
   const query = `
-    SELECT id_quiz, title, description, type, module, category, published, created_at
+    SELECT id_quiz, title, description, module, category, published, created_at
     FROM quizzes
     ORDER BY created_at DESC
   `;
@@ -20,7 +20,7 @@ exports.getAllQuizzes = (req, res) => {
 // LISTE DES QUIZ PUBLIÉS (pour les athlètes)
 exports.getPublishedQuizzes = (req, res) => {
   const query = `
-    SELECT id_quiz, title, description, type, module, category
+    SELECT id_quiz, title, description, module, category
     FROM quizzes
     WHERE published = TRUE
     ORDER BY created_at DESC
@@ -35,7 +35,6 @@ exports.getPublishedQuizzes = (req, res) => {
   });
 };
 
-
 // GET ONE QUIZ WITH ITS QUESTIONS AND OPTIONS
 exports.getQuizById = (req, res) => {
   // Get the quiz ID from the URL
@@ -43,7 +42,7 @@ exports.getQuizById = (req, res) => {
 
   // Get the quiz information
   const quizQuery = `
-    SELECT id_quiz, title, description, type, module, category, published, created_at
+    SELECT id_quiz, title, description, module, category, published, created_at
     FROM quizzes
     WHERE id_quiz = ?
   `;
@@ -92,28 +91,24 @@ exports.getQuizById = (req, res) => {
           WHERE id_question = ?
         `;
 
-        db.query(
-          optionsQuery,
-          [question.id_question],
-          (err, optionResults) => {
-            // Handle database errors
-            if (err) {
-              return res.status(500).json({ error: err.message });
-            }
-
-            // Add the options to the current question
-            question.options = optionResults;
-
-            // Count this question as loaded
-            questionsLoaded++;
-
-            // Return the quiz only when all questions have their options
-            if (questionsLoaded === questionResults.length) {
-              quiz.questions = questionResults;
-              res.json(quiz);
-            }
+        db.query(optionsQuery, [question.id_question], (err, optionResults) => {
+          // Handle database errors
+          if (err) {
+            return res.status(500).json({ error: err.message });
           }
-        );
+
+          // Add the options to the current question
+          question.options = optionResults;
+
+          // Count this question as loaded
+          questionsLoaded++;
+
+          // Return the quiz only when all questions have their options
+          if (questionsLoaded === questionResults.length) {
+            quiz.questions = questionResults;
+            res.json(quiz);
+          }
+        });
       });
     });
   });
@@ -121,25 +116,25 @@ exports.getQuizById = (req, res) => {
 
 exports.createQuiz = (req, res) => {
   // Get the quiz information from the request body
-  const { title, description, type, module, category } = req.body;
+  const { title, description, module, category } = req.body;
 
   // Get the user ID from the authenticated user
   const userId = req.user.id_user;
 
   // Check if all required fields are provided
-  if (!title || !description || !type || !module || !category) {
+  if (!title || !description || !module || !category) {
     return res.status(400).json({ error: "Tous les champs sont requis" });
   }
 
   // Create the quiz with published set to false
   const query = `
-    INSERT INTO quizzes (title, description, type, module, category, published, id_user)
-    VALUES (?, ?, ?, ?, ?, FALSE, ?)
+    INSERT INTO quizzes (title, description, module, category, published, id_user)
+    VALUES (?, ?, ?, ?, FALSE, ?)
   `;
 
   db.query(
     query,
-    [title, description, type, module, category, userId],
+    [title, description, module, category, userId],
     (err, result) => {
       // Handle database errors
       if (err) {
@@ -151,7 +146,7 @@ exports.createQuiz = (req, res) => {
         message: "Quiz créé avec succès",
         quizId: result.insertId,
       });
-    }
+    },
   );
 };
 
@@ -160,13 +155,12 @@ exports.updateQuiz = (req, res) => {
   const quizId = req.params.id;
 
   // Get the updated quiz information from the request body
-  const { title, description, type, module, category, published } = req.body;
+  const { title, description, module, category, published } = req.body;
 
   // Check if all required fields are provided
   if (
     !title ||
     !description ||
-    !type ||
     !module ||
     !category ||
     typeof published !== "boolean"
@@ -195,13 +189,13 @@ exports.updateQuiz = (req, res) => {
     // Update the quiz in the database
     const query = `
       UPDATE quizzes
-      SET title = ?, description = ?, type = ?, module = ?, category = ?, published = ?
+      SET title = ?, description = ?, module = ?, category = ?, published = ?
       WHERE id_quiz = ?
     `;
 
     db.query(
       query,
-      [title, description, type, module, category, published, quizId],
+      [title, description, module, category, published, quizId],
       (err) => {
         // Handle database errors
         if (err) {
@@ -210,7 +204,7 @@ exports.updateQuiz = (req, res) => {
 
         // Return the success message
         res.json({ message: "Quiz mis à jour avec succès" });
-      }
+      },
     );
   });
 };
@@ -320,7 +314,7 @@ exports.unpublishQuiz = (req, res) => {
       return res.json({ message: "Quiz dépublié avec succès" });
     });
   });
-};  
+};
 
 exports.addQuestionToQuiz = (req, res) => {
   // Get the quiz ID from the URL
@@ -367,21 +361,17 @@ exports.addQuestionToQuiz = (req, res) => {
       VALUES (?, ?, ?, ?)
     `;
 
-    db.query(
-      query,
-      [text, type_answer, points ?? 1, quizId],
-      (err, result) => {
-        // Handle database errors
-        if (err) {
-          return res.status(500).json({ error: err.message });
-        }
+    db.query(query, [text, type_answer, points ?? 1, quizId], (err, result) => {
+      // Handle database errors
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
 
-        // Return the success message and the new question ID
-        res.status(201).json({
-          message: "Question ajoutée avec succès",
-          questionId: result.insertId,
-        });
-      },
-    );
+      // Return the success message and the new question ID
+      res.status(201).json({
+        message: "Question ajoutée avec succès",
+        questionId: result.insertId,
+      });
+    });
   });
 };
