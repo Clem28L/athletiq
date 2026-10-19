@@ -1,4 +1,6 @@
 const db = require("../config/db");
+const mysql = require("mysql2/promise");
+const { validateQuestion } = require("../services/questionValidation");
 
 // LISTE DES QUIZ
 exports.getAllQuizzes = (req, res) => {
@@ -39,10 +41,17 @@ exports.getPublishedQuizzes = (req, res) => {
 exports.getQuizById = (req, res) => {
   // Get the quiz ID from the URL
   const quizId = req.params.id;
+  const isExpert = req.user.role === "expert";
+
+  // Check the user role
+  if (!isExpert && req.user.role !== "athlete") {
+    return res.status(403).json({ error: "Accès refusé." });
+  }
 
   // Get the quiz information
   const quizQuery = `
-    SELECT id_quiz, title, description, module, category, published, created_at
+    SELECT id_quiz, title, description, module, category,
+           published, created_at, id_user
     FROM quizzes
     WHERE id_quiz = ?
   `;
@@ -53,62 +62,105 @@ exports.getQuizById = (req, res) => {
       return res.status(500).json({ error: err.message });
     }
 
-    // Check if the quiz exists
     if (quizResults.length === 0) {
-      return res.status(404).json({ error: "Quiz not found" });
+      return res.status(404).json({ error: "Quiz non trouvé." });
     }
 
-    // Save the quiz information
     const quiz = quizResults[0];
 
-    // Get the questions linked to this quiz
+    // Experts can only manage their own quizzes
+    if (isExpert && quiz.id_user !== req.user.id_user) {
+      return res.status(403).json({
+        error: "Tu peux seulement consulter tes propres quiz.",
+      });
+    }
+
+    // Athletes can only access published quizzes
+    if (!isExpert && !quiz.published) {
+      return res.status(404).json({ error: "Quiz non trouvé." });
+    }
+
+    // Get all question fields
     const questionsQuery = `
-      SELECT id_question, text, type_answer, points
+      SELECT id_question, text, type_answer, points,
+             question_order, correct_number, tolerance,
+             min_value, max_value, step_value, unit,
+             accepted_texts, settings
       FROM questions
       WHERE id_quiz = ?
+      ORDER BY question_order, id_question
     `;
 
     db.query(questionsQuery, [quizId], (err, questionResults) => {
-      // Handle database errors
       if (err) {
         return res.status(500).json({ error: err.message });
       }
 
-      // If there are no questions, return the quiz with an empty list
       if (questionResults.length === 0) {
         quiz.questions = [];
         return res.json(quiz);
       }
 
-      // Count the questions to know when all options are loaded
       let questionsLoaded = 0;
 
-      // Get the options for each question
+      // Prevent several responses if a query fails
+      let hasError = false;
+
       questionResults.forEach((question) => {
+        // Hide corrections from athletes
+        if (!isExpert) {
+          delete question.correct_number;
+          delete question.tolerance;
+          delete question.accepted_texts;
+
+          // Settings may contain private correction rules
+          delete question.settings;
+        }
+
+        // Get all option fields
         const optionsQuery = `
-          SELECT id_option, text
+          SELECT id_option, text, is_correct, display_order,
+                 correct_position, pair_key, pair_side,
+                 correct_category
           FROM options
           WHERE id_question = ?
+          ORDER BY display_order, id_option
         `;
 
-        db.query(optionsQuery, [question.id_question], (err, optionResults) => {
-          // Handle database errors
-          if (err) {
-            return res.status(500).json({ error: err.message });
+        db.query(
+          optionsQuery,
+          [question.id_question],
+          (err, optionResults) => {
+            if (hasError) return;
+
+            if (err) {
+              hasError = true;
+
+              return res.status(500).json({
+                error: err.message,
+              });
+            }
+
+            // Keep correction fields for experts only
+            if (!isExpert) {
+              optionResults.forEach((option) => {
+                delete option.is_correct;
+                delete option.correct_position;
+                delete option.pair_key;
+                delete option.correct_category;
+              });
+            }
+
+            question.options = optionResults;
+            questionsLoaded++;
+
+            // Reply when all options are loaded
+            if (questionsLoaded === questionResults.length) {
+              quiz.questions = questionResults;
+              return res.json(quiz);
+            }
           }
-
-          // Add the options to the current question
-          question.options = optionResults;
-
-          // Count this question as loaded
-          questionsLoaded++;
-
-          // Return the quiz only when all questions have their options
-          if (questionsLoaded === questionResults.length) {
-            quiz.questions = questionResults;
-            res.json(quiz);
-          }
-        });
+        );
       });
     });
   });
@@ -316,62 +368,180 @@ exports.unpublishQuiz = (req, res) => {
   });
 };
 
-exports.addQuestionToQuiz = (req, res) => {
-  // Get the quiz ID from the URL
-  const quizId = req.params.id;
+exports.addQuestionToQuiz = async (req, res) => {
+  // Get the quiz ID
+  const quizId = Number(req.params.id);
 
-  // Get the question information from the request body
-  const { text, type_answer, points } = req.body;
+  if (!Number.isInteger(quizId) || quizId < 1) {
+    return res.status(400).json({ error: "ID du quiz invalide." });
+  }
 
-  // Check if required fields are provided
-  if (!text || !type_answer) {
+  // Validate the question
+  const data = req.body;
+  const validationError = validateQuestion(data);
+
+  if (validationError) {
+    return res.status(400).json({ error: validationError });
+  }
+
+  const {
+    text,
+    type_answer,
+    points,
+    options = [],
+    correct_number,
+    tolerance = 0,
+    min_value,
+    max_value,
+    step_value,
+    unit,
+    accepted_texts,
+  } = data;
+
+  if (
+    unit !== undefined &&
+    (typeof unit !== "string" || unit.length > 30)
+  ) {
     return res.status(400).json({
-      error: "Le texte et le type de réponse sont requis",
+      error: "L’unité doit être un texte de 30 caractères maximum.",
     });
   }
 
-  // Check if points are valid
-  if (points !== undefined && (!Number.isInteger(points) || points < 0)) {
-    return res.status(400).json({
-      error: "Les points doivent être un entier positif ou nul",
+  let connection;
+
+  try {
+    // Use a separate connection for this transaction
+    connection = await mysql.createConnection({
+      host: db.config.host,
+      port: db.config.port,
+      user: db.config.user,
+      password: db.config.password,
+      database: db.config.database,
+      ssl: db.config.ssl,
     });
-  }
 
-  // Check if the quiz exists
-  const checkQuery = `
-    SELECT id_quiz
-    FROM quizzes
-    WHERE id_quiz = ?
-  `;
+    await connection.beginTransaction();
 
-  db.query(checkQuery, [quizId], (err, results) => {
-    // Handle database errors
-    if (err) {
-      return res.status(500).json({ error: err.message });
+    // Check the quiz and its owner
+    const [quizzes] = await connection.execute(
+      "SELECT id_quiz, id_user FROM quizzes WHERE id_quiz = ? FOR UPDATE",
+      [quizId]
+    );
+
+    if (quizzes.length === 0) {
+      await connection.rollback();
+
+      return res.status(404).json({ error: "Quiz non trouvé." });
     }
 
-    // Check if the quiz was found
-    if (results.length === 0) {
-      return res.status(404).json({ error: "Quiz non trouvé" });
+    if (quizzes[0].id_user !== req.user.id_user) {
+      await connection.rollback();
+
+      return res.status(403).json({
+        error: "Tu peux seulement modifier tes propres quiz.",
+      });
     }
 
-    // Insert the new question into the database
+    const isNumeric =
+      type_answer === "numeric" || type_answer === "slider";
+
+    const isSlider = type_answer === "slider";
+
+    // Insert the question
     const query = `
-      INSERT INTO questions (text, type_answer, points, id_quiz)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO questions (
+        id_quiz,
+        text,
+        type_answer,
+        points,
+        correct_number,
+        tolerance,
+        min_value,
+        max_value,
+        step_value,
+        unit,
+        accepted_texts
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    db.query(query, [text, type_answer, points ?? 1, quizId], (err, result) => {
-      // Handle database errors
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
+    const [result] = await connection.execute(query, [
+      quizId,
+      text.trim(),
+      type_answer,
+      points,
+      isNumeric ? correct_number : null,
+      isNumeric ? tolerance : 0,
+      isSlider ? min_value : null,
+      isSlider ? max_value : null,
+      isSlider ? step_value : null,
+      isNumeric ? (unit || "").trim() : null,
+      type_answer === "short_text"
+        ? JSON.stringify(accepted_texts)
+        : null,
+    ]);
 
-      // Return the success message and the new question ID
-      res.status(201).json({
-        message: "Question ajoutée avec succès",
-        questionId: result.insertId,
-      });
+    const questionId = result.insertId;
+
+    // Insert the options when needed
+    const optionQuery = `
+      INSERT INTO options (
+        id_question,
+        text,
+        is_correct,
+        display_order,
+        correct_position,
+        pair_key,
+        pair_side,
+        correct_category
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    for (let index = 0; index < options.length; index++) {
+      const option = options[index];
+
+      const isChoice =
+        type_answer === "single_choice" ||
+        type_answer === "multiple_choice" ||
+        type_answer === "true_false";
+
+      await connection.execute(optionQuery, [
+        questionId,
+        option.text.trim(),
+        isChoice && option.is_correct ? 1 : 0,
+        index + 1,
+        type_answer === "ordering" ? option.correct_position : null,
+        type_answer === "matching" ? option.pair_key : null,
+        type_answer === "matching" ? option.pair_side : null,
+        type_answer === "categorization"
+          ? option.correct_category.trim()
+          : null,
+      ]);
+    }
+
+    // Save everything together
+    await connection.commit();
+
+    return res.status(201).json({
+      message: "Question ajoutée avec succès.",
+      questionId: questionId,
     });
-  });
+  } catch (err) {
+    // Cancel all inserts if something fails
+    if (connection) {
+      await connection.rollback();
+    }
+
+    console.error(err);
+
+    return res.status(500).json({
+      error: "Impossible d’ajouter la question.",
+    });
+  } finally {
+    // Always close this connection
+    if (connection) {
+      await connection.end();
+    }
+  }
 };
