@@ -1,6 +1,8 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+
+import QuizModuleFilter from "@/components/QuizModuleFilter.vue";
 
 const router = useRouter();
 
@@ -8,7 +10,24 @@ const quizzes = ref([]);
 const loading = ref(true);
 const error = ref("");
 const filterModule = ref("all");
-const filterType = ref("all");
+
+// Return quizzes from the selected module
+const filteredQuizzes = computed(function () {
+  const results = [];
+
+  // Keep all quizzes or those matching the selected module
+  for (let i = 0; i < quizzes.value.length; i++) {
+    const quiz = quizzes.value[i];
+
+    if (filterModule.value === "all") {
+      results.push(quiz);
+    } else if (quiz.module === filterModule.value) {
+      results.push(quiz);
+    }
+  }
+
+  return results;
+});
 
 // Load quizzes from the API
 async function loadQuizzes() {
@@ -79,7 +98,7 @@ async function togglePublish(quiz) {
           category: quiz.category,
           published: !quiz.published,
         }),
-      },
+      }
     );
 
     if (!response.ok) {
@@ -93,45 +112,19 @@ async function togglePublish(quiz) {
   }
 }
 
-// Navigation
+// Open the quiz form
 function editQuiz(id) {
   router.push("/expert/quizzes/" + id + "/edit");
 }
 
+// Open the question manager
 function manageQuestions(id) {
   router.push("/expert/quizzes/" + id + "/questions");
 }
 
+// Open the new quiz form
 function goToNewQuiz() {
   router.push("/expert/quizzes/new");
-}
-
-// Filter quizzes based on the two dropdowns
-function getFilteredQuizzes() {
-  return quizzes.value.filter((q) => {
-    if (filterModule.value !== "all" && q.module !== filterModule.value) {
-      return false;
-    }
-    if (filterType.value !== "all" && q.type !== filterType.value) {
-      return false;
-    }
-    return true;
-  });
-}
-
-// Unique values for the dropdowns
-function getUnique(field) {
-  let values = [];
-
-  for (const quiz of quizzes.value) {
-    let value = quiz[field];
-
-    if (!values.includes(value)) {
-      values.push(value);
-    }
-  }
-
-  return values;
 }
 
 onMounted(loadQuizzes);
@@ -139,70 +132,77 @@ onMounted(loadQuizzes);
 
 <template>
   <div class="quiz-manager">
-    <!-- Header -->
     <header class="page-header">
       <div>
-        <h1>Gestion des Quiz</h1>
+        <h1>Quiz Management</h1>
+
         <p class="subtitle">
-          {{ quizzes.length }} quiz ·
-          {{ quizzes.filter((q) => q.published).length }} publiés
+          {{ quizzes.length }} quizzes ·
+          {{ quizzes.filter((q) => q.published).length }} published
         </p>
       </div>
-      <button class="btn-primary" @click="goToNewQuiz">+ Nouveau quiz</button>
+
+      <button class="btn-primary" @click="goToNewQuiz">
+        + New Quiz
+      </button>
     </header>
 
-    <!-- Filters -->
+    <!-- Shared module filter -->
     <div class="filters">
-      <select v-model="filterModule">
-        <option value="all">Tous les modules</option>
-        <option v-for="m in getUnique('module')" :key="m" :value="m">
-          {{ m }}
-        </option>
-      </select>
-      <select v-model="filterType">
-        <option value="all">Tous les types</option>
-        <option v-for="t in getUnique('type')" :key="t" :value="t">
-          {{ t }}
-        </option>
-      </select>
+      <QuizModuleFilter
+        id="expert-module"
+        v-model="filterModule"
+      />
     </div>
 
-    <!-- States -->
-    <div v-if="loading" class="state-msg">Chargement...</div>
-    <div v-else-if="error" class="state-msg error">{{ error }}</div>
-    <div v-else-if="getFilteredQuizzes().length === 0" class="state-msg">
-      Aucun quiz pour l'instant.
+    <div v-if="loading" class="state-msg">
+      Loading...
     </div>
 
-    <!-- Grid -->
+    <div v-else-if="error" class="state-msg error">
+      {{ error }}
+    </div>
+
+    <div v-else-if="filteredQuizzes.length === 0" class="state-msg">
+      No quizzes to display.
+    </div>
+
     <div v-else class="quiz-grid">
       <article
-        v-for="quiz in getFilteredQuizzes()"
+        v-for="quiz in filteredQuizzes"
         :key="quiz.id_quiz"
         class="quiz-card"
       >
         <div class="tags">
           <span class="tag">{{ quiz.module }}</span>
-          <span class="tag">{{ quiz.type }}</span>
         </div>
 
         <h3>{{ quiz.title }}</h3>
         <p class="description">{{ quiz.description }}</p>
-
         <p class="category">{{ quiz.category }}</p>
 
         <div class="actions">
           <button class="btn-action" @click="editQuiz(quiz.id_quiz)">
-            Éditer
+            Edit
           </button>
-          <button class="btn-action" @click="manageQuestions(quiz.id_quiz)">
+
+          <button
+            class="btn-action"
+            @click="manageQuestions(quiz.id_quiz)"
+          >
             Questions
           </button>
+
           <button class="btn-action" @click="togglePublish(quiz)">
-            {{ quiz.published ? "Dépublier" : "Publier" }}
+            <span v-if="quiz.published">Unpublish</span>
+            <span v-else>Publish</span>
           </button>
-          <button class="btn-action danger" @click="deleteQuiz(quiz.id_quiz)">
-            Supprimer
+
+          <button
+            class="btn-action danger"
+            @click="deleteQuiz(quiz.id_quiz)"
+          >
+            Delete
           </button>
         </div>
       </article>
@@ -227,11 +227,13 @@ onMounted(loadQuizzes);
   align-items: flex-start;
   margin-bottom: 32px;
 }
+
 .page-header h1 {
   font-size: 32px;
   font-weight: 700;
   margin: 0;
 }
+
 .subtitle {
   color: #86868b;
   font-size: 14px;
@@ -248,23 +250,16 @@ onMounted(loadQuizzes);
   font-weight: 500;
   cursor: pointer;
 }
+
 .btn-primary:hover {
   background: #000;
 }
 
-/* Filters */
+/* Filter */
 .filters {
   display: flex;
   gap: 12px;
   margin-bottom: 32px;
-}
-.filters select {
-  padding: 10px 16px;
-  border: 1px solid #d2d2d7;
-  background: white;
-  border-radius: 8px;
-  font-size: 14px;
-  min-width: 180px;
 }
 
 /* Grid */
@@ -289,6 +284,7 @@ onMounted(loadQuizzes);
   gap: 8px;
   margin-bottom: 16px;
 }
+
 .tag {
   font-size: 12px;
   padding: 4px 12px;
@@ -303,12 +299,14 @@ onMounted(loadQuizzes);
   font-weight: 600;
   margin: 0 0 8px 0;
 }
+
 .description {
   color: #86868b;
   font-size: 14px;
   line-height: 1.5;
   margin: 0 0 12px 0;
 }
+
 .category {
   color: #86868b;
   font-size: 13px;
@@ -324,6 +322,7 @@ onMounted(loadQuizzes);
   padding-top: 16px;
   border-top: 1px solid #e5e5e7;
 }
+
 .btn-action {
   flex: 1;
   min-width: 80px;
@@ -334,13 +333,16 @@ onMounted(loadQuizzes);
   font-size: 13px;
   cursor: pointer;
 }
+
 .btn-action:hover {
   background: #f5f5f7;
 }
+
 .btn-action.danger {
   color: #ff3b30;
   border-color: #ff3b30;
 }
+
 .btn-action.danger:hover {
   background: #ff3b30;
   color: white;
@@ -352,6 +354,7 @@ onMounted(loadQuizzes);
   padding: 60px 20px;
   color: #86868b;
 }
+
 .state-msg.error {
   color: #ff3b30;
 }
