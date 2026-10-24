@@ -1,7 +1,8 @@
-// Create an empty answer for the selected type
+// Create an empty answer based on the question type.
 export function createAnswer(question) {
   const type = question.type_answer;
 
+  // Use null because zero can be a real answer.
   if (type === "numeric" || type === "slider") {
     return null;
   }
@@ -10,6 +11,7 @@ export function createAnswer(question) {
     return "";
   }
 
+  // Store the selected match or category using each item's ID.
   if (type === "matching" || type === "categorization") {
     return {};
   }
@@ -17,7 +19,7 @@ export function createAnswer(question) {
   return [];
 }
 
-// Check that every required item has a value
+// Check if the athlete has answered, without checking if the answer is correct.
 export function isAnswerComplete(question, value) {
   const type = question.type_answer;
 
@@ -41,7 +43,7 @@ export function isAnswerComplete(question, value) {
       return false;
     }
 
-    // Check every category item or every left matching item
+    // Check all category items, but only the left items for matching questions.
     for (let i = 0; i < question.options.length; i++) {
       const option = question.options[i];
 
@@ -55,5 +57,6 @@ export function isAnswerComplete(question, value) {
     return true;
   }
 
+  // Choice questions need at least one selected option.
   return Array.isArray(value) && value.length > 0;
 }

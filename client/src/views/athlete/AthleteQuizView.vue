@@ -23,7 +23,7 @@ import "@/assets/quiz-answers.css";
 const route = useRoute();
 const router = useRouter();
 
-// Quiz data and local answers
+// Keep the quiz and answers here while the athlete moves between questions.
 const quiz = ref(null);
 const questions = ref([]);
 const answers = ref({});
@@ -36,7 +36,7 @@ const submitError = ref("");
 const quizChanged = ref(false);
 const result = ref(null);
 
-// Return the question currently displayed
+// Update the displayed question when questionIndex changes.
 const currentQuestion = computed(function () {
   if (questions.value.length === 0) {
     return null;
@@ -45,7 +45,7 @@ const currentQuestion = computed(function () {
   return questions.value[questionIndex.value];
 });
 
-// Count questions with a complete answer
+// Count completed answers without checking if they are correct.
 const answeredCount = computed(function () {
   let count = 0;
 
@@ -61,7 +61,7 @@ const answeredCount = computed(function () {
   return count;
 });
 
-// Load a fresh quiz and clear the local answers
+// Load the quiz and start with empty answers.
 async function loadQuiz() {
   loading.value = true;
   error.value = "";
@@ -93,6 +93,7 @@ async function loadQuiz() {
       }
     );
 
+    // Ask the athlete to log in again if the token is no longer valid.
     if (response.status === 401) {
       logoutUser();
       await router.push("/login");
@@ -119,7 +120,7 @@ async function loadQuiz() {
     quiz.value = data;
     questions.value = data.questions;
 
-    // Keep one answer per question during navigation
+    // Use each question's ID to store its own answer.
     for (let i = 0; i < questions.value.length; i++) {
       const question = questions.value[i];
 
@@ -132,22 +133,23 @@ async function loadQuiz() {
   }
 }
 
-// Show the next question
+// Show the next question without going past the last one.
 function nextQuestion() {
   if (questionIndex.value < questions.value.length - 1) {
     questionIndex.value++;
   }
 }
 
-// Show the previous question
+// Show the previous question without going before the first one.
 function previousQuestion() {
   if (questionIndex.value > 0) {
     questionIndex.value--;
   }
 }
 
-// Send the answers without sending a score
+// Send all answers and let the server calculate the score.
 async function submitQuiz() {
+  // Stop if we are already sending, have a result, or must reload the quiz.
   if (submitting.value || result.value || quizChanged.value) {
     return;
   }
@@ -160,6 +162,7 @@ async function submitQuiz() {
     const question = questions.value[i];
     const value = answers.value[question.id_question];
 
+    // Open the first question that still needs an answer.
     if (!isAnswerComplete(question, value)) {
       questionIndex.value = i;
       submitError.value = "Please answer question " + (i + 1) + ".";
@@ -207,11 +210,12 @@ async function submitQuiz() {
         submitError.value = data.error;
       }
 
+      // The server returns 409 when the quiz has changed.
       if (response.status === 409) {
         quizChanged.value = true;
       }
 
-      // Open the question rejected by the server
+      // Open the question that caused the server error.
       for (let i = 0; i < questions.value.length; i++) {
         if (questions.value[i].id_question === data.questionId) {
           questionIndex.value = i;
@@ -230,11 +234,12 @@ async function submitQuiz() {
   }
 }
 
-// Return to the published quiz list
+// Return to the quiz list.
 function goBack() {
   router.push("/athlete/quizzes");
 }
 
+// Load the quiz when the page opens.
 onMounted(loadQuiz);
 </script>
 
@@ -273,7 +278,7 @@ onMounted(loadQuiz);
         </div>
       </header>
 
-      <!-- Result returned by the server -->
+      <!-- Show the result after the server has saved the attempt. -->
       <section
         v-if="result"
         class="quiz-question-card quiz-result"
@@ -328,7 +333,7 @@ onMounted(loadQuiz);
           {{ currentQuestion.text }}
         </h2>
 
-        <!-- Recreate the answer block when the question changes -->
+        <!-- The key creates a fresh answer block when the question changes. -->
         <fieldset
           :key="currentQuestion.id_question"
           class="quiz-answer-area"
@@ -336,6 +341,7 @@ onMounted(loadQuiz);
         >
           <legend class="answer-help">Your answer</legend>
 
+          <!-- Show the right component and keep its answer under the question ID. -->
           <AnswerChoice
             v-if="
               currentQuestion.type_answer === 'single_choice' ||

@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from "vue";
 
+// Receive the question and the current answer from the parent.
 const props = defineProps({
   question: {
     type: Object,
@@ -14,8 +15,9 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-// Show the minimum before the first selection
+// Update the displayed value when the answer changes.
 const previewValue = computed(function () {
+  // Show the minimum until the athlete chooses an answer.
   if (props.modelValue === null) {
     return props.question.min_value;
   }
@@ -23,12 +25,12 @@ const previewValue = computed(function () {
   return props.modelValue;
 });
 
-// Send the selected slider value
+// Send the slider value as a number to the parent.
 function updateAnswer(event) {
   emit("update:modelValue", Number(event.target.value));
 }
 
-// Confirm the initial position as an answer
+// Use the displayed value without moving the slider.
 function confirmValue() {
   emit("update:modelValue", previewValue.value);
 }
@@ -40,6 +42,7 @@ function confirmValue() {
       Your answer: {{ previewValue }} {{ question.unit }}
     </label>
 
+    <!-- Use the limits and step chosen by the expert. -->
     <input
       id="slider-answer"
       type="range"
@@ -55,6 +58,7 @@ function confirmValue() {
       {{ question.unit }}
     </p>
 
+    <!-- Show this button until the athlete chooses an answer. -->
     <button
       v-if="modelValue === null"
       type="button"

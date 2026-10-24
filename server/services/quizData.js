@@ -1,7 +1,7 @@
-// Load the crypto tools included in Node.js
+// Load the tools used to create keys and pick random numbers.
 const crypto = require("crypto");
 
-// Load the questions and their options
+// Load the quiz questions and their options.
 async function loadQuizQuestions(connection, quizId, lockRows = false) {
   let questionQuery = `
     SELECT id_question, text, type_answer, points, question_order,
@@ -22,13 +22,13 @@ async function loadQuizQuestions(connection, quizId, lockRows = false) {
     ORDER BY o.id_question, o.display_order, o.id_option
   `;
 
-  // Prevent changes while the answers are being saved
+  // Make other changes wait while the answers are being saved.
   if (lockRows) {
     questionQuery += " FOR UPDATE";
     optionQuery += " FOR UPDATE";
   }
 
-  // MySQL returns the rows in the first item
+  // MySQL puts the returned rows at index 0.
   const questionResult = await connection.execute(questionQuery, [quizId]);
   const questions = questionResult[0];
 
@@ -38,7 +38,7 @@ async function loadQuizQuestions(connection, quizId, lockRows = false) {
   for (let i = 0; i < questions.length; i++) {
     questions[i].options = [];
 
-    // Find the options belonging to this question
+    // Add the options that belong to this question.
     for (let j = 0; j < options.length; j++) {
       if (options[j].id_question === questions[i].id_question) {
         questions[i].options.push(options[j]);
@@ -49,17 +49,17 @@ async function loadQuizQuestions(connection, quizId, lockRows = false) {
   return questions;
 }
 
-// Create a public key for an option
+// Create a key to hide the option's database ID.
 function getOptionKey(option) {
   const signature = crypto.createHmac("sha256", process.env.JWT_SECRET);
 
-  // Use the option ID to create a stable key
+  // The same ID and secret always give the same key.
   signature.update("option:" + option.id_option);
 
   return signature.digest("hex");
 }
 
-// Create a version from the current quiz content
+// Create a version to check if the quiz has changed.
 function getQuizVersion(quizId, questions) {
   const quizText = quizId + ":" + JSON.stringify(questions);
 
@@ -69,12 +69,12 @@ function getQuizVersion(quizId, questions) {
   return signature.digest("hex");
 }
 
-// Mix the items in a list
+// Put the items in a random order.
 function shuffle(items) {
   for (let i = items.length - 1; i > 0; i--) {
     const j = crypto.randomInt(i + 1);
 
-    // Swap the current item with a random item
+    // Swap the two items.
     const saved = items[i];
     items[i] = items[j];
     items[j] = saved;
@@ -83,7 +83,7 @@ function shuffle(items) {
   return items;
 }
 
-// Prepare a question without sending its correction
+// Prepare the question without sending the correct answers.
 function prepareAthleteQuestion(question) {
   const data = {
     id_question: question.id_question,
@@ -95,6 +95,7 @@ function prepareAthleteQuestion(question) {
     categories: [],
   };
 
+  // Convert MySQL decimal values from strings to numbers.
   if (question.type_answer === "slider") {
     data.min_value = Number(question.min_value);
     data.max_value = Number(question.max_value);
@@ -109,10 +110,12 @@ function prepareAthleteQuestion(question) {
       text: option.text,
     };
 
+    // Send the item's side without showing its correct match.
     if (question.type_answer === "matching") {
       publicOption.pair_side = option.pair_side;
     }
 
+    // Display the stored French labels in English.
     if (question.type_answer === "true_false") {
       if (option.text.trim().toLowerCase() === "vrai") {
         publicOption.text = "True";
@@ -121,7 +124,7 @@ function prepareAthleteQuestion(question) {
       }
     }
 
-    // Send category names without revealing the correct category of each item
+    // Send each category name once, without showing the correct choices.
     if (question.type_answer === "categorization") {
       const category = option.correct_category.trim();
 

@@ -1,4 +1,5 @@
 <script setup>
+// Receive the question and the current text from the parent.
 defineProps({
   question: {
     type: Object,
@@ -12,7 +13,7 @@ defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-// Send the text to the parent
+// Send the text to the parent whenever the athlete types.
 function updateAnswer(event) {
   emit("update:modelValue", event.target.value);
 }

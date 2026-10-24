@@ -10,7 +10,7 @@ import "@/assets/athlete-results.css";
 
 const router = useRouter();
 
-// Page data and selected module
+// Keep the lists, selected module and current page state.
 const quizzes = ref([]);
 const results = ref([]);
 const loading = ref(true);
@@ -24,7 +24,7 @@ const moduleLabels = {
   equipment: "Equipment",
 };
 
-// Return quizzes from the selected module
+// Update the quiz list when the selected module or quizzes change.
 const filteredQuizzes = computed(function () {
   const items = [];
 
@@ -41,7 +41,7 @@ const filteredQuizzes = computed(function () {
   return items;
 });
 
-// Return results from the selected module
+// Update the results list when the selected module or results change.
 const filteredResults = computed(function () {
   const items = [];
 
@@ -58,7 +58,7 @@ const filteredResults = computed(function () {
   return items;
 });
 
-// Return the module name displayed on the page
+// Return the display name, or keep the original name if it is unknown.
 function getModuleLabel(module) {
   if (moduleLabels[module]) {
     return moduleLabels[module];
@@ -67,14 +67,14 @@ function getModuleLabel(module) {
   return module;
 }
 
-// Display the attempt date in the browser's local time
+// Show the date in English using the browser's local time.
 function formatDate(value) {
   const date = new Date(value);
 
   return date.toLocaleString("en-GB");
 }
 
-// Load published quizzes from the API
+// Load the quizzes published by experts.
 async function loadQuizzes() {
   loading.value = true;
   error.value = "";
@@ -99,6 +99,7 @@ async function loadQuizzes() {
       }
     );
 
+    // Ask the athlete to log in again if the token is no longer valid.
     if (response.status === 401) {
       logoutUser();
       await router.push("/login");
@@ -125,7 +126,7 @@ async function loadQuizzes() {
   }
 }
 
-// Load the connected athlete's latest results
+// Load the athlete's latest saved result for each completed quiz.
 async function loadResults() {
   loading.value = true;
   error.value = "";
@@ -176,7 +177,7 @@ async function loadResults() {
   }
 }
 
-// Switch between available quizzes and saved results
+// Switch between quizzes and results, then load the selected list.
 async function toggleResults() {
   showResults.value = !showResults.value;
 
@@ -187,7 +188,7 @@ async function toggleResults() {
   }
 }
 
-// Refresh the currently displayed list
+// Reload the list currently displayed.
 async function refreshPage() {
   if (showResults.value) {
     await loadResults();
@@ -196,11 +197,12 @@ async function refreshPage() {
   }
 }
 
-// Open the selected quiz
+// Open the selected quiz without creating an attempt yet.
 function startQuiz(id) {
   router.push("/athlete/quizzes/" + id);
 }
 
+// Load available quizzes when the page opens.
 onMounted(loadQuizzes);
 </script>
 
@@ -233,6 +235,7 @@ onMounted(loadQuizzes);
 
     <div class="athlete-quiz-toolbar">
       <div class="athlete-filter-actions">
+        <!-- Use the same module filter as the expert page. -->
         <QuizModuleFilter
           id="athlete-module"
           v-model="selectedModule"
@@ -276,7 +279,7 @@ onMounted(loadQuizzes);
       </button>
     </div>
 
-    <!-- Latest results -->
+    <!-- Show saved results after loading has finished without an error. -->
     <div v-else-if="showResults">
       <div v-if="results.length === 0" class="athlete-state">
         <h2>No results yet</h2>
@@ -330,7 +333,7 @@ onMounted(loadQuizzes);
       </div>
     </div>
 
-    <!-- Available quizzes -->
+    <!-- Show available quizzes when the results view is closed. -->
     <div v-else>
       <div v-if="quizzes.length === 0" class="athlete-state">
         <h2>No quizzes available</h2>

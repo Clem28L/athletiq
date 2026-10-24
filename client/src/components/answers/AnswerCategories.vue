@@ -1,4 +1,5 @@
 <script setup>
+// Receive the question and the current answers from the parent.
 const props = defineProps({
   question: {
     type: Object,
@@ -12,7 +13,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-// Return the category selected for an item
+// Return the selected category, or an empty value if nothing is selected.
 function getSelection(id) {
   if (props.modelValue[id]) {
     return props.modelValue[id];
@@ -21,10 +22,11 @@ function getSelection(id) {
   return "";
 }
 
-// Copy the answers before changing a category
+// Update the category selected for one item.
 function updateCategory(id, value) {
   const answer = {};
 
+  // Copy the other answers before changing this item.
   for (const key in props.modelValue) {
     answer[key] = props.modelValue[key];
   }
@@ -41,6 +43,7 @@ function updateCategory(id, value) {
       Choose a category for every item.
     </p>
 
+    <!-- Show a category list for each item. -->
     <div
       v-for="option in question.options"
       :key="option.id"

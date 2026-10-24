@@ -1,6 +1,6 @@
 const { getOptionKey } = require("./quizData");
 
-// Find an option using the public key sent by the athlete
+// Find the option that matches the key sent by the athlete.
 function findOption(question, key) {
   for (let i = 0; i < question.options.length; i++) {
     const option = question.options[i];
@@ -13,8 +13,9 @@ function findOption(question, key) {
   return null;
 }
 
-// Check the answer format and compare it with the correction
+// Check the answer and return the information needed to save it.
 function checkAnswer(question, value) {
+  // An invalid answer has an error; a wrong answer only has correct set to false.
   const result = {
     error: null,
     correct: false,
@@ -44,14 +45,14 @@ function checkAnswer(question, value) {
     let correctCount = 0;
     let allCorrect = true;
 
-    // Count the correct options stored in the database
+    // Count how many options are correct.
     for (let i = 0; i < question.options.length; i++) {
       if (Number(question.options[i].is_correct) === 1) {
         correctCount++;
       }
     }
 
-    // Check each selected option and reject duplicates
+    // Check that each selected option belongs to this question and appears once.
     for (let i = 0; i < value.length; i++) {
       const option = findOption(question, value[i]);
 
@@ -67,7 +68,7 @@ function checkAnswer(question, value) {
       }
     }
 
-    // Every correct option must be selected, with no wrong option
+    // All correct options must be selected, with no wrong options.
     if (allCorrect && value.length === correctCount) {
       result.correct = true;
     }
@@ -76,12 +77,13 @@ function checkAnswer(question, value) {
   }
 
   if (type === "numeric" || type === "slider") {
-    // Keep the number within the database limits
+    // Check that the number can be saved in the database.
     if (!Number.isFinite(value) || Math.abs(value) > 999999999.999) {
       result.error = "Enter a valid number.";
       return result;
     }
 
+    // Keep at most three digits after the decimal point.
     if (value !== Number(value.toFixed(3))) {
       result.error = "Use no more than three decimal places.";
       return result;
@@ -94,7 +96,7 @@ function checkAnswer(question, value) {
 
       const steps = (value - min) / step;
 
-      // Check the limits and the allowed steps
+      // Check the limits and steps, allowing small rounding differences.
       if (
         value < min ||
         value > max ||
@@ -110,7 +112,7 @@ function checkAnswer(question, value) {
     const difference = Math.abs(value - Number(question.correct_number));
     const tolerance = Number(question.tolerance);
 
-    // Allow the tolerance and small decimal rounding errors
+    // Accept the allowed difference and small rounding differences.
     if (difference <= tolerance + 0.000000001) {
       result.correct = true;
     }
@@ -132,7 +134,7 @@ function checkAnswer(question, value) {
 
     let accepted = question.accepted_texts;
 
-    // Convert the JSON text if MySQL returned a string
+    // MySQL may return the list as JSON text instead of an array.
     if (typeof accepted === "string") {
       accepted = JSON.parse(accepted);
     }
@@ -141,7 +143,7 @@ function checkAnswer(question, value) {
       throw new Error("Invalid accepted texts");
     }
 
-    // Compare the answer with every accepted text
+    // Compare with each accepted answer, ignoring capital letters and outer spaces.
     for (let i = 0; i < accepted.length; i++) {
       if (
         result.text.toLowerCase() ===
@@ -166,7 +168,7 @@ function checkAnswer(question, value) {
     result.data = [];
     result.correct = true;
 
-    // Check that every item appears once and is in the correct position
+    // Check each item once and compare its position with the correct position.
     for (let i = 0; i < value.length; i++) {
       const option = findOption(question, value[i]);
 
@@ -198,7 +200,7 @@ function checkAnswer(question, value) {
       const usedRightIds = [];
       let leftCount = 0;
 
-      // Find the right item selected for each left item
+      // Find the right item chosen for each left item.
       for (let i = 0; i < question.options.length; i++) {
         const left = question.options[i];
 
@@ -208,6 +210,7 @@ function checkAnswer(question, value) {
           const rightKey = value[getOptionKey(left)];
           const right = findOption(question, rightKey);
 
+          // A right item must exist and cannot be used twice.
           if (
             !right ||
             right.pair_side !== "right" ||
@@ -225,20 +228,21 @@ function checkAnswer(question, value) {
             right: right.id_option,
           });
 
+          // Items belong together when they have the same pair key.
           if (left.pair_key !== right.pair_key) {
             result.correct = false;
           }
         }
       }
 
-      // Reject extra items sent in the answer
+      // Check that the answer contains no extra items.
       if (Object.keys(value).length !== leftCount) {
         result.error = "The matching answer contains invalid items.";
       }
     } else {
       const categories = [];
 
-      // Build the list of allowed categories
+      // Collect each allowed category name once.
       for (let i = 0; i < question.options.length; i++) {
         const category = question.options[i].correct_category.trim();
 
@@ -247,7 +251,7 @@ function checkAnswer(question, value) {
         }
       }
 
-      // Check the selected category for each item
+      // Read the category chosen for each item.
       for (let i = 0; i < question.options.length; i++) {
         const option = question.options[i];
         const category = value[getOptionKey(option)];
@@ -267,7 +271,7 @@ function checkAnswer(question, value) {
         }
       }
 
-      // Reject extra items sent in the answer
+      // Check that the answer contains no extra items.
       if (Object.keys(value).length !== question.options.length) {
         result.error = "The category answer contains invalid items.";
       }

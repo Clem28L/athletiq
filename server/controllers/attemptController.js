@@ -8,7 +8,7 @@ const {
 
 const { checkAnswer } = require("../services/answerValidation");
 
-// Validate, score, and save a complete submission
+// Check the answers, calculate the score and save the attempt.
 exports.submitQuiz = async (req, res) => {
   const quizId = Number(req.params.id);
   const body = req.body;
@@ -27,6 +27,7 @@ exports.submitQuiz = async (req, res) => {
   let connection;
 
   try {
+    // Open a separate database connection for this submission.
     connection = await mysql.createConnection({
       host: db.config.host,
       port: db.config.port,
@@ -36,9 +37,10 @@ exports.submitQuiz = async (req, res) => {
       ssl: db.config.ssl,
     });
 
+    // Start a group of changes that can all be saved or cancelled together.
     await connection.beginTransaction();
 
-    // Keep the quiz unchanged while checking and saving
+    // Make changes to this quiz wait while we check and save the answers.
     const [quizzes] = await connection.execute(
       `SELECT id_quiz, published
        FROM quizzes
@@ -58,6 +60,7 @@ exports.submitQuiz = async (req, res) => {
     const questions = await loadQuizQuestions(connection, quizId, true);
     const version = getQuizVersion(quizId, questions);
 
+    // Reject answers if the quiz changed after the athlete opened it.
     if (body.version !== version) {
       await connection.rollback();
 
@@ -89,7 +92,7 @@ exports.submitQuiz = async (req, res) => {
       let submitted = null;
       let count = 0;
 
-      // Find exactly one answer for this question
+      // Find the answer for this question and count how many times it appears.
       for (let j = 0; j < body.answers.length; j++) {
         const answer = body.answers[j];
 
@@ -120,6 +123,7 @@ exports.submitQuiz = async (req, res) => {
 
       const points = Number(question.points);
 
+      // Check that the points can be saved in the database.
       if (
         !Number.isInteger(points) ||
         points < 0 ||
@@ -130,6 +134,7 @@ exports.submitQuiz = async (req, res) => {
 
       let awarded = 0;
 
+      // Give all the question's points for a correct answer.
       if (checked.correct) {
         awarded = points;
         correctAnswers++;
@@ -149,9 +154,10 @@ exports.submitQuiz = async (req, res) => {
       throw new Error("The quiz must have a positive total score");
     }
 
+    // Calculate the percentage and round it to two decimal places.
     const score = Math.round(earnedPoints / totalPoints * 10000) / 100;
 
-    // Create the attempt only after every answer is valid
+    // Create the attempt after every answer has passed the checks.
     const [attempt] = await connection.execute(
       `INSERT INTO attempts (id_quiz, id_user, score)
        VALUES (?, ?, ?)`,
@@ -164,6 +170,7 @@ exports.submitQuiz = async (req, res) => {
 
       let answerData = null;
 
+      // Convert answers with several items to JSON text for the database.
       if (answer.data !== null) {
         answerData = JSON.stringify(answer.data);
       }
@@ -188,7 +195,7 @@ exports.submitQuiz = async (req, res) => {
         ]
       );
 
-      // Save selected options for choice questions
+      // Link each selected option to the answer we just saved.
       for (let j = 0; j < answer.optionIds.length; j++) {
         await connection.execute(
           `INSERT INTO attempt_answer_options (id_answer, id_option)
@@ -198,6 +205,7 @@ exports.submitQuiz = async (req, res) => {
       }
     }
 
+    // Save all changes now that every step has worked.
     await connection.commit();
 
     return res.status(201).json({
@@ -209,6 +217,7 @@ exports.submitQuiz = async (req, res) => {
       totalQuestions: questions.length,
     });
   } catch (err) {
+    // Cancel the database changes if something fails.
     if (connection) {
       await connection.rollback();
     }
@@ -219,16 +228,18 @@ exports.submitQuiz = async (req, res) => {
       error: "Unable to save your answers.",
     });
   } finally {
+    // Close this connection, even if an error occurred.
     if (connection) {
       await connection.end();
     }
   }
 };
 
-// Return the latest result for each quiz completed by this athlete
+// Return the athlete's latest saved result for each quiz.
 exports.getMyResults = (req, res) => {
   const userId = req.user.id_user;
 
+  // Keep only the latest attempt for each quiz, not the highest score.
   const query = `
     SELECT
       q.id_quiz,
@@ -251,7 +262,6 @@ exports.getMyResults = (req, res) => {
     ORDER BY a.attempt_date DESC, a.id_attempt DESC
   `;
 
-  // Only read results belonging to the connected athlete
   db.query(query, [userId], (err, results) => {
     if (err) {
       console.error(err);

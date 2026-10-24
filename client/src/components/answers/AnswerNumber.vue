@@ -1,4 +1,5 @@
 <script setup>
+// Receive the question and the current answer from the parent.
 defineProps({
   question: {
     type: Object,
@@ -12,8 +13,9 @@ defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-// Keep an empty field unanswered
+// Send the entered number to the parent.
 function updateAnswer(event) {
+  // Keep null for an empty field because zero can be a real answer.
   let value = null;
 
   if (event.target.value !== "") {

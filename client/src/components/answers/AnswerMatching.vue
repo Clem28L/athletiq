@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from "vue";
 
+// Receive the question and the current answers from the parent.
 const props = defineProps({
   question: {
     type: Object,
@@ -14,7 +15,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-// Return the left items
+// Keep only the items from the left side.
 const leftOptions = computed(function () {
   const items = [];
 
@@ -29,7 +30,7 @@ const leftOptions = computed(function () {
   return items;
 });
 
-// Return the right items
+// Keep only the items from the right side.
 const rightOptions = computed(function () {
   const items = [];
 
@@ -44,7 +45,7 @@ const rightOptions = computed(function () {
   return items;
 });
 
-// Return the match selected for one left item
+// Return the selected match, or an empty value if nothing is selected.
 function getSelection(id) {
   if (props.modelValue[id]) {
     return props.modelValue[id];
@@ -53,7 +54,7 @@ function getSelection(id) {
   return "";
 }
 
-// Prevent the same right item from being selected twice
+// Check if another left item already uses this right item.
 function isUsed(rightId, leftId) {
   for (const key in props.modelValue) {
     if (key !== leftId && props.modelValue[key] === rightId) {
@@ -64,10 +65,11 @@ function isUsed(rightId, leftId) {
   return false;
 }
 
-// Copy the answers before changing a pair
+// Update the match selected for one left item.
 function updatePair(id, value) {
   const answer = {};
 
+  // Copy the other answers before changing this pair.
   for (const key in props.modelValue) {
     answer[key] = props.modelValue[key];
   }
@@ -100,6 +102,7 @@ function updatePair(id, value) {
       >
         <option value="">Choose a match</option>
 
+        <!-- An item already used in another pair cannot be selected. -->
         <option
           v-for="right in rightOptions"
           :key="right.id"
