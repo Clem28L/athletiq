@@ -17,6 +17,7 @@
 .athlete-quizzes-page h1 {
   margin: 0;
   font-size: 30px;
+  overflow-wrap: anywhere;
 }
 
 .athlete-quizzes-page .athlete-page-header p {
@@ -24,6 +25,8 @@
   color: #68686d;
   font-size: 14px;
   line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 /* Module filter */
@@ -36,40 +39,13 @@
   margin-bottom: 24px;
 }
 
-.athlete-quizzes-page .module-filter {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.athlete-quizzes-page .module-filter label {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.athlete-quizzes-page select {
-  min-width: 210px;
-  padding: 11px 14px;
-  border: 1px solid #d2d2d7;
-  border-radius: 8px;
-  background: white;
-  color: #33322f;
-  font: inherit;
-  font-size: 14px;
-}
-
-.athlete-quizzes-page select:focus {
-  outline: 2px solid #55544f;
-  outline-offset: 2px;
-}
-
 .athlete-quizzes-page .quiz-count {
   margin: 0;
   color: #68686d;
   font-size: 13px;
 }
 
-/* Quiz cards */
+/* Published quiz cards */
 .athlete-quizzes-page .athlete-quiz-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -111,18 +87,27 @@
   overflow-wrap: anywhere;
 }
 
-.athlete-quizzes-page .quiz-category {
+.athlete-quizzes-page .quiz-card-footer {
   width: 100%;
-  margin: auto 0 0;
+  margin-top: auto;
   padding-top: 16px;
   border-top: 1px solid #e5e5e0;
+}
+
+.athlete-quizzes-page .quiz-category {
+  margin: 0 0 16px;
   color: #68686d;
   font-size: 13px;
   overflow-wrap: anywhere;
 }
 
-/* Buttons and messages */
-.athlete-quizzes-page .refresh-button {
+.athlete-quizzes-page .quiz-card-footer .start-quiz-button {
+  width: 100%;
+}
+
+/* Buttons */
+.athlete-quizzes-page .refresh-button,
+.athlete-quizzes-page .start-quiz-button {
   padding: 10px 16px;
   border: 1px solid #d2d2d7;
   border-radius: 8px;
@@ -137,11 +122,33 @@
   background: #f3f3ef;
 }
 
-.athlete-quizzes-page .refresh-button:disabled {
+.athlete-quizzes-page .start-quiz-button {
+  border-color: #373631;
+  background: #373631;
+  color: white;
+}
+
+.athlete-quizzes-page .start-quiz-button:hover {
+  background: #504e48;
+}
+
+.athlete-quizzes-page button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
+.athlete-quizzes-page .quiz-back-button {
+  margin-bottom: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #55544f;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Loading, errors and empty lists */
 .athlete-quizzes-page .athlete-state {
   margin: 0;
   padding: 40px 24px;
@@ -166,6 +173,58 @@
   color: #b42318;
 }
 
+/* Selected quiz */
+.athlete-quizzes-page .quiz-player {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.athlete-quizzes-page .quiz-question-card {
+  padding: 32px;
+  border: 1px solid #d2d2d7;
+  border-radius: 12px;
+  background: white;
+}
+
+.athlete-quizzes-page .quiz-question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.athlete-quizzes-page .quiz-progress {
+  margin: 0;
+  color: #68686d;
+  font-size: 14px;
+}
+
+.athlete-quizzes-page .question-points {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #efeee9;
+  color: #55544f;
+  font-size: 13px;
+}
+
+.athlete-quizzes-page .quiz-question-card h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.athlete-quizzes-page .quiz-player-actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 40px;
+}
+
 /* Mobile layout */
 @media (max-width: 560px) {
   .athlete-quizzes-page {
@@ -176,17 +235,16 @@
     font-size: 26px;
   }
 
-  .athlete-quizzes-page .module-filter,
-  .athlete-quizzes-page select {
-    width: 100%;
-    min-width: 0;
-  }
-
   .athlete-quizzes-page .athlete-quiz-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .athlete-quizzes-page .athlete-quiz-card {
+  .athlete-quizzes-page .athlete-quiz-card,
+  .athlete-quizzes-page .quiz-question-card {
     padding: 20px;
+  }
+
+  .athlete-quizzes-page .quiz-question-card h2 {
+    font-size: 20px;
   }
 }

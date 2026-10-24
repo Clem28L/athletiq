@@ -1,0 +1,130 @@
+/* Answer area */
+.athlete-quizzes-page .quiz-answer-area {
+  min-width: 0;
+  margin: 28px 0 20px;
+  padding: 0;
+  border: none;
+}
+
+.athlete-quizzes-page .quiz-answer-area legend {
+  margin-bottom: 14px;
+}
+
+.athlete-quizzes-page .answer-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.athlete-quizzes-page .answer-help {
+  margin: 0;
+  color: #68686d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Choice options */
+.athlete-quizzes-page .answer-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.athlete-quizzes-page .answer-option:hover {
+  background: #f7f7f3;
+}
+
+.athlete-quizzes-page .answer-option span {
+  overflow-wrap: anywhere;
+}
+
+.athlete-quizzes-page .answer-option input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: #373631;
+}
+
+/* Text, numeric and select fields */
+.athlete-quizzes-page .answer-fields label {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.athlete-quizzes-page .answer-fields input[type="number"],
+.athlete-quizzes-page .answer-fields input[type="text"],
+.athlete-quizzes-page .answer-fields select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  background: white;
+  color: #33322f;
+  font: inherit;
+  font-size: 14px;
+}
+
+.athlete-quizzes-page .answer-fields input:focus,
+.athlete-quizzes-page .answer-fields select:focus {
+  outline: 2px solid #55544f;
+  outline-offset: 2px;
+}
+
+.athlete-quizzes-page .answer-fields input[type="range"] {
+  width: 100%;
+  accent-color: #373631;
+}
+
+/* Ordering controls */
+.athlete-quizzes-page .answer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+}
+
+.athlete-quizzes-page .answer-row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.athlete-quizzes-page .answer-move-buttons {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.athlete-quizzes-page .answer-fields > button {
+  align-self: flex-start;
+}
+
+/* Result */
+.athlete-quizzes-page .quiz-result {
+  text-align: center;
+}
+
+.athlete-quizzes-page .quiz-result .quiz-score {
+  margin: 24px 0;
+  color: #166534;
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.athlete-quizzes-page .quiz-result .answer-help {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 560px) {
+  .athlete-quizzes-page .answer-row {
+    flex-wrap: wrap;
+  }
+}
