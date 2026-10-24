@@ -1,0 +1,71 @@
+/* Filter and results button */
+.athlete-quizzes-page .athlete-filter-actions {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Results table */
+.athlete-quizzes-page .results-table-container {
+  overflow-x: auto;
+  border: 1px solid #d2d2d7;
+  border-radius: 12px;
+  background: white;
+}
+
+.athlete-quizzes-page .results-table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.athlete-quizzes-page .results-table caption {
+  padding: 18px 20px;
+  color: #68686d;
+  font-size: 14px;
+  text-align: left;
+}
+
+.athlete-quizzes-page .results-table th {
+  padding: 16px 20px;
+  border-bottom: 1px solid #d2d2d7;
+  background: #f7f7f4;
+  color: #33322f;
+  font-size: 13px;
+}
+
+.athlete-quizzes-page .results-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid #e5e5e0;
+  color: #55544f;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.athlete-quizzes-page .results-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.athlete-quizzes-page .results-table tbody tr:hover {
+  background: #fafaf7;
+}
+
+.athlete-quizzes-page .results-table td:first-child {
+  max-width: 360px;
+  overflow-wrap: anywhere;
+}
+
+.athlete-quizzes-page .results-table .result-score {
+  color: #33322f;
+  font-size: 18px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .athlete-quizzes-page .athlete-filter-actions {
+    width: 100%;
+  }
+}

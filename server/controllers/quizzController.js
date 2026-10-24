@@ -1,7 +1,11 @@
 const db = require("../config/db");
 const mysql = require("mysql2/promise");
 const { validateQuestion } = require("../services/questionValidation");
-
+const {
+  loadQuizQuestions,
+  getQuizVersion,
+  prepareAthleteQuestion,
+} = require("../services/quizData");
 // LISTE DES QUIZ
 exports.getAllQuizzes = (req, res) => {
   const query = `
@@ -38,132 +42,76 @@ exports.getPublishedQuizzes = (req, res) => {
 };
 
 // GET ONE QUIZ WITH ITS QUESTIONS AND OPTIONS
-exports.getQuizById = (req, res) => {
-  // Get the quiz ID from the URL
-  const quizId = req.params.id;
+exports.getQuizById = async (req, res) => {
+  const quizId = Number(req.params.id);
   const isExpert = req.user.role === "expert";
 
-  // Check the user role
-  if (!isExpert && req.user.role !== "athlete") {
-    return res.status(403).json({ error: "Accès refusé." });
+  if (!Number.isInteger(quizId) || quizId < 1) {
+    return res.status(400).json({
+      error: "Invalid quiz ID.",
+    });
   }
 
-  // Get the quiz information
-  const quizQuery = `
-    SELECT id_quiz, title, description, module, category,
-           published, created_at, id_user
-    FROM quizzes
-    WHERE id_quiz = ?
-  `;
+  if (!isExpert && req.user.role !== "athlete") {
+    return res.status(403).json({
+      error: "Access denied.",
+    });
+  }
 
-  db.query(quizQuery, [quizId], (err, quizResults) => {
-    // Handle database errors
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  try {
+    const connection = db.promise();
+
+    const [results] = await connection.execute(
+      `SELECT id_quiz, title, description, module, category,
+              published, created_at, id_user
+       FROM quizzes
+       WHERE id_quiz = ?`,
+      [quizId]
+    );
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        error: "Quiz not found.",
+      });
     }
 
-    if (quizResults.length === 0) {
-      return res.status(404).json({ error: "Quiz non trouvé." });
-    }
+    const quiz = results[0];
 
-    const quiz = quizResults[0];
-
-    // Experts can only manage their own quizzes
     if (isExpert && quiz.id_user !== req.user.id_user) {
       return res.status(403).json({
-        error: "Tu peux seulement consulter tes propres quiz.",
+        error: "You can only access your own quizzes.",
       });
     }
 
-    // Athletes can only access published quizzes
     if (!isExpert && !quiz.published) {
-      return res.status(404).json({ error: "Quiz non trouvé." });
+      return res.status(404).json({
+        error: "Quiz not found.",
+      });
     }
 
-    // Get all question fields
-    const questionsQuery = `
-      SELECT id_question, text, type_answer, points,
-             question_order, correct_number, tolerance,
-             min_value, max_value, step_value, unit,
-             accepted_texts, settings
-      FROM questions
-      WHERE id_quiz = ?
-      ORDER BY question_order, id_question
-    `;
+    const questions = await loadQuizQuestions(connection, quizId);
 
-    db.query(questionsQuery, [quizId], (err, questionResults) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
+    if (isExpert) {
+      // Keep complete data for the expert editor
+      quiz.questions = questions;
+    } else {
+      quiz.version = getQuizVersion(quizId, questions);
+      quiz.questions = [];
+
+      // Remove corrections and shuffle the public options
+      for (let i = 0; i < questions.length; i++) {
+        quiz.questions.push(prepareAthleteQuestion(questions[i]));
       }
+    }
 
-      if (questionResults.length === 0) {
-        quiz.questions = [];
-        return res.json(quiz);
-      }
+    return res.json(quiz);
+  } catch (err) {
+    console.error(err);
 
-      let questionsLoaded = 0;
-
-      // Prevent several responses if a query fails
-      let hasError = false;
-
-      questionResults.forEach((question) => {
-        // Hide corrections from athletes
-        if (!isExpert) {
-          delete question.correct_number;
-          delete question.tolerance;
-          delete question.accepted_texts;
-
-          // Settings may contain private correction rules
-          delete question.settings;
-        }
-
-        // Get all option fields
-        const optionsQuery = `
-          SELECT id_option, text, is_correct, display_order,
-                 correct_position, pair_key, pair_side,
-                 correct_category
-          FROM options
-          WHERE id_question = ?
-          ORDER BY display_order, id_option
-        `;
-
-        db.query(
-          optionsQuery,
-          [question.id_question],
-          (err, optionResults) => {
-            if (hasError) return;
-
-            if (err) {
-              hasError = true;
-
-              return res.status(500).json({
-                error: err.message,
-              });
-            }
-
-            // Keep correction fields for experts only
-            if (!isExpert) {
-              optionResults.forEach((option) => {
-                delete option.is_correct;
-                delete option.correct_position;
-                delete option.pair_key;
-                delete option.correct_category;
-              });
-            }
-
-            question.options = optionResults;
-            questionsLoaded++;
-
-            // Reply when all options are loaded
-            if (questionsLoaded === questionResults.length) {
-              quiz.questions = questionResults;
-              return res.json(quiz);
-            }
-          }
-        );
-      });
+    return res.status(500).json({
+      error: "Unable to load this quiz.",
     });
-  });
+  }
 };
 
 exports.createQuiz = (req, res) => {
