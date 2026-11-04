@@ -20,6 +20,15 @@ const routes = [
     component: QuizzesManager,
     meta: { role: "expert" },
   },
+
+  {
+    path: "/injuries",
+    alias: "/blessures",
+    name: "injury",
+    component: () => import("../views/InjuryView.vue"),
+    meta: { fullHeight: true },
+  },
+
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",

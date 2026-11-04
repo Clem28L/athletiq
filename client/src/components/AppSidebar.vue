@@ -50,6 +50,11 @@
           <span class="sidebar-label">{{ quizLabel }}</span>
         </RouterLink>
 
+        <RouterLink to="/injuries" class="sidebar-link" title="Find your pain" @click="closeMobile">
+          <span class="sidebar-icon">◎</span>
+          <span class="sidebar-label">Injuries</span>
+        </RouterLink>
+
         <RouterLink
           to="/nutrition"
           class="sidebar-link"
