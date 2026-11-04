@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -8,13 +8,24 @@ import { injuryRegions, injuryZones } from "../data/injuryZones";
 import "../assets/injury-map.css";
 
 // eslint-disable-next-line no-undef
+const props = defineProps({
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  readOnly: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+// eslint-disable-next-line no-undef
 const emit = defineEmits(["zone-selected", "zone-confirmed"]);
 
 const canvasContainer = ref(null);
 const loading = ref(true);
 const error = ref("");
 const selectedZone = ref(null);
-const confirmed = ref(false);
 const hasInteracted = ref(false);
 const activeRegion = ref(null);
 const hoveredZone = ref(null);
@@ -225,13 +236,13 @@ function getLabel(zone, side) {
     return zone.label;
   }
 
-  let sideName = "Left";
+  let sideName = "gauche";
 
   if (side < 0) {
-    sideName = "Right";
+    sideName = "droit";
   }
 
-  return sideName + " " + zone.label.toLowerCase();
+  return zone.label + " · côté " + sideName;
 }
 
 function moveCamera(target, distance) {
@@ -316,7 +327,6 @@ function selectMarker(marker) {
     coordinates: { x: point.x, y: point.y, z: point.z },
   };
 
-  confirmed.value = false;
   emit("zone-selected", selectedZone.value);
 
   if (!activeRegion.value || activeRegion.value.id !== zone.region) {
@@ -362,7 +372,7 @@ function onPointerDown(event) {
   hoveredZone.value = null;
   pointerStart = null;
 
-  if (event.button === 0 && event.isPrimary) {
+  if (!props.readOnly && event.button === 0 && event.isPrimary) {
     pointerStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
   }
 }
@@ -374,6 +384,11 @@ function clearHover() {
 }
 
 function onPointerMove(event) {
+  if (props.readOnly) {
+    clearHover();
+    return;
+  }
+
   // A drag turns the body and must not select a point
   if (pointerStart) {
     const distance = Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y);
@@ -427,7 +442,7 @@ function onPointerUp(event) {
   const start = pointerStart;
   pointerStart = null;
 
-  if (!start || start.id !== event.pointerId || loading.value) {
+  if (!start || start.id !== event.pointerId || loading.value || props.readOnly) {
     return;
   }
 
@@ -451,7 +466,6 @@ function onPointerUp(event) {
 }
 
 function confirmZone() {
-  confirmed.value = true;
   emit("zone-confirmed", { ...selectedZone.value });
 }
 
@@ -482,6 +496,14 @@ function updateMarkers() {
 
     if (marker.userData.zone.detail) {
       opacity = THREE.MathUtils.smoothstep(zoom, 0.65, 0.9);
+    }
+
+    if (props.readOnly) {
+      opacity = 0;
+
+      if (marker === selectedMarker) {
+        opacity = 1;
+      }
     }
 
     directionToCamera.copy(camera.position).sub(marker.position).normalize();
@@ -558,6 +580,10 @@ function updateMarkers() {
 
 // Only draw when the view changes or points are still fading
 function animate() {
+  if (!props.active) {
+    return;
+  }
+
   animationId = requestAnimationFrame(animate);
   controls.update();
 
@@ -678,7 +704,7 @@ function loadModel() {
   }, undefined, () => {
     if (!destroyed) {
       loading.value = false;
-      error.value = "We cannot load the 3D body. Please try again.";
+      error.value = "Le corps 3D ne se charge pas. Réessayez.";
     }
   });
 }
@@ -707,6 +733,31 @@ function resizeScene() {
   needsRender = true;
 }
 
+// Keep the loaded body, but stop drawing it during the questionnaire
+watch(() => props.active, async active => {
+  cancelAnimationFrame(animationId);
+
+  if (active) {
+    await nextTick();
+
+    if (!props.active || !renderer || destroyed) {
+      return;
+    }
+
+    resizeScene();
+    needsRender = true;
+    animate();
+  }
+});
+
+watch(() => props.readOnly, readOnly => {
+  clearHover();
+
+  if (readOnly && selectedMarker) {
+    focusRegion(getRegion(selectedZone.value.region), selectedMarker.userData.side);
+  }
+});
+
 onMounted(() => {
   try {
     scene = new THREE.Scene();
@@ -717,7 +768,7 @@ onMounted(() => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.domElement.tabIndex = 0;
-    renderer.domElement.setAttribute("aria-label", "3D body: drag to turn, scroll to zoom, click to choose where it hurts.");
+    renderer.domElement.setAttribute("aria-label", "Corps 3D interactif");
     canvasContainer.value.appendChild(renderer.domElement);
 
     controls = new OrbitControls(camera, renderer.domElement);
@@ -764,7 +815,7 @@ onMounted(() => {
     animate();
   } catch (err) {
     loading.value = false;
-    error.value = "Your browser cannot show the 3D body.";
+    error.value = "Votre navigateur ne peut pas afficher le corps 3D.";
   }
 });
 
@@ -806,7 +857,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="injury-lab" aria-labelledby="injury-title">
+  <section class="injury-lab" aria-label="Localisation de la douleur sur le corps">
 
     <div
       ref="canvasContainer"
@@ -820,60 +871,57 @@ onBeforeUnmount(() => {
     ></div>
 
     <div class="injury-info">
-      <h1 id="injury-title" class="injury-title">
-        Where does it hurt?
-      </h1>
+      <slot name="info">
+        <h1 id="injury-title" class="injury-title">
+          Où avez-vous mal ?
+        </h1>
 
-      <p class="injury-description">
-        Turn the body and move your mouse over a point. Click where it hurts.
-      </p>
-
-      <button
-        class="injury-reset"
-        type="button"
-        :disabled="loading || error !== ''"
-        @click="showWholeBody"
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          aria-hidden="true"
-        >
-          <path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />
-        </svg>
-        Show the whole body
-      </button>
-
-      <div v-if="selectedZone" class="injury-selection" aria-live="polite">
-        <p class="injury-selection-caption">Your pain</p>
-
-        <h2>{{ selectedZone.label }}</h2>
-
-        <p v-if="!confirmed" class="injury-selection-help">
-          You can choose another point before you confirm.
+        <p class="injury-description">
+          Tournez le corps, zoomez et cliquez sur le point où vous avez mal.
         </p>
 
         <button
-          v-if="!confirmed"
-          class="button button-dark"
+          class="injury-reset"
           type="button"
-          @click="confirmZone"
+          :disabled="loading || error !== ''"
+          @click="showWholeBody"
         >
-          It hurts here
-          <span aria-hidden="true">→</span>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />
+          </svg>
+          Voir tout le corps
         </button>
 
-        <p v-else class="injury-confirmation" role="status">
-          You chose this point. The quiz is not ready yet.
-        </p>
-      </div>
+        <div v-if="selectedZone" class="injury-selection" aria-live="polite">
+          <p class="injury-selection-caption">Votre douleur</p>
+
+          <h2>{{ selectedZone.label }}</h2>
+
+          <p class="injury-selection-help">
+            Confirmez ce point pour commencer les questions.
+          </p>
+
+          <button
+            class="button button-dark"
+            type="button"
+            @click="confirmZone"
+          >
+            C’est bien ici
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </slot>
     </div>
 
-    <p v-if="loading" class="injury-status" role="status">Loading…</p>
+    <p v-if="loading" class="injury-status" role="status">Chargement…</p>
     <p v-else-if="error" class="injury-status" role="alert">{{ error }}</p>
 
     <div
@@ -885,8 +933,8 @@ onBeforeUnmount(() => {
       {{ hoveredZone.label }}
     </div>
 
-    <p v-if="!loading && !error && !hasInteracted" class="injury-help">
-      Drag to turn · Scroll to zoom
+    <p v-if="!loading && !error && !hasInteracted && !readOnly" class="injury-help">
+      Glissez pour tourner · Faites défiler pour zoomer
     </p>
   </section>
 </template>

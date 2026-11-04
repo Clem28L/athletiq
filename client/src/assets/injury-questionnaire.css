@@ -1,0 +1,246 @@
+.injury-flow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.injury-question-page {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+
+  color: #343434;
+  background-color: #f3f3f1;
+  background-image: radial-gradient(#c9c9c5 0.8px, transparent 0.8px);
+  background-size: 20px 20px;
+}
+
+.injury-question-shell {
+  width: min(660px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.injury-question-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d0cfca;
+  font-size: 14px;
+  color: #66645e;
+}
+
+.injury-text-button {
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  color: #53534e;
+  text-align: left;
+  cursor: pointer;
+}
+
+.injury-text-button:hover {
+  color: #25241f;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.injury-question-form {
+  padding-top: 20px;
+}
+
+.injury-step {
+  margin: 0 0 8px;
+  color: #6b6962;
+  font-size: 13px;
+}
+
+.injury-question-page h1,
+.injury-result h1 {
+  margin: 0 0 12px;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.7px;
+}
+
+.injury-options {
+  display: grid;
+  gap: 8px;
+
+  min-width: 0;
+  margin: 18px 0;
+  padding: 0;
+  border: 0;
+}
+
+.injury-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  min-height: 48px;
+  padding: 11px 18px;
+  border: 1px solid #cecdc8;
+  border-radius: 4px;
+  background: #fafaf8;
+
+  font-size: 15px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.injury-option:hover {
+  border-color: #77756f;
+}
+
+.injury-option-selected {
+  border-color: #373631;
+  background: #e9e8e2;
+}
+
+.injury-option input {
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: #373631;
+}
+
+.injury-question-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.injury-question-actions .button {
+  gap: 32px;
+}
+
+.injury-flow .button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.injury-flow button:focus-visible,
+.injury-flow a:focus-visible,
+.injury-flow summary:focus-visible,
+.injury-option:focus-within {
+  outline: 2px solid #555550;
+  outline-offset: 4px;
+}
+
+.injury-unsupported {
+  width: min(540px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 12vh 0 32px;
+  line-height: 1.7;
+}
+
+.injury-unsupported .button {
+  margin-top: 16px;
+}
+
+/* The text can scroll while the body stays in place */
+.injury-lab-result::after {
+  display: none;
+}
+
+.injury-lab-result .injury-info {
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 420px;
+  max-width: 45%;
+  padding: 28px 24px 32px 38px;
+  overflow-y: auto;
+  pointer-events: auto;
+  background: linear-gradient(to right, #f3f3f1, #f3f3f1ed);
+}
+
+.injury-result {
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.injury-result p {
+  margin: 0 0 14px;
+}
+
+.injury-result h1 {
+  margin-top: 24px;
+}
+
+.injury-result h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.injury-result-advice {
+  padding-left: 12px;
+  border-left: 2px solid #b5b3aa;
+}
+
+.injury-result ul {
+  margin: 0 0 14px;
+  padding-left: 18px;
+}
+
+.injury-result li {
+  margin-bottom: 8px;
+}
+
+.injury-result-sources {
+  font-size: 12px;
+}
+
+.injury-result-sources summary {
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.injury-result-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+@media (max-width: 700px) {
+  .injury-question-shell {
+    width: calc(100% - 32px);
+    padding: 20px 0;
+  }
+
+  .injury-question-page h1,
+  .injury-result h1 {
+    font-size: 25px;
+  }
+
+  .injury-option {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .injury-lab-result .injury-canvas {
+    bottom: 52%;
+  }
+
+  .injury-lab-result .injury-info {
+    top: 48%;
+    width: 100%;
+    max-width: none;
+    padding: 18px 20px 28px;
+    border-top: 1px solid #d0cfca;
+    background: #f3f3f1;
+  }
+
+}
