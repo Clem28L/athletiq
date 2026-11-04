@@ -2,8 +2,8 @@
 import { computed, nextTick, ref, watch } from "vue";
 import questionnaire from "../data/injuryQuestionnaire.json";
 import { getInjuryResult } from "../utils/injuryQuestionnaire";
+import AnswerChoice from "./answers/AnswerChoice.vue";
 
-// eslint-disable-next-line no-undef
 const props = defineProps({
   zone: {
     type: Object,
@@ -15,7 +15,6 @@ const props = defineProps({
   },
 });
 
-// eslint-disable-next-line no-undef
 const emit = defineEmits(["complete", "back"]);
 
 const questionId = ref(questionnaire.zones[props.zone.id].start);
@@ -23,6 +22,26 @@ const answerId = ref("");
 const history = ref([]);
 const heading = ref(null);
 const question = computed(() => questionnaire.questions[questionId.value]);
+
+// Use the same question format as the quiz answer component
+const choiceQuestion = computed(() => ({
+  id_question: questionId.value,
+  type_answer: "single_choice",
+  options: question.value.options,
+}));
+
+const selectedAnswers = computed({
+  get() {
+    if (!answerId.value) {
+      return [];
+    }
+
+    return [answerId.value];
+  },
+  set(answers) {
+    answerId.value = answers[0] || "";
+  },
+});
 
 function nextQuestion() {
   let choice = null;
@@ -88,7 +107,7 @@ watch([questionId, () => props.active], async () => {
     <div class="injury-question-shell">
       <div class="injury-question-top">
         <button class="injury-text-button" type="button" @click="emit('back')">
-          ← Changer de zone
+          ← Change area
         </button>
       </div>
 
@@ -104,28 +123,19 @@ watch([questionId, () => props.active], async () => {
           class="injury-options"
           aria-labelledby="question-title"
         >
-          <label
-            v-for="option in question.options"
-            :key="option.id"
-            class="injury-option"
-            :class="{ 'injury-option-selected': answerId === option.id }"
-          >
-            <input
-              v-model="answerId"
-              type="radio"
-              name="injury-answer"
-              :value="option.id"
-            />
-            <span>{{ option.text }}</span>
-          </label>
+          <AnswerChoice
+            v-model="selectedAnswers"
+            :question="choiceQuestion"
+            :show-help="false"
+          />
         </fieldset>
 
         <div class="injury-question-actions">
           <button class="injury-text-button" type="button" @click="previousQuestion">
-            ← Retour
+            ← Back
           </button>
           <button class="button button-dark" type="submit" :disabled="!answerId">
-            Continuer <span aria-hidden="true">→</span>
+            Continue <span aria-hidden="true">→</span>
           </button>
         </div>
       </form>

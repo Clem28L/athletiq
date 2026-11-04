@@ -69,46 +69,10 @@
 }
 
 .injury-options {
-  display: grid;
-  gap: 8px;
-
   min-width: 0;
   margin: 18px 0;
   padding: 0;
   border: 0;
-}
-
-.injury-option {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-
-  min-height: 48px;
-  padding: 11px 18px;
-  border: 1px solid #cecdc8;
-  border-radius: 4px;
-  background: #fafaf8;
-
-  font-size: 15px;
-  line-height: 1.5;
-  cursor: pointer;
-}
-
-.injury-option:hover {
-  border-color: #77756f;
-}
-
-.injury-option-selected {
-  border-color: #373631;
-  background: #e9e8e2;
-}
-
-.injury-option input {
-  flex-shrink: 0;
-  width: 17px;
-  height: 17px;
-  margin: 0;
-  accent-color: #373631;
 }
 
 .injury-question-actions {
@@ -129,8 +93,7 @@
 
 .injury-flow button:focus-visible,
 .injury-flow a:focus-visible,
-.injury-flow summary:focus-visible,
-.injury-option:focus-within {
+.injury-flow summary:focus-visible {
   outline: 2px solid #555550;
   outline-offset: 4px;
 }
@@ -223,11 +186,6 @@
   .injury-question-page h1,
   .injury-result h1 {
     font-size: 25px;
-  }
-
-  .injury-option {
-    padding: 12px;
-    font-size: 14px;
   }
 
   .injury-lab-result .injury-canvas {

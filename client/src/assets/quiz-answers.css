@@ -24,32 +24,6 @@
   line-height: 1.6;
 }
 
-/* Choice options */
-.athlete-quizzes-page .answer-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid #d2d2d7;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.athlete-quizzes-page .answer-option:hover {
-  background: #f7f7f3;
-}
-
-.athlete-quizzes-page .answer-option span {
-  overflow-wrap: anywhere;
-}
-
-.athlete-quizzes-page .answer-option input {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  accent-color: #373631;
-}
-
 /* Text, numeric and select fields */
 .athlete-quizzes-page .answer-fields label {
   font-size: 14px;
@@ -70,7 +44,9 @@
   font-size: 14px;
 }
 
-.athlete-quizzes-page .answer-fields input:focus,
+.athlete-quizzes-page .answer-fields input[type="number"]:focus,
+.athlete-quizzes-page .answer-fields input[type="text"]:focus,
+.athlete-quizzes-page .answer-fields input[type="range"]:focus,
 .athlete-quizzes-page .answer-fields select:focus {
   outline: 2px solid #55544f;
   outline-offset: 2px;

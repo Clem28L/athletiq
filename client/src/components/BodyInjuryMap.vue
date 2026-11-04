@@ -7,7 +7,6 @@ import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { injuryRegions, injuryZones } from "../data/injuryZones";
 import "../assets/injury-map.css";
 
-// eslint-disable-next-line no-undef
 const props = defineProps({
   active: {
     type: Boolean,
@@ -19,7 +18,6 @@ const props = defineProps({
   },
 });
 
-// eslint-disable-next-line no-undef
 const emit = defineEmits(["zone-selected", "zone-confirmed"]);
 
 const canvasContainer = ref(null);
@@ -41,6 +39,7 @@ let selectedMarker = null;
 let hoveredMarker = null;
 let markerTexture;
 let selectedTexture;
+let bodyMesh;
 
 let pointerStart = null;
 let overviewDistance = 3.2;
@@ -52,6 +51,10 @@ let lastHoverTime = 0;
 const markers = [];
 const bodyVolumes = [];
 const pickVolumes = [];
+const modelParts = [];
+
+const bodyColor = new THREE.Color("#b7b7b5");
+const selectedColor = new THREE.Color("#c94c48");
 
 const focusPoint = new THREE.Vector3(0, 0.88, 0);
 const pointer = new THREE.Vector2();
@@ -236,13 +239,13 @@ function getLabel(zone, side) {
     return zone.label;
   }
 
-  let sideName = "gauche";
+  let sideName = "left";
 
   if (side < 0) {
-    sideName = "droit";
+    sideName = "right";
   }
 
-  return zone.label + " · côté " + sideName;
+  return zone.label + " · " + sideName + " side";
 }
 
 function moveCamera(target, distance) {
@@ -327,6 +330,7 @@ function selectMarker(marker) {
     coordinates: { x: point.x, y: point.y, z: point.z },
   };
 
+  highlightSelection(marker);
   emit("zone-selected", selectedZone.value);
 
   if (!activeRegion.value || activeRegion.value.id !== zone.region) {
@@ -334,6 +338,64 @@ function selectMarker(marker) {
   }
 
   needsRender = true;
+}
+
+function highlightSelection(marker) {
+  if (!bodyMesh) {
+    return;
+  }
+
+  const zone = marker.userData.zone;
+  const point = marker.userData.point;
+  const normal = marker.userData.normal;
+  const positions = bodyMesh.geometry.getAttribute("position");
+  const colors = bodyMesh.geometry.getAttribute("color");
+  const color = new THREE.Color();
+  const radius = Math.min(0.09, getRegion(zone.region).height / 5);
+  let sideName = "left ";
+
+  if (marker.userData.side < 0) {
+    sideName = "right ";
+  }
+
+  for (const part of modelParts) {
+    let selectedMuscle = false;
+
+    if (zone.muscles) {
+      for (const muscle of zone.muscles) {
+        if (part.name.includes(sideName + muscle)) {
+          selectedMuscle = true;
+        }
+      }
+    }
+
+    for (let i = part.start; i < part.start + part.count; i++) {
+      let strength = 0;
+
+      if (selectedMuscle) {
+        strength = 1;
+      }
+
+      // Joints have no separate muscle, so colour only the surface near the point
+      if (!zone.muscles) {
+        const x = positions.getX(i) - point.x;
+        const y = positions.getY(i) - point.y;
+        const z = positions.getZ(i) - point.z;
+        const distance = x * x + y * y + z * z;
+        const depth = x * normal.x + y * normal.y + z * normal.z;
+
+        if (depth > -radius * 0.45) {
+          strength = THREE.MathUtils.clamp((1 - distance / (radius * radius)) * 2, 0, 1);
+        }
+      }
+
+      color.copy(bodyColor).lerp(selectedColor, strength);
+      colors.setXYZ(i, color.r, color.g, color.b);
+    }
+  }
+
+  // Update colours only on selection, without adding more meshes to draw
+  colors.needsUpdate = true;
 }
 
 function getHit(event) {
@@ -629,6 +691,7 @@ function disposeObject(object) {
 // Join the body parts into one mesh to reduce drawing work
 function combineModel(meshes) {
   const parts = [];
+  let vertexCount = 0;
 
   for (const mesh of meshes) {
     let geometry = mesh.geometry.clone();
@@ -647,17 +710,34 @@ function combineModel(meshes) {
       }
     }
 
+    const count = geometry.getAttribute("position").count;
+
+    // Keep each muscle's vertex range after joining the model
+    modelParts.push({
+      name: mesh.name.toLowerCase().replace(/_/g, " "),
+      start: vertexCount,
+      count: count,
+    });
+
+    vertexCount += count;
     parts.push(geometry);
   }
 
   const combined = mergeGeometries(parts);
+  const colors = new THREE.Float32BufferAttribute(new Float32Array(vertexCount * 3), 3);
+
+  for (let i = 0; i < vertexCount; i++) {
+    colors.setXYZ(i, bodyColor.r, bodyColor.g, bodyColor.b);
+  }
+
+  combined.setAttribute("color", colors);
 
   for (const geometry of parts) {
     geometry.dispose();
   }
 
   const material = new THREE.MeshStandardMaterial({
-    color: "#b7b7b5",
+    vertexColors: true,
     roughness: 0.8,
   });
 
@@ -695,8 +775,8 @@ function loadModel() {
     });
 
     addMarkers(meshes);
-    const combined = combineModel(meshes);
-    scene.add(combined);
+    bodyMesh = combineModel(meshes);
+    scene.add(bodyMesh);
     disposeObject(model);
 
     loading.value = false;
@@ -704,7 +784,7 @@ function loadModel() {
   }, undefined, () => {
     if (!destroyed) {
       loading.value = false;
-      error.value = "Le corps 3D ne se charge pas. Réessayez.";
+      error.value = "The 3D body could not load. Please try again.";
     }
   });
 }
@@ -768,7 +848,7 @@ onMounted(() => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.domElement.tabIndex = 0;
-    renderer.domElement.setAttribute("aria-label", "Corps 3D interactif");
+    renderer.domElement.setAttribute("aria-label", "Interactive 3D body");
     canvasContainer.value.appendChild(renderer.domElement);
 
     controls = new OrbitControls(camera, renderer.domElement);
@@ -815,7 +895,7 @@ onMounted(() => {
     animate();
   } catch (err) {
     loading.value = false;
-    error.value = "Votre navigateur ne peut pas afficher le corps 3D.";
+    error.value = "Your browser cannot show the 3D body.";
   }
 });
 
@@ -857,7 +937,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="injury-lab" aria-label="Localisation de la douleur sur le corps">
+  <section class="injury-lab" aria-label="Find your pain on the body">
 
     <div
       ref="canvasContainer"
@@ -873,11 +953,11 @@ onBeforeUnmount(() => {
     <div class="injury-info">
       <slot name="info">
         <h1 id="injury-title" class="injury-title">
-          Où avez-vous mal ?
+          Where does it hurt?
         </h1>
 
         <p class="injury-description">
-          Tournez le corps, zoomez et cliquez sur le point où vous avez mal.
+          Turn the body, zoom in and click where it hurts.
         </p>
 
         <button
@@ -897,16 +977,16 @@ onBeforeUnmount(() => {
           >
             <path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />
           </svg>
-          Voir tout le corps
+          Show full body
         </button>
 
         <div v-if="selectedZone" class="injury-selection" aria-live="polite">
-          <p class="injury-selection-caption">Votre douleur</p>
+          <p class="injury-selection-caption">Your pain</p>
 
           <h2>{{ selectedZone.label }}</h2>
 
           <p class="injury-selection-help">
-            Confirmez ce point pour commencer les questions.
+            Confirm this point to start the questions.
           </p>
 
           <button
@@ -914,14 +994,14 @@ onBeforeUnmount(() => {
             type="button"
             @click="confirmZone"
           >
-            C’est bien ici
+            This is the spot
             <span aria-hidden="true">→</span>
           </button>
         </div>
       </slot>
     </div>
 
-    <p v-if="loading" class="injury-status" role="status">Chargement…</p>
+    <p v-if="loading" class="injury-status" role="status">Loading…</p>
     <p v-else-if="error" class="injury-status" role="alert">{{ error }}</p>
 
     <div
@@ -934,7 +1014,7 @@ onBeforeUnmount(() => {
     </div>
 
     <p v-if="!loading && !error && !hasInteracted && !readOnly" class="injury-help">
-      Glissez pour tourner · Faites défiler pour zoomer
+      Drag to turn · Scroll to zoom
     </p>
   </section>
 </template>

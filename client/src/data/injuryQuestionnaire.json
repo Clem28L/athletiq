@@ -208,243 +208,243 @@
   },
   "questions": {
     "shin-location": {
-      "text": "Sur le tibia, où s’étend la douleur ?",
+      "text": "Where is the pain along your shin?",
       "options": [
         {
           "id": "inner",
-          "text": "Le long du bord interne, sur plusieurs centimètres",
+          "text": "Along the inner edge, over several centimetres",
           "next": "shin-pattern",
           "scores": {
             "shin-splints": 4,
             "stress-fracture": -2
           },
-          "reason": "Douleur étendue sur le bord interne du tibia"
+          "reason": "Pain along a wide area of the inner shin"
         },
         {
           "id": "spot",
-          "text": "Sur un point osseux précis",
+          "text": "On one small spot on the bone",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4,
             "shin-splints": -2
           },
-          "reason": "Douleur osseuse ponctuelle"
+          "reason": "Pain on one small spot on the bone"
         },
         {
           "id": "front",
-          "text": "Dans les muscles à l’avant de la jambe",
+          "text": "In the muscles at the front of my lower leg",
           "next": "front-leg-pattern",
           "scores": {
             "anterior-tibial": 2,
             "compartment": 2
           },
-          "reason": "Douleur à l’avant de la jambe"
+          "reason": "Pain at the front of the lower leg"
         },
         {
           "id": "unsure",
-          "text": "Difficile à localiser",
+          "text": "It is hard to locate",
           "next": "shin-pattern"
         }
       ]
     },
     "shin-pattern": {
-      "text": "Comment cette douleur évolue-t-elle pendant une sortie ?",
+      "text": "How does the pain change during a run?",
       "options": [
         {
           "id": "impact",
-          "text": "Elle apparaît avec les impacts et augmente en courant",
+          "text": "It starts with each foot strike and gets worse as I run",
           "next": "shin-recovery",
           "scores": {
             "shin-splints": 3,
             "stress-fracture": 2
           },
-          "reason": "Douleur reproduite par les impacts"
+          "reason": "Pain with repeated foot strikes"
         },
         {
           "id": "warm",
-          "text": "Elle se calme à chaud, puis revient après ou à la sortie suivante",
+          "text": "It eases as I warm up, then returns after the run or on the next run",
           "next": "shin-recovery",
           "scores": {
             "shin-splints": 3
           },
-          "reason": "Douleur tibiale revenant après la course"
+          "reason": "Shin pain that returns after running"
         },
         {
           "id": "pressure",
-          "text": "Une pression se forme après un temps de course similaire",
+          "text": "Pressure builds after about the same amount of running each time",
           "next": "pressure-recovery",
           "scores": {
             "compartment": 4
           },
-          "reason": "Pression apparaissant à un temps de course reproductible"
+          "reason": "Pressure that starts after a similar amount of running"
         },
         {
           "id": "unsure",
-          "text": "Je n’ai pas remarqué de schéma précis",
+          "text": "I have not noticed a clear pattern",
           "next": "shin-recovery"
         }
       ]
     },
     "shin-recovery": {
-      "text": "Entre deux sorties, que constatez-vous sur le tibia ?",
+      "text": "What happens to your shin pain between runs?",
       "options": [
         {
           "id": "diffuse",
-          "text": "La douleur reste étendue et diminue les jours sans course",
+          "text": "It stays spread out and eases on days without running",
           "next": "training",
           "scores": {
             "shin-splints": 3,
             "stress-fracture": -1
           },
-          "reason": "Douleur diffuse diminuant avec la récupération"
+          "reason": "Pain over a wide area that eases with rest"
         },
         {
           "id": "focus",
-          "text": "Elle se concentre en un point et arrive de plus en plus tôt",
+          "text": "It moves to one small spot and starts earlier on each run",
           "next": "training",
           "scores": {
             "stress-fracture": 6,
             "shin-splints": -3
           },
-          "reason": "Douleur qui se focalise et progresse",
-          "care": "Suspendez les impacts et faites examiner une douleur osseuse qui se focalise ou gêne la marche avant de reprendre la course"
+          "reason": "Pain that becomes more focused and starts earlier",
+          "care": "Stop running and other impact exercise. Have bone pain that becomes focused or affects walking checked before running again"
         },
         {
           "id": "walking",
-          "text": "Le même point fait aussi mal en marchant ou au repos",
+          "text": "The same spot also hurts when I walk or rest",
           "next": "training",
           "scores": {
             "stress-fracture": 6,
             "shin-splints": -3
           },
-          "reason": "Douleur ponctuelle également présente hors course",
-          "care": "Suspendez les impacts et faites examiner une douleur osseuse qui se focalise ou gêne la marche avant de reprendre la course"
+          "reason": "Pain in one spot, even outside running",
+          "care": "Stop running and other impact exercise. Have bone pain that becomes focused or affects walking checked before running again"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas encore",
+          "text": "I do not know yet",
           "next": "training"
         }
       ]
     },
     "bone-pattern": {
-      "text": "Comment cette douleur ponctuelle a-t-elle évolué ?",
+      "text": "How has the pain in this small spot changed?",
       "options": [
         {
           "id": "earlier",
-          "text": "Elle revient au même point et commence plus tôt à chaque sortie",
+          "text": "It returns to the same spot and starts earlier on each run",
           "next": "training",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Douleur osseuse répétée et de plus en plus précoce"
+          "reason": "Bone pain in the same spot that starts earlier on each run"
         },
         {
           "id": "walking",
-          "text": "La marche ou le repos deviennent aussi douloureux",
+          "text": "It now also hurts when I walk or rest",
           "next": "training",
           "scores": {
             "stress-fracture": 5
           },
-          "reason": "Douleur osseuse aussi présente à la marche ou au repos"
+          "reason": "Bone pain when walking or resting too"
         },
         {
           "id": "shoe",
-          "text": "Elle dépend surtout de la pression de la chaussure",
+          "text": "It mainly depends on pressure from my shoe",
           "next": "foot-pressure",
           "scores": {
             "extensor-tendon": 3,
             "stress-fracture": -2
           },
-          "reason": "Gêne liée à la pression de la chaussure"
+          "reason": "Pain linked to pressure from the shoe"
         },
         {
           "id": "unsure",
-          "text": "Pas assez de recul pour le dire",
+          "text": "It is too early to tell",
           "next": "training"
         }
       ]
     },
     "front-leg-pattern": {
-      "text": "Qu’est-ce qui réveille la douleur à l’avant de la jambe ?",
+      "text": "What brings on the pain at the front of your lower leg?",
       "options": [
         {
           "id": "downhill",
-          "text": "Les descentes prolongées, quand je retiens la pose du pied",
+          "text": "Long downhill runs, when I control how my foot lands",
           "next": "front-leg-after",
           "scores": {
             "anterior-tibial": 4
           },
-          "reason": "Douleur antérieure liée aux descentes prolongées"
+          "reason": "Pain at the front of the lower leg during long downhill runs"
         },
         {
           "id": "pressure",
-          "text": "Une sensation de jambe serrée au bout d’un certain temps",
+          "text": "My lower leg feels tight after running for a while",
           "next": "pressure-recovery",
           "scores": {
             "compartment": 4
           },
-          "reason": "Sensation de compression à l’effort"
+          "reason": "A tight feeling during exercise"
         },
         {
           "id": "bone",
-          "text": "Les impacts sur un point osseux précis",
+          "text": "Foot strikes that hurt one small spot on the bone",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Point osseux douloureux à l’impact"
+          "reason": "Pain in one spot on the bone with each foot strike"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "front-leg-after"
         }
       ]
     },
     "front-leg-after": {
-      "text": "La gêne suit-elle l’avant de la cheville quand vous relevez le pied dans vos mouvements habituels ?",
+      "text": "Does the pain follow the front of your ankle when you lift your foot during normal movement?",
       "options": [
         {
           "id": "yes",
-          "text": "Oui, sur ce trajet précis",
+          "text": "Yes, along that line",
           "next": "training",
           "scores": {
             "anterior-tibial": 4
           },
-          "reason": "Douleur sur le trajet du releveur du pied"
+          "reason": "Pain along the muscle and tendon that lift the foot"
         },
         {
           "id": "pressure",
-          "text": "Non, c’est surtout une pression qui cède à l’arrêt",
+          "text": "No, it is mainly pressure that eases when I stop",
           "next": "pressure-recovery",
           "scores": {
             "compartment": 3
           },
-          "reason": "Pression diminuant à l’arrêt"
+          "reason": "Pressure that eases when exercise stops"
         },
         {
           "id": "no",
-          "text": "Non, la douleur est différente",
+          "text": "No, the pain is different",
           "next": "training"
         }
       ]
     },
     "pressure-recovery": {
-      "text": "Quand vous arrêtez de courir, que devient la sensation de pression ?",
+      "text": "What happens to the pressure when you stop running?",
       "options": [
         {
           "id": "quick",
-          "text": "Elle disparaît en quelques minutes et revient au même niveau d’effort",
+          "text": "It goes away in a few minutes and returns at the same level of effort",
           "next": "training",
           "scores": {
             "compartment": 4
           },
-          "reason": "Pression rapidement soulagée à l’arrêt"
+          "reason": "Pressure that quickly eases when exercise stops"
         },
         {
           "id": "slow",
-          "text": "Elle persiste comme une douleur localisée",
+          "text": "It stays as pain in one area",
           "next": "training",
           "scores": {
             "compartment": -3
@@ -452,196 +452,196 @@
         },
         {
           "id": "severe",
-          "text": "Elle reste très forte avec une faiblesse ou un engourdissement",
+          "text": "It stays very strong, with weakness or numbness",
           "next": "finish",
           "scores": {
             "compartment": 3
           },
-          "reason": "Pression persistante avec faiblesse ou engourdissement",
-          "care": "Arrêtez l’effort et faites évaluer rapidement une douleur intense qui persiste avec faiblesse ou engourdissement"
+          "reason": "Lasting pressure with weakness or numbness",
+          "care": "Stop exercising. Get urgent medical help if severe pain continues with weakness or numbness"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "knee-front-location": {
-      "text": "À l’avant du genou, où se trouve le maximum de douleur ?",
+      "text": "Where does the front of your knee hurt most?",
       "options": [
         {
           "id": "around",
-          "text": "Autour ou derrière la rotule",
+          "text": "Around or behind the kneecap",
           "next": "kneecap-trigger",
           "scores": {
             "kneecap": 4
           },
-          "reason": "Douleur autour ou derrière la rotule"
+          "reason": "Pain around or behind the kneecap"
         },
         {
           "id": "below",
-          "text": "Sur le tendon juste sous la rotule",
+          "text": "On the tendon just below the kneecap",
           "next": "patellar-trigger",
           "scores": {
             "patellar": 4
           },
-          "reason": "Douleur localisée sous la rotule"
+          "reason": "Pain just below the kneecap"
         },
         {
           "id": "above",
-          "text": "Juste au-dessus de la rotule",
+          "text": "Just above the kneecap",
           "next": "quad-tendon-trigger",
           "scores": {
             "quadriceps-tendon": 4
           },
-          "reason": "Douleur juste au-dessus de la rotule"
+          "reason": "Pain just above the kneecap"
         },
         {
           "id": "unsure",
-          "text": "Je ne distingue pas bien",
+          "text": "I cannot tell clearly",
           "next": "kneecap-trigger"
         }
       ]
     },
     "kneecap-trigger": {
-      "text": "Quand cette douleur du genou est-elle la plus présente ?",
+      "text": "When does your knee hurt most?",
       "options": [
         {
           "id": "flexion",
-          "text": "Dans les descentes, les escaliers ou en pliant le genou",
+          "text": "Going downhill, using stairs or bending my knee",
           "next": "knee-after",
           "scores": {
             "kneecap": 3,
             "patellar": 1
           },
-          "reason": "Douleur du genou augmentée par les flexions"
+          "reason": "Knee pain that gets worse when bending"
         },
         {
           "id": "sitting",
-          "text": "Après être resté assis, surtout en me relevant",
+          "text": "After sitting for a long time, especially when I stand up",
           "next": "knee-after",
           "scores": {
             "kneecap": 4
           },
-          "reason": "Douleur autour de la rotule après une position assise prolongée"
+          "reason": "Pain around the kneecap after sitting for a long time"
         },
         {
           "id": "push",
-          "text": "Sur les accélérations, très précisément sous la rotule",
+          "text": "When I speed up, on one spot just below the kneecap",
           "next": "patellar-trigger",
           "scores": {
             "patellar": 3
           },
-          "reason": "Douleur sous la rotule lors des poussées"
+          "reason": "Pain below the kneecap when pushing off"
         },
         {
           "id": "outer",
-          "text": "Elle est surtout sur le côté externe en courant",
+          "text": "It mainly hurts on the outside of my knee while running",
           "next": "knee-outer-timing",
           "scores": {
             "it-band": 4
           },
-          "reason": "Douleur située sur le côté externe du genou"
+          "reason": "Pain on the outside of the knee"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "knee-after"
         }
       ]
     },
     "knee-after": {
-      "text": "Après la sortie, quelle situation retrouve la même douleur ?",
+      "text": "After a run, what brings back the same pain?",
       "options": [
         {
           "id": "stairs",
-          "text": "Les escaliers ou la position assise genou plié",
+          "text": "Stairs or sitting with my knee bent",
           "next": "training",
           "scores": {
             "kneecap": 3
           },
-          "reason": "La même douleur revient dans les escaliers ou assis"
+          "reason": "The same pain returns on stairs or while sitting"
         },
         {
           "id": "tendon",
-          "text": "Un point sur le tendon sous la rotule, sensible après l’effort",
+          "text": "One spot on the tendon below the kneecap stays sore after exercise",
           "next": "training",
           "scores": {
             "patellar": 3
           },
-          "reason": "Le tendon sous la rotule reste sensible après l’effort"
+          "reason": "The tendon below the kneecap stays sore after exercise"
         },
         {
           "id": "both",
-          "text": "Les escaliers, avec aussi une douleur externe à la course",
+          "text": "Stairs, with pain on the outside of my knee while running too",
           "next": "knee-mixed-outer",
           "scores": {
             "kneecap": 3,
             "it-band": 3
           },
-          "reason": "Douleur de rotule et douleur externe à l’effort"
+          "reason": "Pain around the kneecap and on the outside of the knee during exercise"
         },
         {
           "id": "none",
-          "text": "Aucune de ces situations",
+          "text": "None of these",
           "next": "training"
         }
       ]
     },
     "patellar-trigger": {
-      "text": "Quelles sollicitations réveillent le point sous la rotule ?",
+      "text": "What brings on the pain just below your kneecap?",
       "options": [
         {
           "id": "push",
-          "text": "Les accélérations, sauts, côtes ou flexions chargées",
+          "text": "Speeding up, jumping, running uphill or bending my knee under load",
           "next": "tendon-response",
           "scores": {
             "patellar": 4
           },
-          "reason": "Douleur du tendon rotulien lors des efforts de poussée"
+          "reason": "Pain in the patellar tendon when pushing off"
         },
         {
           "id": "warm",
-          "text": "Le début de séance, puis la douleur revient après l’effort",
+          "text": "The start of a run, then the pain returns after exercise",
           "next": "tendon-response",
           "scores": {
             "patellar": 3
           },
-          "reason": "Douleur sous la rotule variant avec l’échauffement"
+          "reason": "Pain below the kneecap that changes as the body warms up"
         },
         {
           "id": "diffuse",
-          "text": "C’est plutôt diffus autour de la rotule",
+          "text": "The pain is spread around the kneecap instead",
           "next": "knee-after",
           "scores": {
             "kneecap": 4,
             "patellar": -2
           },
-          "reason": "Douleur diffuse plutôt que tendineuse"
+          "reason": "Pain spread around the kneecap rather than along the tendon"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "tendon-response"
         }
       ]
     },
     "quad-tendon-trigger": {
-      "text": "Cette douleur au-dessus de la rotule revient-elle quand le genou travaille ?",
+      "text": "Does the pain above your kneecap return when you use your knee?",
       "options": [
         {
           "id": "yes",
-          "text": "Oui, sur les flexions, les escaliers ou les efforts de poussée",
+          "text": "Yes, when bending my knee, using stairs or pushing off",
           "next": "tendon-response",
           "scores": {
             "quadriceps-tendon": 4
           },
-          "reason": "Douleur sus-rotulienne avec la mise en charge du genou"
+          "reason": "Pain above the kneecap when the knee takes weight"
         },
         {
           "id": "muscle",
-          "text": "Elle se situe plutôt dans le corps du muscle",
+          "text": "The pain is mainly in the muscle itself",
           "next": "muscle-onset",
           "scores": {
             "elongation": 1,
@@ -650,27 +650,27 @@
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "tendon-response"
         }
       ]
     },
     "tendon-response": {
-      "text": "Comment cette zone réagit-elle après une séance chargée ?",
+      "text": "How does this area feel after a hard session?",
       "options": [
         {
           "id": "same",
-          "text": "Le même point du tendon reste sensible ou raide",
+          "text": "The same spot on the tendon stays sore or stiff",
           "next": "training",
           "scores": {
             "patellar": 2,
             "quadriceps-tendon": 2
           },
-          "reason": "Sensibilité du même tendon après une séance chargée"
+          "reason": "Soreness in the same tendon after a hard session"
         },
         {
           "id": "quiet",
-          "text": "Elle se calme avec la récupération",
+          "text": "It eases with rest",
           "next": "training",
           "scores": {
             "patellar": 1,
@@ -679,310 +679,310 @@
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "knee-outer-location": {
-      "text": "Sur le côté externe du genou, quel type de douleur ressentez-vous ?",
+      "text": "What does the pain on the outside of your knee feel like?",
       "options": [
         {
           "id": "lateral",
-          "text": "Un point sur le côté, qui se réveille avec les foulées",
+          "text": "One spot on the side hurts with each stride",
           "next": "knee-outer-timing",
           "scores": {
             "it-band": 4
           },
-          "reason": "Douleur latérale du genou répétée avec les foulées"
+          "reason": "Pain on the outside of the knee with repeated strides"
         },
         {
           "id": "joint",
-          "text": "Une douleur dans l’articulation après une torsion",
+          "text": "Pain inside the joint after twisting my knee",
           "next": "knee-mechanical",
           "scores": {
             "meniscus": 4
           },
-          "reason": "Douleur articulaire après torsion"
+          "reason": "Joint pain after a twist"
         },
         {
           "id": "around",
-          "text": "Une gêne plutôt autour de la rotule",
+          "text": "It mainly hurts around the kneecap",
           "next": "kneecap-trigger",
           "scores": {
             "kneecap": 4
           },
-          "reason": "Douleur surtout autour de la rotule"
+          "reason": "Pain mainly around the kneecap"
         },
         {
           "id": "unsure",
-          "text": "Difficile à préciser",
+          "text": "It is hard to describe",
           "next": "knee-outer-timing"
         }
       ]
     },
     "knee-outer-timing": {
-      "text": "À quel moment revient cette douleur externe pendant la course ?",
+      "text": "When does the pain on the outside of your knee return during a run?",
       "options": [
         {
           "id": "repeat",
-          "text": "Après une distance ou une durée assez reproductible",
+          "text": "After about the same distance or time each run",
           "next": "knee-outer-terrain",
           "scores": {
             "it-band": 4
           },
-          "reason": "Douleur externe apparaissant après une distance ou durée similaire"
+          "reason": "Outer knee pain after a similar distance or time"
         },
         {
           "id": "build",
-          "text": "Elle augmente avec les kilomètres, même sur le plat",
+          "text": "It gets worse as I run further, even on flat ground",
           "next": "knee-outer-terrain",
           "scores": {
             "it-band": 3
           },
-          "reason": "Douleur externe augmentant avec la durée de course"
+          "reason": "Outer knee pain that increases during the run"
         },
         {
           "id": "early",
-          "text": "Dès le départ, puis au fil des foulées",
+          "text": "From the start, then with each stride",
           "next": "knee-outer-terrain",
           "scores": {
             "it-band": 2
           },
-          "reason": "Douleur externe liée aux foulées"
+          "reason": "Outer knee pain linked to each stride"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "knee-outer-terrain"
         }
       ]
     },
     "knee-outer-terrain": {
-      "text": "Qu’est-ce qui change cette douleur externe ?",
+      "text": "What changes the pain on the outside of your knee?",
       "options": [
         {
           "id": "downhill",
-          "text": "Les descentes ou dévers l’accentuent",
+          "text": "Downhill runs or sloping ground make it worse",
           "next": "training",
           "scores": {
             "it-band": 3
           },
-          "reason": "Douleur externe aggravée par les descentes ou dévers"
+          "reason": "Outer knee pain made worse by downhill runs or sloping ground"
         },
         {
           "id": "stop",
-          "text": "L’arrêt de la course la calme, elle revient en recourant",
+          "text": "Stopping eases it, but it returns when I run again",
           "next": "training",
           "scores": {
             "it-band": 3
           },
-          "reason": "Douleur externe calmée à l’arrêt puis reproduite en course"
+          "reason": "Outer knee pain that eases with rest and returns when running"
         },
         {
           "id": "both",
-          "text": "Elle suit la course, avec aussi une douleur de rotule dans les escaliers",
+          "text": "It follows running, with pain around the kneecap on stairs too",
           "next": "knee-mixed-front",
           "scores": {
             "it-band": 2,
             "kneecap": 3
           },
-          "reason": "Douleurs externe et rotulienne associées"
+          "reason": "Pain on the outside of the knee and around the kneecap"
         },
         {
           "id": "locking",
-          "text": "Le genou se bloque réellement et ne se redresse plus",
+          "text": "My knee locks and I cannot straighten it",
           "next": "finish",
           "scores": {
             "meniscus": 4
           },
-          "reason": "Blocage du genou avec perte d’extension",
-          "care": "Un genou bloqué qui ne peut plus se redresser demande un examen rapide"
+          "reason": "A locked knee that cannot straighten",
+          "care": "A locked knee that cannot straighten needs a prompt medical check"
         },
         {
           "id": "unsure",
-          "text": "Je n’ai pas remarqué",
+          "text": "I have not noticed",
           "next": "training"
         }
       ]
     },
     "knee-inner-location": {
-      "text": "À l’intérieur du genou, où se concentre la douleur ?",
+      "text": "Where does the inside of your knee hurt most?",
       "options": [
         {
           "id": "below",
-          "text": "Quelques centimètres sous l’articulation, sur le côté interne du tibia",
+          "text": "A few centimetres below the joint, on the inner side of the shin",
           "next": "knee-inner-trigger",
           "scores": {
             "pes-anserine": 4
           },
-          "reason": "Douleur interne située sous l’articulation"
+          "reason": "Pain on the inside, below the knee joint"
         },
         {
           "id": "joint",
-          "text": "Sur la ligne de l’articulation, surtout après une torsion",
+          "text": "Along the joint line, especially after a twist",
           "next": "knee-mechanical",
           "scores": {
             "meniscus": 4
           },
-          "reason": "Douleur sur la ligne articulaire interne"
+          "reason": "Pain along the inner knee joint line"
         },
         {
           "id": "rotula",
-          "text": "Plutôt autour du bord interne de la rotule",
+          "text": "Mainly around the inner edge of the kneecap",
           "next": "kneecap-trigger",
           "scores": {
             "kneecap": 4
           },
-          "reason": "Douleur sur le bord interne de la rotule"
+          "reason": "Pain along the inner edge of the kneecap"
         },
         {
           "id": "unsure",
-          "text": "Difficile à situer",
+          "text": "It is hard to locate",
           "next": "knee-inner-trigger"
         }
       ]
     },
     "knee-inner-trigger": {
-      "text": "Comment cette douleur interne réagit-elle à l’effort ?",
+      "text": "How does exercise affect the pain on the inside of your knee?",
       "options": [
         {
           "id": "hills",
-          "text": "Les côtes, la course et les escaliers l’accentuent sous le genou",
+          "text": "Hills, running and stairs make the pain below my knee worse",
           "next": "training",
           "scores": {
             "pes-anserine": 4
           },
-          "reason": "Douleur sous le côté interne du genou augmentée à l’effort"
+          "reason": "Pain below the inner knee that gets worse with exercise"
         },
         {
           "id": "twist",
-          "text": "Les pivots ou flexions profondes provoquent une douleur dans l’articulation",
+          "text": "Turning or bending my knee deeply causes pain inside the joint",
           "next": "knee-mechanical",
           "scores": {
             "meniscus": 3
           },
-          "reason": "Douleur articulaire avec pivots ou flexions profondes"
+          "reason": "Joint pain when turning or bending the knee deeply"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "knee-mechanical"
         }
       ]
     },
     "knee-mechanical": {
-      "text": "Avez-vous ressenti un accrochage ou un blocage dans le genou ?",
+      "text": "Has your knee caught or locked during movement?",
       "options": [
         {
           "id": "catch",
-          "text": "Oui, des accrochages douloureux avec les pivots ou flexions",
+          "text": "Yes, it catches painfully when I turn or bend it",
           "next": "training",
           "scores": {
             "meniscus": 4
           },
-          "reason": "Accrochages douloureux lors des mouvements du genou"
+          "reason": "Painful catching during knee movement"
         },
         {
           "id": "locked",
-          "text": "Oui, le genou reste bloqué et je ne peux plus le redresser",
+          "text": "Yes, it stays locked and I cannot straighten it",
           "next": "finish",
           "scores": {
             "meniscus": 5
           },
-          "reason": "Blocage persistant du genou",
-          "care": "Un blocage persistant du genou nécessite un examen rapide"
+          "reason": "A knee that stays locked",
+          "care": "A knee that stays locked needs a prompt medical check"
         },
         {
           "id": "no",
-          "text": "Non, surtout une douleur à la course ou dans les escaliers",
+          "text": "No, it mainly hurts when running or using stairs",
           "next": "training",
           "scores": {
             "pes-anserine": 2,
             "kneecap": 2,
             "meniscus": -2
           },
-          "reason": "Douleur d’effort sans blocage"
+          "reason": "Pain during exercise without locking"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "knee-back-location": {
-      "text": "Derrière le genou, que ressentez-vous surtout ?",
+      "text": "What do you mainly feel behind your knee?",
       "options": [
         {
           "id": "lump",
-          "text": "Une boule ou une sensation de gonflement dans le pli",
+          "text": "A lump or swelling in the fold behind my knee",
           "next": "knee-back-pattern",
           "scores": {
             "baker": 4
           },
-          "reason": "Sensation de boule derrière le genou"
+          "reason": "A lump behind the knee"
         },
         {
           "id": "joint",
-          "text": "Une douleur profonde avec des accrochages",
+          "text": "Deep pain with a catching feeling",
           "next": "knee-mechanical",
           "scores": {
             "meniscus": 4
           },
-          "reason": "Douleur postérieure avec accrochages"
+          "reason": "Pain behind the knee with a catching feeling"
         },
         {
           "id": "muscle",
-          "text": "Une traction musculaire apparue sur une accélération",
+          "text": "A pulling feeling in the muscle that started when I sped up",
           "next": "muscle-function",
           "scores": {
             "elongation": 3,
             "muscle-tear": 3
           },
-          "reason": "Traction musculaire soudaine derrière le genou"
+          "reason": "Sudden muscle pain behind the knee"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "knee-back-pattern"
         }
       ]
     },
     "knee-back-pattern": {
-      "text": "La gêne derrière le genou vous limite-t-elle pour le plier ou le tendre ?",
+      "text": "Does the pain behind your knee limit how far you can bend or straighten it?",
       "options": [
         {
           "id": "tension",
-          "text": "Oui, avec une tension autour de la boule",
+          "text": "Yes, with tightness around the lump",
           "next": "training",
           "scores": {
             "baker": 4
           },
-          "reason": "Tension et gêne de flexion autour du gonflement postérieur"
+          "reason": "Tightness and difficulty bending around the swelling behind the knee"
         },
         {
           "id": "catch",
-          "text": "Ce sont plutôt des accrochages dans l’articulation",
+          "text": "It feels more like catching inside the joint",
           "next": "knee-mechanical",
           "scores": {
             "meniscus": 3
           },
-          "reason": "Accrochages articulaires derrière le genou"
+          "reason": "Catching inside the joint behind the knee"
         },
         {
           "id": "none",
-          "text": "Non, je ne retrouve pas ce profil",
+          "text": "No, this does not match what I feel",
           "next": "training"
         }
       ]
     },
     "quad-location": {
-      "text": "Dans le quadriceps, la douleur est-elle dans le muscle ou près de la rotule ?",
+      "text": "Is your thigh pain in the quadriceps muscle or near the kneecap?",
       "options": [
         {
           "id": "muscle",
-          "text": "Dans le corps du muscle, à l’avant de la cuisse",
+          "text": "In the muscle at the front of my thigh",
           "next": "muscle-onset",
           "scores": {
             "elongation": 1,
@@ -991,35 +991,35 @@
         },
         {
           "id": "tendon",
-          "text": "Sur un point juste au-dessus de la rotule",
+          "text": "On one spot just above the kneecap",
           "next": "quad-tendon-trigger",
           "scores": {
             "quadriceps-tendon": 4
           },
-          "reason": "Douleur sur le tendon au-dessus de la rotule"
+          "reason": "Pain in the tendon above the kneecap"
         },
         {
           "id": "diffuse",
-          "text": "Sur une zone large, surtout après une séance difficile",
+          "text": "Over a wide area, mainly after a hard session",
           "next": "muscle-recovery",
           "scores": {
             "muscle-soreness": 3
           },
-          "reason": "Douleur musculaire diffuse après une séance chargée"
+          "reason": "Pain over a wide area of muscle after a hard session"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas bien",
+          "text": "I am not sure",
           "next": "muscle-onset"
         }
       ]
     },
     "hamstring-location": {
-      "text": "À l’arrière de la cuisse, où se trouve la douleur ?",
+      "text": "Where is the pain at the back of your thigh?",
       "options": [
         {
           "id": "muscle",
-          "text": "Dans le corps du muscle",
+          "text": "In the muscle itself",
           "next": "muscle-onset",
           "scores": {
             "elongation": 1,
@@ -1028,197 +1028,197 @@
         },
         {
           "id": "high",
-          "text": "Très haut, juste sous le pli de la fesse",
+          "text": "High up, just below the buttock",
           "next": "hamstring-pattern",
           "scores": {
             "proximal-hamstring": 4
           },
-          "reason": "Douleur localisée sous le pli fessier"
+          "reason": "Pain just below the buttock"
         },
         {
           "id": "diffuse",
-          "text": "Sur une grande zone musculaire après la séance",
+          "text": "Over a wide area of muscle after a session",
           "next": "muscle-recovery",
           "scores": {
             "muscle-soreness": 3
           },
-          "reason": "Gêne diffuse des ischio-jambiers après la séance"
+          "reason": "Pain over a wide area of the hamstrings after a session"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "muscle-onset"
         }
       ]
     },
     "muscle-onset": {
-      "text": "Quand la douleur musculaire a-t-elle commencé ?",
+      "text": "When did the muscle pain start?",
       "options": [
         {
           "id": "sudden",
-          "text": "Sur une accélération, une poussée ou une grande foulée précise",
+          "text": "When I sped up, pushed off or took one long stride",
           "next": "muscle-function",
           "scores": {
             "elongation": 3,
             "muscle-tear": 3,
             "muscle-soreness": -3
           },
-          "reason": "Douleur musculaire soudaine sur une foulée"
+          "reason": "Sudden muscle pain during a stride"
         },
         {
           "id": "delayed",
-          "text": "Le lendemain d’une séance plus dure, sans douleur vive pendant la course",
+          "text": "The day after a harder session, with no sharp pain during the run",
           "next": "muscle-recovery",
           "scores": {
             "muscle-soreness": 4,
             "muscle-tear": -3
           },
-          "reason": "Douleur musculaire retardée après la séance"
+          "reason": "Muscle pain that started after the session"
         },
         {
           "id": "gradual",
-          "text": "Un tiraillement s’est installé pendant la séance",
+          "text": "A pulling feeling built up during the session",
           "next": "muscle-function",
           "scores": {
             "elongation": 2,
             "muscle-tear": 1
           },
-          "reason": "Tiraillement apparu pendant la séance"
+          "reason": "A pulling feeling that started during the session"
         },
         {
           "id": "unsure",
-          "text": "Je ne repère pas le début",
+          "text": "I cannot remember when it started",
           "next": "muscle-function"
         }
       ]
     },
     "muscle-function": {
-      "text": "Lors de cette séance, avez-vous pu continuer à courir ?",
+      "text": "Were you able to keep running during that session?",
       "options": [
         {
           "id": "mild",
-          "text": "Oui, avec un tiraillement mais sans perte nette de force",
+          "text": "Yes, with a pulling feeling but no clear loss of strength",
           "next": "muscle-symptom",
           "scores": {
             "elongation": 4,
             "muscle-tear": -2
           },
-          "reason": "Tiraillement sans perte nette de force"
+          "reason": "A pulling feeling without a clear loss of strength"
         },
         {
           "id": "stop",
-          "text": "Non, une douleur vive m’a obligé à arrêter",
+          "text": "No, a sharp pain made me stop",
           "next": "muscle-symptom",
           "scores": {
             "muscle-tear": 4,
             "elongation": 1
           },
-          "reason": "Arrêt de la séance imposé par une douleur vive"
+          "reason": "Sharp pain that forced the run to stop"
         },
         {
           "id": "weak",
-          "text": "Non, avec un claquement ou une perte de force",
+          "text": "No, I felt a snap or lost strength",
           "next": "muscle-symptom",
           "scores": {
             "muscle-tear": 5,
             "elongation": -2
           },
-          "reason": "Douleur soudaine avec claquement ou perte de force",
-          "care": "Arrêtez l’effort et faites examiner rapidement cette perte de force pour préciser la lésion"
+          "reason": "Sudden pain with a snap or loss of strength",
+          "care": "Stop exercising and have this loss of strength checked promptly to find out how serious the injury is"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "muscle-symptom"
         }
       ]
     },
     "muscle-symptom": {
-      "text": "Depuis cette séance, que ressentez-vous dans ce muscle ?",
+      "text": "What have you felt in this muscle since that session?",
       "options": [
         {
           "id": "local",
-          "text": "Le même point tire quand le muscle travaille dans mes gestes habituels",
+          "text": "The same spot pulls when I use the muscle in normal movements",
           "next": "finish",
           "scores": {
             "elongation": 3,
             "muscle-tear": 3
           },
-          "reason": "Douleur localisée lors de l’utilisation du muscle"
+          "reason": "Pain in one area when using the muscle"
         },
         {
           "id": "diffuse",
-          "text": "Une raideur assez diffuse qui s’améliore de jour en jour",
+          "text": "Stiffness over a wide area that improves each day",
           "next": "finish",
           "scores": {
             "muscle-soreness": 4,
             "muscle-tear": -2
           },
-          "reason": "Raideur diffuse s’améliorant avec la récupération"
+          "reason": "Stiffness over a wide area that improves with rest"
         },
         {
           "id": "weak",
-          "text": "Une douleur localisée avec une gêne importante à la marche",
+          "text": "Pain in one area that makes walking very difficult",
           "next": "finish",
           "scores": {
             "muscle-tear": 4,
             "elongation": 1
           },
-          "reason": "Gêne musculaire localisée limitant la marche",
-          "care": "Ne reprenez pas la course avant une évaluation de cette gêne importante à la marche"
+          "reason": "Muscle pain in one area that limits walking",
+          "care": "Do not run again until this difficulty walking has been checked"
         },
         {
           "id": "unsure",
-          "text": "Difficile à préciser",
+          "text": "It is hard to describe",
           "next": "finish"
         }
       ]
     },
     "muscle-recovery": {
-      "text": "Comment cette douleur diffuse évolue-t-elle les jours suivants ?",
+      "text": "How does the pain over this wider area change in the following days?",
       "options": [
         {
           "id": "improves",
-          "text": "Elle est surtout présente un ou deux jours après, puis diminue",
+          "text": "It is worst one or two days later, then eases",
           "next": "finish",
           "scores": {
             "muscle-soreness": 4,
             "muscle-tear": -2
           },
-          "reason": "Douleur retardée et décroissante avec la récupération"
+          "reason": "Pain that starts later and eases with rest"
         },
         {
           "id": "local",
-          "text": "Elle se concentre au même point pendant les mouvements",
+          "text": "It moves to the same small spot during movement",
           "next": "muscle-function",
           "scores": {
             "elongation": 2,
             "muscle-tear": 2
           },
-          "reason": "Douleur devenant localisée à l’utilisation du muscle"
+          "reason": "Pain that becomes focused when using the muscle"
         },
         {
           "id": "unsure",
-          "text": "Je n’ai pas assez de recul",
+          "text": "It is too early to tell",
           "next": "finish"
         }
       ]
     },
     "adductor-location": {
-      "text": "À l’intérieur de la cuisse, où est la gêne ?",
+      "text": "Where is the pain on the inside of your thigh?",
       "options": [
         {
           "id": "groin",
-          "text": "Près de l’aine, vers l’attache du muscle",
+          "text": "Near the groin, where the muscle attaches",
           "next": "adductor-pattern",
           "scores": {
             "adductor-tendon": 4
           },
-          "reason": "Douleur haute des adducteurs près de l’aine"
+          "reason": "Pain high on the inner thigh, near the groin"
         },
         {
           "id": "muscle",
-          "text": "Dans le muscle, après une foulée ou un changement d’appui",
+          "text": "In the muscle, after a stride or a change of direction",
           "next": "muscle-onset",
           "scores": {
             "elongation": 1,
@@ -1227,120 +1227,120 @@
         },
         {
           "id": "diffuse",
-          "text": "Diffuse, surtout le lendemain d’une séance difficile",
+          "text": "Over a wide area, mainly the day after a hard session",
           "next": "muscle-recovery",
           "scores": {
             "muscle-soreness": 3
           },
-          "reason": "Gêne diffuse des adducteurs après une séance chargée"
+          "reason": "Pain over a wide area of the inner thigh after a hard session"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "adductor-pattern"
         }
       ]
     },
     "adductor-pattern": {
-      "text": "Comment cette douleur près de l’aine réagit-elle à la course ?",
+      "text": "How does running affect the pain near your groin?",
       "options": [
         {
           "id": "stride",
-          "text": "Elle revient sur les relances, grandes foulées ou changements de direction",
+          "text": "It returns when I speed up, take long strides or change direction",
           "next": "training",
           "scores": {
             "adductor-tendon": 4
           },
-          "reason": "Douleur des adducteurs reproduite par les relances ou grandes foulées"
+          "reason": "Inner thigh pain when speeding up or taking long strides"
         },
         {
           "id": "sudden",
-          "text": "Elle est apparue d’un coup et m’a fait arrêter",
+          "text": "It started suddenly and made me stop",
           "next": "muscle-function",
           "scores": {
             "muscle-tear": 3,
             "elongation": 2
           },
-          "reason": "Douleur soudaine des adducteurs en course"
+          "reason": "Sudden inner thigh pain while running"
         },
         {
           "id": "none",
-          "text": "Je ne retrouve pas ce lien avec les mouvements",
+          "text": "I do not notice a link with these movements",
           "next": "training"
         }
       ]
     },
     "calf-location": {
-      "text": "Quel profil décrit le mieux votre douleur au mollet ?",
+      "text": "Which option best describes your calf pain?",
       "options": [
         {
           "id": "sudden",
-          "text": "Un tiraillement ou une douleur vive sur une poussée précise",
+          "text": "A pulling feeling or sharp pain during one push-off",
           "next": "muscle-function",
           "scores": {
             "elongation": 3,
             "muscle-tear": 3
           },
-          "reason": "Douleur du mollet apparue sur une poussée"
+          "reason": "Calf pain that started during a push-off"
         },
         {
           "id": "delayed",
-          "text": "Une douleur diffuse après une séance plus dure",
+          "text": "Pain over a wide area after a harder session",
           "next": "muscle-recovery",
           "scores": {
             "muscle-soreness": 3
           },
-          "reason": "Douleur diffuse du mollet après la séance"
+          "reason": "Pain over a wide area of the calf after a session"
         },
         {
           "id": "pressure",
-          "text": "Une pression qui serre après un temps de course similaire",
+          "text": "Tight pressure after about the same amount of running each time",
           "next": "pressure-recovery",
           "scores": {
             "compartment": 4
           },
-          "reason": "Pression du mollet reproductible à l’effort"
+          "reason": "Calf pressure that returns at a similar level of effort"
         },
         {
           "id": "low",
-          "text": "Plutôt en bas, sur le tendon au-dessus du talon",
+          "text": "Lower down, on the tendon above my heel",
           "next": "achilles-pattern",
           "scores": {
             "achilles": 2
           },
-          "reason": "Douleur basse sur le trajet du tendon d’Achille"
+          "reason": "Pain lower down along the Achilles tendon"
         },
         {
           "id": "other",
-          "text": "Une douleur continue qui ne suit pas vraiment l’effort",
+          "text": "Constant pain that is not clearly linked to exercise",
           "next": "calf-rest"
         }
       ]
     },
     "hip-location": {
-      "text": "Sur la hanche, où ressentez-vous la douleur ?",
+      "text": "Where do you feel the pain in your hip?",
       "options": [
         {
           "id": "side",
-          "text": "Sur le côté, près du relief osseux",
+          "text": "On the side, near the bony part",
           "next": "hip-pattern",
           "scores": {
             "outer-hip": 4
           },
-          "reason": "Douleur située sur le côté de la hanche"
+          "reason": "Pain on the side of the hip"
         },
         {
           "id": "low",
-          "text": "Sous le pli de la fesse",
+          "text": "Just below my buttock",
           "next": "hamstring-pattern",
           "scores": {
             "proximal-hamstring": 4
           },
-          "reason": "Douleur située sous le pli fessier"
+          "reason": "Pain just below the buttock"
         },
         {
           "id": "muscle",
-          "text": "Dans le muscle, sur une foulée précise",
+          "text": "In the muscle, during one particular stride",
           "next": "muscle-onset",
           "scores": {
             "elongation": 1,
@@ -1349,35 +1349,35 @@
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "hip-pattern"
         }
       ]
     },
     "glute-location": {
-      "text": "Dans la fesse, où se concentre la douleur ?",
+      "text": "Where does your buttock hurt most?",
       "options": [
         {
           "id": "low",
-          "text": "En bas, près de l’appui quand je suis assis",
+          "text": "Low down, where I put weight when sitting",
           "next": "hamstring-pattern",
           "scores": {
             "proximal-hamstring": 4
           },
-          "reason": "Douleur basse de la fesse près de l’appui assis"
+          "reason": "Pain low in the buttock, where the body rests when sitting"
         },
         {
           "id": "side",
-          "text": "Plutôt sur le côté de la hanche",
+          "text": "Mainly on the side of my hip",
           "next": "hip-pattern",
           "scores": {
             "outer-hip": 4
           },
-          "reason": "Douleur latérale de hanche"
+          "reason": "Pain on the side of the hip"
         },
         {
           "id": "muscle",
-          "text": "Dans le muscle après une accélération ou une séance de côtes",
+          "text": "In the muscle after speeding up or running hills",
           "next": "muscle-onset",
           "scores": {
             "elongation": 1,
@@ -1386,183 +1386,183 @@
         },
         {
           "id": "diffuse",
-          "text": "Diffuse, surtout après l’effort",
+          "text": "Over a wide area, mainly after exercise",
           "next": "muscle-recovery",
           "scores": {
             "muscle-soreness": 3
           },
-          "reason": "Gêne fessière diffuse après l’effort"
+          "reason": "Pain over a wide area of the buttock after exercise"
         }
       ]
     },
     "hip-pattern": {
-      "text": "Qu’est-ce qui reproduit la douleur sur le côté de la hanche ?",
+      "text": "What brings back the pain on the side of your hip?",
       "options": [
         {
           "id": "lying",
-          "text": "Dormir sur ce côté, et courir en côte ou longtemps",
+          "text": "Sleeping on that side, and uphill or long runs",
           "next": "training",
           "scores": {
             "outer-hip": 4
           },
-          "reason": "Douleur latérale reproduite par l’appui couché et la charge de course"
+          "reason": "Hip pain when lying on that side and during uphill or long runs"
         },
         {
           "id": "running",
-          "text": "Les appuis répétés en course, puis les escaliers",
+          "text": "Repeated foot strikes while running, then stairs",
           "next": "training",
           "scores": {
             "outer-hip": 3
           },
-          "reason": "Douleur latérale liée aux appuis et aux escaliers"
+          "reason": "Hip pain with repeated foot strikes and on stairs"
         },
         {
           "id": "sitting",
-          "text": "Plutôt rester assis sur le bas de la fesse",
+          "text": "It mainly hurts low in my buttock when I sit",
           "next": "hamstring-pattern",
           "scores": {
             "proximal-hamstring": 4
           },
-          "reason": "Douleur basse en position assise"
+          "reason": "Pain low in the buttock while sitting"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "hamstring-pattern": {
-      "text": "Qu’est-ce qui retrouve la douleur sous la fesse ?",
+      "text": "What brings back the pain just below your buttock?",
       "options": [
         {
           "id": "sitting",
-          "text": "Rester assis longtemps, et les sorties rapides ou en côte",
+          "text": "Sitting for a long time, and fast or uphill runs",
           "next": "training",
           "scores": {
             "proximal-hamstring": 4
           },
-          "reason": "Douleur sous-fessière associant position assise et charge de course"
+          "reason": "Pain below the buttock when sitting for a long time and during runs"
         },
         {
           "id": "running",
-          "text": "Les grandes foulées, au même point près de l’attache",
+          "text": "Long strides, at the same spot near the muscle attachment",
           "next": "training",
           "scores": {
             "proximal-hamstring": 3
           },
-          "reason": "Douleur à l’attache haute des ischio-jambiers en course"
+          "reason": "Pain where the hamstrings attach high up during running"
         },
         {
           "id": "sudden",
-          "text": "Une accélération précise avec tiraillement dans le muscle",
+          "text": "One sudden increase in speed, with a pulling feeling in the muscle",
           "next": "muscle-function",
           "scores": {
             "elongation": 3,
             "muscle-tear": 3
           },
-          "reason": "Tiraillement musculaire soudain"
+          "reason": "A sudden pulling feeling in the muscle"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "achilles-pattern": {
-      "text": "Comment se manifeste la douleur du tendon d’Achille ?",
+      "text": "What does your Achilles tendon pain feel like?",
       "options": [
         {
           "id": "morning",
-          "text": "Une raideur aux premiers pas après le repos",
+          "text": "Stiffness during my first steps after resting",
           "next": "achilles-course",
           "scores": {
             "achilles": 4
           },
-          "reason": "Raideur du tendon d’Achille après le repos"
+          "reason": "Achilles tendon stiffness after rest"
         },
         {
           "id": "effort",
-          "text": "Une douleur localisée sur le tendon avec les poussées",
+          "text": "Pain in one part of the tendon when I push off",
           "next": "achilles-course",
           "scores": {
             "achilles": 3
           },
-          "reason": "Douleur du tendon d’Achille avec les poussées"
+          "reason": "Achilles tendon pain when pushing off"
         },
         {
           "id": "snap",
-          "text": "Une douleur brutale avec sensation de coup ou de claquement",
+          "text": "Sudden pain, like a kick or a snap",
           "next": "achilles-push",
           "scores": {
             "achilles-rupture": 4,
             "achilles": -2
           },
-          "reason": "Douleur achilléenne brutale avec sensation de claquement"
+          "reason": "Sudden Achilles pain with a snapping feeling"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "achilles-course"
         }
       ]
     },
     "achilles-course": {
-      "text": "Comment le tendon réagit-il pendant et après la sortie ?",
+      "text": "How does the tendon feel during and after a run?",
       "options": [
         {
           "id": "warm",
-          "text": "Il se calme parfois à chaud puis redevient sensible après",
+          "text": "It sometimes eases as I warm up, then becomes sore again afterwards",
           "next": "achilles-after",
           "scores": {
             "achilles": 4
           },
-          "reason": "Douleur achilléenne variant avec l’échauffement et revenant après"
+          "reason": "Achilles pain that changes with warming up and returns after the run"
         },
         {
           "id": "hills",
-          "text": "Les côtes ou accélérations réveillent toujours le même point",
+          "text": "Hills or speeding up always bring back pain in the same spot",
           "next": "achilles-after",
           "scores": {
             "achilles": 3
           },
-          "reason": "Tendon sensible aux fortes poussées"
+          "reason": "Tendon pain with strong push-offs"
         },
         {
           "id": "snap",
-          "text": "J’ai soudain perdu la poussée du pied",
+          "text": "I suddenly lost the ability to push off with my foot",
           "next": "achilles-push",
           "scores": {
             "achilles-rupture": 4,
             "achilles": -3
           },
-          "reason": "Perte soudaine de la poussée du pied"
+          "reason": "A sudden loss of push-off strength in the foot"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "achilles-after"
         }
       ]
     },
     "achilles-push": {
-      "text": "Après cette douleur soudaine, avez-vous perdu la force de poussée du pied ?",
+      "text": "After the sudden pain, did you lose the strength to push off with your foot?",
       "options": [
         {
           "id": "lost",
-          "text": "Oui, je n’arrivais plus à pousser ou à marcher normalement",
+          "text": "Yes, I could no longer push off or walk normally",
           "next": "finish",
           "scores": {
             "achilles-rupture": 5,
             "achilles": -4
           },
-          "reason": "Perte de poussée après douleur achilléenne soudaine",
-          "care": "Suspendez les appuis sportifs et faites vérifier rapidement le tendon ; une rupture doit être recherchée"
+          "reason": "A loss of push-off strength after sudden Achilles pain",
+          "care": "Stop sports and have the tendon checked promptly for a possible tear"
         },
         {
           "id": "normal",
-          "text": "Non, la poussée restait possible",
+          "text": "No, I could still push off",
           "next": "training",
           "scores": {
             "achilles-rupture": -4,
@@ -1571,575 +1571,575 @@
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "finish",
-          "care": "Après un claquement du tendon ou une perte de poussée, faites vérifier le tendon sans le tester en courant"
+          "care": "After a snap in the tendon or a loss of push-off strength, have the tendon checked. Do not test it by running"
         }
       ]
     },
     "ankle-location": {
-      "text": "Autour de la cheville, où suit la douleur ?",
+      "text": "Where does the pain around your ankle go?",
       "options": [
         {
           "id": "inner",
-          "text": "Derrière la malléole interne, vers la voûte",
+          "text": "Behind the inner ankle bone, towards the arch",
           "next": "ankle-inner-pattern",
           "scores": {
             "tibial-tendon": 4
           },
-          "reason": "Douleur interne de cheville vers la voûte"
+          "reason": "Pain from the inner ankle towards the arch"
         },
         {
           "id": "outer",
-          "text": "Derrière la malléole externe, vers le bord du pied",
+          "text": "Behind the outer ankle bone, towards the edge of my foot",
           "next": "ankle-outer-pattern",
           "scores": {
             "peroneal-tendon": 4
           },
-          "reason": "Douleur derrière la malléole externe"
+          "reason": "Pain behind the outer ankle bone"
         },
         {
           "id": "front",
-          "text": "Sur l’avant, vers le dessus du pied",
+          "text": "Along the front, towards the top of my foot",
           "next": "front-leg-after",
           "scores": {
             "anterior-tibial": 3,
             "extensor-tendon": 2
           },
-          "reason": "Douleur à l’avant de la cheville"
+          "reason": "Pain at the front of the ankle"
         },
         {
           "id": "twist",
-          "text": "Elle suit une cheville qui a tourné sur un appui",
+          "text": "It started after I twisted my ankle during a step",
           "next": "ankle-twist-pattern",
           "scores": {
             "sprain": 4
           },
-          "reason": "Douleur après torsion de la cheville"
+          "reason": "Pain after twisting the ankle"
         }
       ]
     },
     "ankle-inner-location": {
-      "text": "La douleur interne de cheville se prolonge-t-elle vers la voûte du pied ?",
+      "text": "Does the pain on the inside of your ankle go towards the arch of your foot?",
       "options": [
         {
           "id": "yes",
-          "text": "Oui, sur ce trajet",
+          "text": "Yes, along that line",
           "next": "ankle-inner-pattern",
           "scores": {
             "tibial-tendon": 4
           },
-          "reason": "Douleur sur le trajet interne de cheville vers la voûte"
+          "reason": "Pain along the inner ankle towards the arch"
         },
         {
           "id": "bone",
-          "text": "Non, c’est un point précis sur l’os",
+          "text": "No, it is one small spot on the bone",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Douleur osseuse ponctuelle près de la cheville"
+          "reason": "Pain on one small spot on the bone near the ankle"
         },
         {
           "id": "twist",
-          "text": "Elle a commencé après une torsion",
+          "text": "It started after a twist",
           "next": "ankle-twist-pattern",
           "scores": {
             "sprain": 4
           },
-          "reason": "Torsion de cheville avant la douleur"
+          "reason": "An ankle twist before the pain started"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "ankle-inner-pattern"
         }
       ]
     },
     "ankle-inner-pattern": {
-      "text": "Qu’est-ce qui reproduit cette douleur interne de cheville ?",
+      "text": "What brings back the pain on the inside of your ankle?",
       "options": [
         {
           "id": "push",
-          "text": "La poussée à chaque appui, puis une raideur après repos",
+          "text": "Pushing off with each step, then stiffness after rest",
           "next": "training",
           "scores": {
             "tibial-tendon": 4
           },
-          "reason": "Douleur interne à la poussée et raideur après repos"
+          "reason": "Inner ankle pain when pushing off and stiffness after rest"
         },
         {
           "id": "distance",
-          "text": "Les longues sorties ou les appuis répétés, sur le même trajet",
+          "text": "Long runs or repeated steps, along the same line",
           "next": "training",
           "scores": {
             "tibial-tendon": 3
           },
-          "reason": "Douleur du trajet interne augmentant avec les kilomètres"
+          "reason": "Pain along the inner ankle that increases with distance"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "ankle-outer-location": {
-      "text": "Sur le côté externe, où se trouve le maximum de gêne ?",
+      "text": "Where does the outside of your ankle hurt most?",
       "options": [
         {
           "id": "tendon",
-          "text": "Sur un trajet derrière la malléole",
+          "text": "Along a line behind the ankle bone",
           "next": "ankle-outer-pattern",
           "scores": {
             "peroneal-tendon": 4
           },
-          "reason": "Douleur sur le trajet des tendons externes de cheville"
+          "reason": "Pain along the tendons on the outside of the ankle"
         },
         {
           "id": "bone",
-          "text": "Sur un petit point osseux",
+          "text": "On one small spot on the bone",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Douleur osseuse ponctuelle sur le côté externe"
+          "reason": "Pain on one small spot on the outer ankle bone"
         },
         {
           "id": "twist",
-          "text": "Près de la malléole après une torsion",
+          "text": "Near the ankle bone after a twist",
           "next": "ankle-twist-pattern",
           "scores": {
             "sprain": 4
           },
-          "reason": "Douleur près de la malléole après torsion"
+          "reason": "Pain near the ankle bone after a twist"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "ankle-outer-pattern"
         }
       ]
     },
     "ankle-outer-pattern": {
-      "text": "Les sentiers techniques ou dévers réveillent-ils la douleur sur ce trajet externe ?",
+      "text": "Do uneven trails or sloping ground bring back the pain along the outside of your ankle?",
       "options": [
         {
           "id": "yes",
-          "text": "Oui, davantage que les appuis sur terrain régulier",
+          "text": "Yes, more than even ground",
           "next": "training",
           "scores": {
             "peroneal-tendon": 4
           },
-          "reason": "Douleur externe augmentée par les appuis instables"
+          "reason": "Outer ankle pain that gets worse on uneven ground"
         },
         {
           "id": "load",
-          "text": "Elle augmente avec les appuis répétés même sur le plat",
+          "text": "It gets worse with repeated steps, even on flat ground",
           "next": "training",
           "scores": {
             "peroneal-tendon": 3
           },
-          "reason": "Douleur du trajet externe répétée avec les appuis"
+          "reason": "Pain along the outer ankle with repeated steps"
         },
         {
           "id": "twist",
-          "text": "Elle fait surtout suite à une cheville qui a tourné",
+          "text": "It mainly started after I twisted my ankle",
           "next": "ankle-twist-pattern",
           "scores": {
             "sprain": 4
           },
-          "reason": "Torsion suivie de douleur externe"
+          "reason": "Outer ankle pain after a twist"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "ankle-twist-pattern": {
-      "text": "Après cette torsion, qu’est-il arrivé aux appuis ?",
+      "text": "What happened when you put weight on your foot after the twist?",
       "options": [
         {
           "id": "pain",
-          "text": "Les appuis sont devenus douloureux autour de la malléole",
+          "text": "It became painful around the ankle bone",
           "next": "finish",
           "scores": {
             "sprain": 4
           },
-          "reason": "Douleur ligamentaire autour de la cheville après torsion"
+          "reason": "Pain around the ankle ligaments after a twist"
         },
         {
           "id": "unable",
-          "text": "Je ne peux plus marcher quelques pas",
+          "text": "I cannot walk even a few steps",
           "next": "finish",
           "scores": {
             "sprain": 3
           },
-          "reason": "Appui devenu impossible après torsion",
-          "care": "Ne reprenez pas les appuis sportifs ; un examen rapide doit notamment exclure une fracture"
+          "reason": "Unable to put weight on the foot after a twist",
+          "care": "Stop sports that put weight on the foot. Get a prompt medical check to rule out a fracture"
         },
         {
           "id": "bone",
-          "text": "La douleur est très précise sur un relief osseux",
+          "text": "There is pain in one small spot on the bone",
           "next": "finish",
           "scores": {
             "stress-fracture": -3
           },
-          "care": "Une douleur osseuse après torsion demande un examen pour rechercher une fracture ; ce n’est pas une fracture de fatigue à déduire du questionnaire"
+          "care": "Bone pain after a twist needs a medical check for a fracture. The questionnaire cannot call this a stress fracture"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "finish"
         }
       ]
     },
     "heel-location": {
-      "text": "Le talon vous fait-il mal dessous, au centre ou à l’arrière ?",
+      "text": "Does your heel hurt underneath, in the centre or at the back?",
       "options": [
         {
           "id": "sole",
-          "text": "Dessous, plutôt vers la voûte plantaire",
+          "text": "Underneath, towards the arch",
           "next": "sole-pattern",
           "scores": {
             "plantar": 4
           },
-          "reason": "Douleur sous le talon vers la voûte"
+          "reason": "Pain under the heel towards the arch"
         },
         {
           "id": "centre",
-          "text": "Au centre du talon, à l’impact au sol",
+          "text": "In the centre, when my heel hits the ground",
           "next": "sole-pattern",
           "scores": {
             "heel-pad": 4
           },
-          "reason": "Douleur au centre du talon lors des impacts"
+          "reason": "Pain in the centre of the heel with foot strikes"
         },
         {
           "id": "back",
-          "text": "À l’arrière, sur l’attache du tendon d’Achille",
+          "text": "At the back, where the Achilles tendon attaches",
           "next": "achilles-pattern",
           "scores": {
             "achilles": 2
           },
-          "reason": "Douleur à l’attache du tendon d’Achille"
+          "reason": "Pain where the Achilles tendon attaches to the heel"
         },
         {
           "id": "bone",
-          "text": "Sur un point osseux précis",
+          "text": "On one small spot on the bone",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Douleur osseuse ponctuelle au talon"
+          "reason": "Pain on one small spot on the heel bone"
         }
       ]
     },
     "sole-location": {
-      "text": "Sous le pied, où ressentez-vous la douleur ?",
+      "text": "Where does the sole of your foot hurt?",
       "options": [
         {
           "id": "heel",
-          "text": "Entre le dessous du talon et la voûte",
+          "text": "Between the bottom of my heel and the arch",
           "next": "sole-pattern",
           "scores": {
             "plantar": 4
           },
-          "reason": "Douleur sous le talon ou dans la voûte"
+          "reason": "Pain under the heel or in the arch"
         },
         {
           "id": "front",
-          "text": "Sous les appuis des orteils",
+          "text": "Under the base of my toes",
           "next": "forefoot-pattern",
           "scores": {
             "metatarsalgia": 3
           },
-          "reason": "Douleur sous les appuis des orteils"
+          "reason": "Pain under the base of the toes"
         },
         {
           "id": "inner",
-          "text": "Sur le bord interne, vers la cheville",
+          "text": "Along the inner edge, towards my ankle",
           "next": "ankle-inner-pattern",
           "scores": {
             "tibial-tendon": 4
           },
-          "reason": "Douleur de la voûte suivant le bord interne vers la cheville"
+          "reason": "Arch pain along the inner edge towards the ankle"
         },
         {
           "id": "unsure",
-          "text": "Difficile à situer",
+          "text": "It is hard to locate",
           "next": "sole-pattern"
         }
       ]
     },
     "sole-pattern": {
-      "text": "À quel moment la douleur sous le talon est-elle la plus nette ?",
+      "text": "When is the pain under your heel most noticeable?",
       "options": [
         {
           "id": "first",
-          "text": "Aux premiers pas le matin ou après être resté assis",
+          "text": "On my first steps in the morning or after sitting",
           "next": "sole-response",
           "scores": {
             "plantar": 4
           },
-          "reason": "Premiers pas après repos douloureux sous le pied"
+          "reason": "Pain under the foot on the first steps after rest"
         },
         {
           "id": "impact",
-          "text": "Surtout au contact du talon sur un sol dur",
+          "text": "Mainly when my heel hits hard ground",
           "next": "sole-response",
           "scores": {
             "heel-pad": 4
           },
-          "reason": "Douleur centrale du talon liée aux impacts sur sol dur"
+          "reason": "Pain in the centre of the heel with foot strikes on hard ground"
         },
         {
           "id": "bone",
-          "text": "Elle se focalise sur un point et gêne aussi la marche",
+          "text": "It moves to one small spot and also hurts when I walk",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Douleur ponctuelle du talon aussi présente à la marche"
+          "reason": "Pain in one small spot on the heel, also when walking"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "sole-response"
         }
       ]
     },
     "sole-response": {
-      "text": "Qu’est-ce qui change cette douleur pendant la journée ?",
+      "text": "What changes the pain during the day?",
       "options": [
         {
           "id": "warm",
-          "text": "Elle se calme après quelques pas, puis revient avec une longue sollicitation",
+          "text": "It eases after a few steps, then returns after using my foot for a long time",
           "next": "training",
           "scores": {
             "plantar": 3
           },
-          "reason": "Douleur plantaire améliorée au début puis réveillée par la durée"
+          "reason": "Sole pain that eases at first, then returns with longer use"
         },
         {
           "id": "cushion",
-          "text": "Un sol dur ou le manque d’amorti accentuent la douleur centrale",
+          "text": "Hard ground or too little cushioning makes the pain in the centre worse",
           "next": "training",
           "scores": {
             "heel-pad": 3
           },
-          "reason": "Douleur du centre du talon sensible à l’amorti"
+          "reason": "Pain in the centre of the heel that changes with cushioning"
         },
         {
           "id": "none",
-          "text": "Je ne remarque pas de schéma",
+          "text": "I have not noticed a pattern",
           "next": "training"
         }
       ]
     },
     "instep-location": {
-      "text": "Sur le dessus du pied, quel type de douleur ressentez-vous ?",
+      "text": "What does the pain on the top of your foot feel like?",
       "options": [
         {
           "id": "tendon",
-          "text": "Un trajet douloureux sous les lacets vers les orteils",
+          "text": "A painful line under my laces, towards my toes",
           "next": "foot-pressure",
           "scores": {
             "extensor-tendon": 3
           },
-          "reason": "Douleur sur le trajet des tendons du dessus du pied"
+          "reason": "Pain along the tendons on the top of the foot"
         },
         {
           "id": "bone",
-          "text": "Un point osseux précis, reproduit par les impacts",
+          "text": "One small spot on the bone that hurts with foot strikes",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Douleur osseuse précise sur le dessus du pied"
+          "reason": "Pain on one small spot on the top of the foot bone"
         },
         {
           "id": "front",
-          "text": "Une gêne plus haute, à l’avant de la cheville",
+          "text": "Pain higher up, at the front of my ankle",
           "next": "front-leg-after",
           "scores": {
             "anterior-tibial": 3
           },
-          "reason": "Douleur à l’avant de la cheville"
+          "reason": "Pain at the front of the ankle"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "foot-pressure"
         }
       ]
     },
     "foot-pressure": {
-      "text": "Comment ce trajet sur le dessus du pied réagit-il dans vos mouvements habituels ?",
+      "text": "How does the painful line on top of your foot feel during normal movement?",
       "options": [
         {
           "id": "movement",
-          "text": "Il tire quand je relève les orteils ou le pied",
+          "text": "It pulls when I lift my toes or my foot",
           "next": "training",
           "scores": {
             "extensor-tendon": 4,
             "anterior-tibial": 2
           },
-          "reason": "Douleur du trajet tendineux lors du relevé du pied ou des orteils"
+          "reason": "Tendon pain when lifting the foot or toes"
         },
         {
           "id": "laces",
-          "text": "Il est surtout gêné par une chaussure ou un laçage serré",
+          "text": "It is mainly affected by tight shoes or laces",
           "next": "training",
           "scores": {
             "extensor-tendon": 2
           },
-          "reason": "Pression de la chaussure sur le trajet douloureux"
+          "reason": "Shoe pressure along the painful area"
         },
         {
           "id": "bone",
-          "text": "C’est surtout un point osseux qui persiste sans chaussure serrée",
+          "text": "It is mainly one spot on the bone, even without a tight shoe",
           "next": "bone-confirm",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Douleur osseuse indépendante du serrage"
+          "reason": "Bone pain that is not linked to tight shoes"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "forefoot-location": {
-      "text": "À l’avant du pied, où est la douleur ?",
+      "text": "Where is the pain at the front of your foot?",
       "options": [
         {
           "id": "diffuse",
-          "text": "Sous une zone d’appui assez large, juste avant les orteils",
+          "text": "Under a fairly wide area, just before my toes",
           "next": "forefoot-pattern",
           "scores": {
             "metatarsalgia": 4
           },
-          "reason": "Douleur sous une zone d’appui de l’avant-pied"
+          "reason": "Pain under the front of the foot when putting weight on it"
         },
         {
           "id": "burning",
-          "text": "Entre les orteils, comme une brûlure ou une petite pierre",
+          "text": "Between my toes, like burning or a small stone",
           "next": "forefoot-pattern",
           "scores": {
             "morton": 4
           },
-          "reason": "Brûlure ou sensation de caillou entre les orteils"
+          "reason": "Burning or a small-stone feeling between the toes"
         },
         {
           "id": "bone",
-          "text": "Sur un point osseux précis, souvent sur le dessus",
+          "text": "On one small spot on the bone, often on top",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Douleur osseuse précise de l’avant-pied"
+          "reason": "Pain on one small spot on the bone at the front of the foot"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "forefoot-pattern"
         }
       ]
     },
     "forefoot-pattern": {
-      "text": "Qu’est-ce qui accentue la gêne à l’avant du pied ?",
+      "text": "What makes the pain at the front of your foot worse?",
       "options": [
         {
           "id": "load",
-          "text": "Les appuis répétés sur l’avant-pied ou les longues sorties",
+          "text": "Repeated steps on the front of my foot or long runs",
           "next": "training",
           "scores": {
             "metatarsalgia": 3
           },
-          "reason": "Douleur d’appui augmentant avec la durée de course"
+          "reason": "Pain when putting weight on the foot that increases with running time"
         },
         {
           "id": "compression",
-          "text": "La chaussure serrée, avec brûlure ou fourmillements vers les orteils",
+          "text": "Tight shoes, with burning or tingling towards my toes",
           "next": "training",
           "scores": {
             "morton": 4
           },
-          "reason": "Douleur nerveuse entre les orteils aggravée par la compression"
+          "reason": "Nerve pain between the toes made worse by pressure"
         },
         {
           "id": "progress",
-          "text": "Un point osseux de plus en plus douloureux à chaque sortie",
+          "text": "One small spot on the bone hurts more with each run",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Douleur osseuse ponctuelle et progressive"
+          "reason": "Bone pain in one small spot that gets worse over time"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "outer-foot-location": {
-      "text": "Sur le bord externe du pied, la douleur suit-elle un trajet ou un point ?",
+      "text": "Is the pain on the outside of your foot along a line or in one spot?",
       "options": [
         {
           "id": "tendon",
-          "text": "Un trajet depuis l’arrière de la malléole externe",
+          "text": "Along a line from behind the outer ankle bone",
           "next": "ankle-outer-pattern",
           "scores": {
             "peroneal-tendon": 4
           },
-          "reason": "Douleur suivant le trajet externe de cheville vers le pied"
+          "reason": "Pain along the outside of the ankle towards the foot"
         },
         {
           "id": "bone",
-          "text": "Un point précis sur le relief osseux du pied",
+          "text": "On one small spot on the bony part of my foot",
           "next": "bone-pattern",
           "scores": {
             "stress-fracture": 4
           },
-          "reason": "Point osseux douloureux du bord externe du pied"
+          "reason": "Pain on one small spot on the bone at the outer edge of the foot"
         },
         {
           "id": "twist",
-          "text": "Elle suit une cheville qui a tourné",
+          "text": "It started after I twisted my ankle",
           "next": "ankle-twist-pattern",
           "scores": {
             "sprain": 4
           },
-          "reason": "Douleur du bord externe après torsion"
+          "reason": "Pain on the outside of the foot after a twist"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "ankle-outer-pattern"
         }
       ]
     },
     "knee-mixed-front": {
-      "text": "La douleur autour de la rotule revient-elle aussi assis longtemps ou dans les escaliers ?",
+      "text": "Does the pain around your kneecap also return after sitting for a long time or using stairs?",
       "options": [
         {
           "id": "yes",
-          "text": "Oui, au même endroit autour de la rotule",
+          "text": "Yes, in the same area around the kneecap",
           "next": "training",
           "scores": {
             "kneecap": 4
           },
-          "reason": "Douleur rotulienne répétée assis ou dans les escaliers"
+          "reason": "Repeated kneecap pain when sitting or using stairs"
         },
         {
           "id": "no",
-          "text": "Non, seule la face externe me gêne vraiment",
+          "text": "No, only the outside of my knee really hurts",
           "next": "training",
           "scores": {
             "kneecap": -3
@@ -2147,26 +2147,26 @@
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "knee-mixed-outer": {
-      "text": "La douleur externe revient-elle après une durée de course assez similaire ?",
+      "text": "Does the pain on the outside of your knee return after a similar amount of running?",
       "options": [
         {
           "id": "yes",
-          "text": "Oui, et elle se calme lorsque j’arrête",
+          "text": "Yes, and it eases when I stop",
           "next": "training",
           "scores": {
             "it-band": 4
           },
-          "reason": "Douleur externe reproductible et calmée à l’arrêt"
+          "reason": "Outer knee pain that returns at a similar time and eases with rest"
         },
         {
           "id": "no",
-          "text": "Non, seule la rotule me gêne vraiment",
+          "text": "No, only my kneecap really hurts",
           "next": "training",
           "scores": {
             "it-band": -3
@@ -2174,17 +2174,17 @@
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "training": {
-      "text": "Qu’est-ce qui a changé dans votre entraînement avant le début de la douleur ?",
+      "text": "What changed in your training before the pain started?",
       "options": [
         {
           "id": "volume",
-          "text": "Plus de kilomètres, une sortie longue allongée ou moins de récupération",
+          "text": "More kilometres, a longer long run or less rest",
           "next": "finish",
           "scores": {
             "shin-splints": 1,
@@ -2207,43 +2207,43 @@
             "metatarsalgia": 1,
             "extensor-tendon": 1
           },
-          "reason": "Augmentation récente de la charge de course",
-          "trainingAdvice": "À la reprise sans douleur, espacez les sorties et augmentez une seule variable à la fois"
+          "reason": "A recent increase in running load",
+          "trainingAdvice": "When you can run without pain, leave rest days between runs and increase only one thing at a time"
         },
         {
           "id": "intensity",
-          "text": "Plus de vitesse, de fractionné ou de dénivelé",
+          "text": "More speed, intervals or hills",
           "next": "training-session"
         },
         {
           "id": "shoes",
-          "text": "Un changement de chaussures",
+          "text": "Different running shoes",
           "next": "training-shoes"
         },
         {
           "id": "terrain",
-          "text": "Un nouveau terrain ou davantage de sentiers techniques",
+          "text": "New surfaces or more uneven trails",
           "next": "training-terrain"
         },
         {
           "id": "stable",
-          "text": "Pas de changement notable",
+          "text": "No clear change",
           "next": "finish"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "finish"
         }
       ],
       "context": true
     },
     "training-session": {
-      "text": "Quel type de séance avez-vous ajouté ou renforcé ?",
+      "text": "Which type of session did you add or do more often?",
       "options": [
         {
           "id": "speed",
-          "text": "Fractionné, accélérations ou compétition",
+          "text": "Intervals, faster runs or races",
           "next": "finish",
           "scores": {
             "achilles": 1,
@@ -2251,12 +2251,12 @@
             "proximal-hamstring": 1,
             "adductor-tendon": 1
           },
-          "reason": "Davantage de séances rapides",
-          "trainingAdvice": "Réintroduisez les séances rapides après une reprise facile et sans douleur"
+          "reason": "More fast sessions",
+          "trainingAdvice": "Add fast sessions back after you can run easily without pain"
         },
         {
           "id": "uphill",
-          "text": "Côtes ou montées prolongées",
+          "text": "Hills or long climbs",
           "next": "finish",
           "scores": {
             "achilles": 1,
@@ -2265,12 +2265,12 @@
             "patellar": 1,
             "pes-anserine": 1
           },
-          "reason": "Davantage de course en montée",
-          "trainingAdvice": "À la reprise, retrouvez le plat avant de remettre les montées"
+          "reason": "More uphill running",
+          "trainingAdvice": "Start on flat ground before adding uphill runs back"
         },
         {
           "id": "downhill",
-          "text": "Descentes prolongées ou dévers",
+          "text": "Long downhill runs or sloping ground",
           "next": "finish",
           "scores": {
             "it-band": 1,
@@ -2278,18 +2278,18 @@
             "anterior-tibial": 1,
             "quadriceps-tendon": 1
           },
-          "reason": "Davantage de descentes ou dévers",
-          "trainingAdvice": "À la reprise, choisissez un terrain régulier avant de remettre descentes et dévers"
+          "reason": "More downhill running or sloping ground",
+          "trainingAdvice": "Start on even ground before adding downhill runs and sloping ground back"
         }
       ],
       "context": true
     },
     "training-shoes": {
-      "text": "Quel changement de chaussures avez-vous fait ?",
+      "text": "What changed in your running shoes?",
       "options": [
         {
           "id": "lower",
-          "text": "Une paire plus basse au talon ou plus minimaliste",
+          "text": "A lower heel or a more minimal shoe",
           "next": "finish",
           "scores": {
             "achilles": 1,
@@ -2297,131 +2297,131 @@
             "shin-splints": 1,
             "stress-fracture": 1
           },
-          "reason": "Transition vers une chaussure moins protectrice ou plus basse au talon",
-          "trainingAdvice": "Réintroduisez progressivement une nouvelle paire, sans augmenter aussi le volume"
+          "reason": "A change to shoes with less protection or a lower heel",
+          "trainingAdvice": "Start using new shoes gradually, without also increasing your running distance"
         },
         {
           "id": "tight",
-          "text": "Une paire qui serre davantage le dessus ou l’avant du pied",
+          "text": "Shoes that feel tighter across the top or front of my foot",
           "next": "finish",
           "scores": {
             "extensor-tendon": 1,
             "morton": 1
           },
-          "reason": "Chaussure comprimant davantage le pied",
-          "trainingAdvice": "Vérifiez le confort du chaussant et du laçage, sans courir pour provoquer la douleur"
+          "reason": "Shoes that put more pressure on the foot",
+          "trainingAdvice": "Check that your shoes and laces feel comfortable. Do not run just to bring on the pain"
         },
         {
           "id": "other",
-          "text": "Une autre paire, sans différence particulière identifiée",
+          "text": "A different pair, with no clear difference in how it feels",
           "next": "finish",
-          "reason": "Chaussures récemment changées"
+          "reason": "A recent change of running shoes"
         }
       ],
       "context": true
     },
     "training-terrain": {
-      "text": "Quel terrain est devenu plus fréquent ?",
+      "text": "Which type of ground do you run on more often now?",
       "options": [
         {
           "id": "trail",
-          "text": "Sentiers techniques, appuis instables ou dévers",
+          "text": "Uneven trails, unstable ground or sloping paths",
           "next": "finish",
           "scores": {
             "peroneal-tendon": 1,
             "tibial-tendon": 1,
             "it-band": 1
           },
-          "reason": "Davantage d’appuis sur terrain irrégulier",
-          "trainingAdvice": "À la reprise, retrouvez un terrain régulier avant les appuis techniques"
+          "reason": "More running on uneven ground",
+          "trainingAdvice": "Start on even ground before returning to uneven trails"
         },
         {
           "id": "hard",
-          "text": "Route ou surfaces plus dures",
+          "text": "Roads or harder surfaces",
           "next": "finish",
           "scores": {
             "shin-splints": 1,
             "stress-fracture": 1,
             "heel-pad": 1
           },
-          "reason": "Davantage de course sur surface dure",
-          "trainingAdvice": "Évitez de cumuler changement de surface et hausse du kilométrage"
+          "reason": "More running on hard surfaces",
+          "trainingAdvice": "Avoid changing surfaces and increasing your running distance at the same time"
         },
         {
           "id": "hills",
-          "text": "Parcours plus vallonnés",
+          "text": "Hillier routes",
           "next": "finish",
           "scores": {
             "achilles": 1,
             "it-band": 1,
             "kneecap": 1
           },
-          "reason": "Parcours plus vallonnés",
-          "trainingAdvice": "À la reprise, réintroduisez progressivement le dénivelé"
+          "reason": "Hillier running routes",
+          "trainingAdvice": "Add hills back gradually when you return to running"
         }
       ],
       "context": true
     },
     "achilles-after": {
-      "text": "Après les séances les plus chargées, retrouvez-vous une sensibilité du même tendon ?",
+      "text": "Is the same tendon sore after your hardest sessions?",
       "options": [
         {
           "id": "yes",
-          "text": "Oui, au même point, parfois encore le lendemain",
+          "text": "Yes, in the same spot, sometimes still the next day",
           "next": "training",
           "scores": {
             "achilles": 3
           },
-          "reason": "Sensibilité du même tendon après les séances chargées"
+          "reason": "Soreness in the same tendon after hard sessions"
         },
         {
           "id": "no",
-          "text": "Non, je ne retrouve pas ce lien",
+          "text": "No, I have not noticed this link",
           "next": "training"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
     },
     "calf-rest": {
-      "text": "Cette douleur continue s’accompagne-t-elle d’un mollet nettement gonflé ou chaud ?",
+      "text": "With this constant pain, is your calf clearly swollen or warm?",
       "options": [
         {
           "id": "yes",
-          "text": "Oui, surtout d’un seul côté",
+          "text": "Yes, mainly on one side",
           "next": "finish",
-          "care": "Une douleur continue avec un mollet gonflé ou chaud doit être examinée rapidement pour exclure une cause vasculaire ; en cas d’essoufflement ou de douleur thoracique, contactez les secours"
+          "care": "Constant pain with a swollen or warm calf needs a prompt medical check to rule out a blood vessel problem. If you have trouble breathing or chest pain, call emergency services"
         },
         {
           "id": "no",
-          "text": "Non, c’est surtout une gêne musculaire sans ces signes",
+          "text": "No, it mainly feels like muscle pain without these signs",
           "next": "muscle-onset"
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "finish"
         }
       ]
     },
     "bone-confirm": {
-      "text": "Cette douleur osseuse revient-elle au même point, même sans pression de la chaussure ?",
+      "text": "Does this bone pain return to the same spot, even without pressure from your shoe?",
       "options": [
         {
           "id": "yes",
-          "text": "Oui, à chaque sollicitation du même point",
+          "text": "Yes, whenever I put load on that spot",
           "next": "training",
           "scores": {
             "stress-fracture": 3
           },
-          "reason": "Douleur osseuse répétée au même point sans pression de chaussure"
+          "reason": "Repeated bone pain in the same spot without shoe pressure"
         },
         {
           "id": "no",
-          "text": "Non, la douleur ne reste pas sur un point osseux",
+          "text": "No, the pain does not stay on one spot on the bone",
           "next": "training",
           "scores": {
             "stress-fracture": -3
@@ -2429,7 +2429,7 @@
         },
         {
           "id": "unsure",
-          "text": "Je ne sais pas",
+          "text": "I do not know",
           "next": "training"
         }
       ]
@@ -2437,18 +2437,18 @@
   },
   "results": {
     "shin-splints": {
-      "title": "Périostite tibiale suspectée",
-      "description": "Irritation liée aux impacts répétés sur le bord interne du tibia.",
-      "advice": "Retirez les sorties douloureuses et réduisez la charge avant une reprise progressive.",
+      "title": "Possible shin splints",
+      "description": "Irritation along the inner edge of the shin from repeated foot strikes.",
+      "advice": "Skip painful runs and reduce your training load before building up gradually.",
       "sources": [
         "clinic-leg",
         "shin-running"
       ]
     },
     "stress-fracture": {
-      "title": "Suspicion de fracture de fatigue",
-      "description": "Une lésion osseuse de stress peut provoquer une douleur très localisée qui progresse avec les impacts.",
-      "advice": "Suspendez la course et faites vérifier cette douleur avant de reprendre les impacts.",
+      "title": "Possible stress fracture",
+      "description": "A small bone injury from repeated stress can cause pain in one spot that gets worse with impact.",
+      "advice": "Stop running and have this pain checked before returning to impact exercise.",
       "sources": [
         "clinic-leg",
         "clinic-foot",
@@ -2456,77 +2456,77 @@
       ]
     },
     "it-band": {
-      "title": "Syndrome de l’essuie-glace suspecté (TFL)",
-      "description": "Irritation de la bandelette ilio-tibiale, ressentie sur le côté externe du genou pendant la course.",
-      "advice": "Réduisez les sorties longues et retirez les descentes ou dévers qui réveillent la douleur.",
+      "title": "Possible IT band syndrome",
+      "description": "Irritation of the band along the outside of the thigh, felt on the outside of the knee while running.",
+      "advice": "Reduce long runs and avoid downhill runs or sloping ground that bring on the pain.",
       "sources": [
         "clinic-knee",
         "it-band"
       ]
     },
     "kneecap": {
-      "title": "Syndrome fémoro-patellaire suspecté",
-      "description": "Douleur autour ou derrière la rotule lors des sollicitations répétées du genou.",
-      "advice": "Retirez les efforts douloureux et réintroduisez progressivement la durée et les descentes.",
+      "title": "Possible runner's knee",
+      "description": "Pain around or behind the kneecap when the knee works repeatedly.",
+      "advice": "Avoid painful exercise, then gradually build up running time and downhill runs.",
       "sources": [
         "clinic-knee",
         "kneecap"
       ]
     },
     "patellar": {
-      "title": "Tendinopathie rotulienne suspectée",
-      "description": "Irritation du tendon situé entre la pointe inférieure de la rotule et le tibia.",
-      "advice": "Réduisez les accélérations, sauts et côtes douloureux avant une reprise progressive de la charge.",
+      "title": "Possible patellar tendinopathy",
+      "description": "Irritation of the tendon between the bottom of the kneecap and the shin.",
+      "advice": "Reduce painful fast runs, jumps and hills before gradually increasing the load again.",
       "sources": [
         "clinic-knee",
         "patellar"
       ]
     },
     "quadriceps-tendon": {
-      "title": "Tendinopathie du quadriceps suspectée",
-      "description": "Atteinte du tendon du quadriceps à son insertion juste au-dessus de la rotule.",
-      "advice": "Retirez les flexions chargées et les descentes douloureuses ; adaptez progressivement la sollicitation du tendon.",
+      "title": "Possible quadriceps tendinopathy",
+      "description": "An injury to the quadriceps tendon where it attaches just above the kneecap.",
+      "advice": "Avoid painful knee bends under load and downhill runs. Gradually adjust how much the tendon works.",
       "sources": [
         "quad-tendon"
       ]
     },
     "pes-anserine": {
-      "title": "Bursite de la patte d’oie suspectée",
-      "description": "Irritation d’une bourse située sous le côté interne du genou, près des attaches tendineuses.",
-      "advice": "Allégez les côtes et les sorties qui reproduisent la douleur.",
+      "title": "Possible pes anserine bursitis",
+      "description": "Irritation of a small fluid-filled sac below the inner knee, near the tendon attachments.",
+      "advice": "Reduce hills and runs that bring on the pain.",
       "sources": [
         "pes"
       ]
     },
     "meniscus": {
-      "title": "Suspicion de lésion méniscale",
-      "description": "Une atteinte du ménisque peut associer douleur articulaire et accrochages après une torsion.",
-      "advice": "Évitez les pivots et les impacts douloureux ; faites préciser la lésion si les accrochages persistent.",
+      "title": "Possible meniscus injury",
+      "description": "An injury to the cartilage inside the knee can cause joint pain and a catching feeling after a twist.",
+      "advice": "Avoid painful turns and impact exercise. Have the injury checked if the catching continues.",
       "sources": [
         "meniscus"
       ]
     },
     "baker": {
-      "title": "Kyste poplité suspecté",
-      "description": "Une poche de liquide derrière le genou peut provoquer une boule et une tension lors de la flexion.",
-      "advice": "Réduisez les mouvements douloureux et faites examiner une boule dont l’origine n’est pas connue.",
+      "title": "Possible Baker's cyst",
+      "description": "A pocket of fluid behind the knee can cause a lump and tightness when bending.",
+      "advice": "Reduce painful movements and have a lump checked if you do not know what caused it.",
       "sources": [
         "baker"
       ]
     },
     "elongation": {
-      "title": "Suspicion d’élongation musculaire",
-      "description": "Le tiraillement localisé sans perte nette de force peut correspondre à une lésion musculaire légère.",
-      "advice": "Retirez les efforts douloureux, les sprints et les étirements forcés ; reprenez progressivement lorsque les gestes courants sont confortables.",
+      "title": "Possible mild muscle strain",
+      "description": "A pulling feeling in one area without a clear loss of strength may be a mild muscle injury.",
+      "advice": "Avoid painful exercise, sprints and forced stretching. Build up gradually when normal movements feel comfortable.",
       "sources": [
         "chuv-muscle",
         "clinic-muscle"
       ]
     },
     "muscle-tear": {
-      "title": "Suspicion de déchirure musculaire",
-      "description": "Une douleur musculaire soudaine qui impose l’arrêt peut correspondre à un claquage.",
-      "advice": "Arrêtez la course et faites préciser l’étendue de la lésion avant la reprise ; ne la testez pas en sprintant.",
+      "title": "Possible muscle tear",
+      "description": "Sudden muscle pain that forces you to stop may be a muscle tear.",
+      "advice": "Stop running and have the injury checked before returning. Do not test it by sprinting.",
       "sources": [
         "clinic-muscle",
         "clinic-leg",
@@ -2534,144 +2534,144 @@
       ]
     },
     "muscle-soreness": {
-      "title": "Courbatures probables",
-      "description": "Douleurs musculaires retardées après une séance plus exigeante, qui diminuent avec la récupération.",
-      "advice": "Espacez les séances exigeantes et reprenez progressivement lorsque la gêne s’atténue.",
+      "title": "Likely muscle soreness",
+      "description": "Muscle pain that starts after a harder session and eases with rest.",
+      "advice": "Leave more rest between hard sessions and return gradually as the pain eases.",
       "sources": [
         "soreness"
       ]
     },
     "adductor-tendon": {
-      "title": "Tendinopathie des adducteurs suspectée",
-      "description": "Douleur des attaches des adducteurs vers l’aine, reproduite par la course et les grandes foulées.",
-      "advice": "Retirez les relances douloureuses et les étirements forcés avant de reconstruire la charge.",
+      "title": "Possible adductor tendinopathy",
+      "description": "Pain where the inner thigh muscles attach near the groin, brought on by running and long strides.",
+      "advice": "Avoid painful bursts of speed and forced stretching before gradually building up the load again.",
       "sources": [
         "adductor"
       ]
     },
     "outer-hip": {
-      "title": "Tendinopathie du moyen fessier suspectée",
-      "description": "Douleur tendineuse sur le côté de la hanche, sensible aux appuis répétés ou à la compression.",
-      "advice": "Allégez les sorties douloureuses et évitez de rester couché sur le côté sensible.",
+      "title": "Possible gluteal tendinopathy",
+      "description": "Tendon pain on the side of the hip, made worse by repeated steps or pressure.",
+      "advice": "Reduce painful runs and avoid lying on the sore side.",
       "sources": [
         "clinic-hip",
         "hip"
       ]
     },
     "proximal-hamstring": {
-      "title": "Tendinopathie haute des ischio-jambiers suspectée",
-      "description": "Irritation de l’attache des ischio-jambiers sous le pli fessier.",
-      "advice": "Retirez les grandes foulées et séances rapides douloureuses ; limitez les positions assises qui compriment la zone.",
+      "title": "Possible upper hamstring tendinopathy",
+      "description": "Irritation where the hamstrings attach just below the buttock.",
+      "advice": "Avoid painful long strides and fast sessions. Limit sitting positions that press on the sore area.",
       "sources": [
         "clinic-hip",
         "hamstring-tendon"
       ]
     },
     "achilles": {
-      "title": "Tendinopathie d’Achille suspectée",
-      "description": "Douleur du tendon reliant le mollet au talon, souvent sensible après repos et lors des poussées.",
-      "advice": "Réduisez les côtes et accélérations douloureuses puis reconstruisez progressivement la charge du tendon.",
+      "title": "Possible Achilles tendinopathy",
+      "description": "Pain in the tendon from the calf to the heel, often after rest or when pushing off.",
+      "advice": "Reduce painful hills and fast runs, then gradually build up the load on the tendon.",
       "sources": [
         "clinic-leg",
         "achilles"
       ]
     },
     "achilles-rupture": {
-      "title": "Suspicion de rupture du tendon d’Achille",
-      "description": "Une douleur brutale suivie d’une perte de poussée peut correspondre à une rupture du tendon.",
-      "advice": "Ne reprenez pas la course et faites examiner rapidement le tendon, sans tester sa force.",
+      "title": "Possible Achilles tendon rupture",
+      "description": "Sudden pain followed by a loss of push-off strength may mean the tendon has torn.",
+      "advice": "Do not run again. Have the tendon checked promptly without testing its strength.",
       "sources": [
         "achilles-rupture"
       ]
     },
     "anterior-tibial": {
-      "title": "Tendinopathie du tibial antérieur suspectée",
-      "description": "Douleur à l’avant de la cheville sur le trajet du muscle qui relève et freine le pied.",
-      "advice": "Retirez les descentes prolongées et les efforts douloureux de relevé du pied.",
+      "title": "Possible tibialis anterior tendinopathy",
+      "description": "Pain at the front of the ankle along the muscle and tendon that lift and lower the foot.",
+      "advice": "Avoid long downhill runs and painful movements that lift the foot.",
       "sources": [
         "clinic-leg"
       ]
     },
     "compartment": {
-      "title": "Syndrome des loges d’effort suspecté",
-      "description": "Une pression musculaire reproductible à l’effort, puis calmée à l’arrêt, peut évoquer ce syndrome.",
-      "advice": "Évitez de reproduire la pression et faites confirmer ce mécanisme s’il se répète.",
+      "title": "Possible exertional compartment syndrome",
+      "description": "Muscle pressure that returns at a similar level of effort and eases when you stop may suggest this condition.",
+      "advice": "Avoid exercise that brings on the pressure. Have it checked if it keeps returning.",
       "sources": [
         "clinic-leg",
         "compartment"
       ]
     },
     "tibial-tendon": {
-      "title": "Tendinopathie du tibial postérieur suspectée",
-      "description": "Douleur sur le trajet interne de la cheville vers la voûte plantaire lors des appuis.",
-      "advice": "Réduisez les appuis douloureux et les longues sorties ; gardez un chaussant confortable et stable.",
+      "title": "Possible posterior tibial tendinopathy",
+      "description": "Pain along the inner ankle towards the arch when putting weight on the foot.",
+      "advice": "Reduce painful steps and long runs. Wear shoes that feel comfortable and stable.",
       "sources": [
         "tibial"
       ]
     },
     "peroneal-tendon": {
-      "title": "Tendinopathie des fibulaires suspectée",
-      "description": "Douleur des tendons derrière la malléole externe, souvent sensible aux terrains instables.",
-      "advice": "Retirez temporairement les appuis techniques et les dévers qui réveillent la douleur.",
+      "title": "Possible peroneal tendinopathy",
+      "description": "Pain in the tendons behind the outer ankle bone, often made worse by uneven ground.",
+      "advice": "Avoid uneven trails and sloping ground that bring on the pain for now.",
       "sources": [
         "peroneal"
       ]
     },
     "sprain": {
-      "title": "Entorse de cheville suspectée",
-      "description": "Une torsion peut léser les ligaments autour de la cheville ; le questionnaire ne permet pas d’exclure une fracture.",
-      "advice": "Protégez la cheville et retirez les appuis douloureux ; faites-la examiner si la marche est difficile ou si la douleur progresse.",
+      "title": "Possible ankle sprain",
+      "description": "A twist can injure the ligaments around the ankle. This questionnaire cannot rule out a fracture.",
+      "advice": "Protect the ankle and avoid painful steps. Have it checked if walking is difficult or the pain gets worse.",
       "sources": [
         "strain"
       ]
     },
     "plantar": {
-      "title": "Aponévrosite plantaire suspectée",
-      "description": "Irritation du fascia sous le pied, entre le talon et les orteils.",
-      "advice": "Réduisez les appuis prolongés douloureux et gardez des chaussures confortables avant une reprise progressive.",
+      "title": "Possible plantar fasciitis",
+      "description": "Irritation of the band of tissue under the foot, between the heel and the toes.",
+      "advice": "Reduce long periods of painful standing or walking. Wear comfortable shoes before returning gradually.",
       "sources": [
         "clinic-foot",
         "plantar"
       ]
     },
     "heel-pad": {
-      "title": "Syndrome du coussinet du talon suspecté",
-      "description": "Irritation du tissu qui amortit les impacts sous le centre du talon.",
-      "advice": "Évitez les impacts douloureux et les sols durs sans amorti suffisant.",
+      "title": "Possible heel pad syndrome",
+      "description": "Irritation of the tissue that cushions foot strikes under the centre of the heel.",
+      "advice": "Avoid painful impact and hard ground without enough cushioning.",
       "sources": [
         "clinic-foot"
       ]
     },
     "metatarsalgia": {
-      "title": "Métatarsalgie suspectée",
-      "description": "Douleur d’appui sous l’avant-pied, juste avant les orteils.",
-      "advice": "Réduisez les fortes poussées et les sorties douloureuses ; vérifiez que l’avant-pied n’est pas comprimé.",
+      "title": "Possible metatarsalgia",
+      "description": "Pain under the front of the foot, just before the toes, when putting weight on it.",
+      "advice": "Reduce strong push-offs and painful runs. Check that your shoes do not squeeze the front of your foot.",
       "sources": [
         "clinic-foot",
         "forefoot"
       ]
     },
     "morton": {
-      "title": "Névrome de Morton suspecté",
-      "description": "Une irritation d’un nerf entre les orteils peut donner une brûlure ou une sensation de caillou.",
-      "advice": "Réduisez la compression de l’avant-pied et les efforts qui déclenchent la douleur.",
+      "title": "Possible Morton's neuroma",
+      "description": "An irritated nerve between the toes can cause burning or a feeling like a small stone in the shoe.",
+      "advice": "Reduce pressure on the front of the foot and exercise that brings on the pain.",
       "sources": [
         "clinic-foot",
         "morton"
       ]
     },
     "extensor-tendon": {
-      "title": "Tendinopathie des extenseurs du pied suspectée",
-      "description": "Douleur sur le trajet des tendons qui relèvent les orteils, sur le dessus du pied.",
-      "advice": "Évitez le laçage compressif et les mouvements douloureux ; ne courez pas pour tester la zone.",
+      "title": "Possible foot extensor tendinopathy",
+      "description": "Pain along the tendons on top of the foot that lift the toes.",
+      "advice": "Avoid tight laces and painful movements. Do not run just to test the area.",
       "sources": [
         "extensor"
       ]
     },
     "unclear": {
-      "title": "Les réponses ne permettent pas de trancher",
-      "description": "Les éléments recueillis ne départagent pas suffisamment les lésions possibles pour cette zone.",
-      "advice": "Précisez l’endroit et les sensations ressenties en modifiant vos réponses.",
+      "title": "The answers do not point to one injury",
+      "description": "The answers do not clearly separate the possible injuries in this area.",
+      "advice": "Edit your answers to describe the exact spot and what the pain feels like.",
       "sources": [
         "clinic-overview"
       ]
@@ -2679,131 +2679,131 @@
   },
   "sources": {
     "kneecap": {
-      "title": "NHS · Douleur fémoro-patellaire",
+      "title": "NHS · Knee pain around the kneecap",
       "url": "https://www.kentcht.nhs.uk/leaflet/patellofemoral-pain/"
     },
     "it-band": {
-      "title": "Cleveland Clinic · Syndrome de l’essuie-glace",
+      "title": "Cleveland Clinic · IT band syndrome",
       "url": "https://my.clevelandclinic.org/health/diseases/21967-iliotibial-band-syndrome"
     },
     "strain": {
-      "title": "NHS · Entorses et lésions musculaires",
+      "title": "NHS · Sprains and muscle strains",
       "url": "https://www.nhs.uk/conditions/sprains-and-strains/"
     },
     "hamstring": {
-      "title": "NHS · Lésion des ischio-jambiers",
+      "title": "NHS · Hamstring injury",
       "url": "https://www.nhs.uk/conditions/hamstring-injury/"
     },
     "hip": {
-      "title": "NHS · Tendons fessiers",
+      "title": "NHS · Gluteal tendons",
       "url": "https://www.rnoh.nhs.uk/patients-and-visitors/patient-information-guides/patients-guide-gluteal-tendinopathy"
     },
     "bone": {
-      "title": "AAOS · Lésions osseuses de fatigue",
+      "title": "AAOS · Bone stress injuries",
       "url": "https://orthoinfo.aaos.org/en/diseases--conditions/stress-fractures"
     },
     "achilles": {
-      "title": "NHS · Tendon d’Achille",
+      "title": "NHS · Achilles tendon",
       "url": "https://www.cuh.nhs.uk/patient-information/achilles-tendinopathy-management-advice/"
     },
     "plantar": {
-      "title": "NHS · Aponévrosite plantaire",
+      "title": "NHS · Plantar fasciitis",
       "url": "https://www.nhs.uk/conditions/plantar-fasciitis/"
     },
     "shin-running": {
-      "title": "Health NZ · Douleur tibiale du coureur",
+      "title": "Health NZ · Shin pain in runners",
       "url": "https://www.healthnz.govt.nz/health-topics/conditions-treatments/bones-and-joints/shin-pain-shin-splints"
     },
     "patellar": {
-      "title": "NHS · Tendinopathie rotulienne",
+      "title": "NHS · Patellar tendinopathy",
       "url": "https://www.mskdorset.nhs.uk/knee-pain/knee-pain-patella-tendinopathy/"
     },
     "hamstring-tendon": {
-      "title": "NHS · Tendon haut des ischio-jambiers",
+      "title": "NHS · Upper hamstring tendon",
       "url": "https://www.cht.nhs.uk/services/clinical-services/physiotherapy-outpatients/hip/proximal-hamstring-tendinopathy"
     },
     "adductor": {
-      "title": "NHS · Douleur liée aux adducteurs",
+      "title": "NHS · Adductor pain",
       "url": "https://www.rightdecisions.scot.nhs.uk/ggc-msk-index/hip/anterior-groin-adductor/"
     },
     "peroneal": {
-      "title": "NHS · Tendons fibulaires",
+      "title": "NHS · Peroneal tendons",
       "url": "https://www.kentcht.nhs.uk/leaflet/peroneal-tendinopathy/"
     },
     "tibial": {
-      "title": "NHS · Tendon tibial postérieur",
+      "title": "NHS · Posterior tibial tendon",
       "url": "https://norfolkandwaveneycommunityhealth.nhs.uk/msk/self-help/foot-and-ankle/posterior-tibial-tendinopathy/"
     },
     "compartment": {
-      "title": "NHS · Syndrome des loges",
+      "title": "NHS · Compartment syndrome",
       "url": "https://www.nhs.uk/conditions/compartment-syndrome/"
     },
     "forefoot": {
-      "title": "NHS · Douleur sous l’avant-pied",
+      "title": "NHS · Pain under the front of the foot",
       "url": "https://www.nhs.uk/symptoms/foot-pain/pain-in-the-ball-of-the-foot/"
     },
     "soreness": {
-      "title": "NHS · Courbatures après l’effort",
+      "title": "NHS · Muscle soreness after exercise",
       "url": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/msk-physiotherapy-resources-faqs/"
     },
     "clinic-overview": {
-      "title": "La Clinique du Coureur · Blessures du coureur",
+      "title": "La Clinique du Coureur · Running injuries",
       "url": "https://lacliniqueducoureur.com/coureurs/je-suis-blesse/"
     },
     "clinic-knee": {
-      "title": "La Clinique du Coureur · Genou",
+      "title": "La Clinique du Coureur · Knee",
       "url": "https://lacliniqueducoureur.com/coureurs/je-suis-blesse/blessure-au-genou/pathologies/"
     },
     "clinic-leg": {
-      "title": "La Clinique du Coureur · Jambe",
+      "title": "La Clinique du Coureur · Lower leg",
       "url": "https://lacliniqueducoureur.com/coureurs/je-suis-blesse/blessure-a-la-jambe/pathologies/"
     },
     "clinic-foot": {
-      "title": "La Clinique du Coureur · Pied",
+      "title": "La Clinique du Coureur · Foot",
       "url": "https://lacliniqueducoureur.com/coureurs/je-suis-blesse/blessure-au-pied/pathologies/"
     },
     "clinic-muscle": {
-      "title": "La Clinique du Coureur · Cuisse",
+      "title": "La Clinique du Coureur · Thigh",
       "url": "https://lacliniqueducoureur.com/coureurs/je-suis-blesse/blessure-a-la-cuisse/pathologies/"
     },
     "clinic-hip": {
-      "title": "La Clinique du Coureur · Hanche et fesse",
+      "title": "La Clinique du Coureur · Hip and buttock",
       "url": "https://lacliniqueducoureur.com/coureurs/je-suis-blesse/blessure-hanche-dos/pathologies/"
     },
     "clinic-load": {
-      "title": "La Clinique du Coureur · Stress mécanique",
+      "title": "La Clinique du Coureur · Mechanical stress",
       "url": "https://lacliniqueducoureur.com/quantification-du-stress-mecanique/"
     },
     "chuv-muscle": {
-      "title": "CHUV · Élongation musculaire",
+      "title": "CHUV · Mild muscle strain",
       "url": "https://www.chuv.ch/fr/offre-en-soins/maladies/maladie/web_mld_387/elongation-du-muscle-ischio-jambier"
     },
     "quad-tendon": {
-      "title": "NHS · Tendon du quadriceps",
+      "title": "NHS · Quadriceps tendon",
       "url": "https://www.rightdecisions.scot.nhs.uk/nhs-tayside-refguide/surgery-and-orthopaedics/orthopaedic-and-trauma-surgery/knee/tendinopathies/?organization=nhs-tayside"
     },
     "pes": {
-      "title": "AAOS · Bursite de la patte d’oie",
+      "title": "AAOS · Pes anserine bursitis",
       "url": "https://www.orthoinfo.org/diseases--conditions/pes-anserine-knee-tendon-bursitis"
     },
     "meniscus": {
-      "title": "NHS · Lésion méniscale",
+      "title": "NHS · Meniscus injury",
       "url": "https://www.rightdecisions.scot.nhs.uk/borders-ref-help-toolkit/orthopaedic/knee/acute-meniscal-tear/"
     },
     "baker": {
-      "title": "NHS · Kyste poplité",
+      "title": "NHS · Baker's cyst",
       "url": "https://www.nhs.uk/conditions/bakers-cyst/"
     },
     "achilles-rupture": {
-      "title": "NHS · Rupture du tendon d’Achille",
+      "title": "NHS · Achilles tendon rupture",
       "url": "https://www.cuh.nhs.uk/patient-information/achilles-tendon-rupture/"
     },
     "morton": {
-      "title": "NHS · Névrome de Morton",
+      "title": "NHS · Morton's neuroma",
       "url": "https://www.nhs.uk/conditions/mortons-neuroma/"
     },
     "extensor": {
-      "title": "Cleveland Clinic · Tendons extenseurs",
+      "title": "Cleveland Clinic · Extensor tendons",
       "url": "https://my.clevelandclinic.org/health/diseases/23126-extensor-tendinitis"
     }
   }

@@ -1,55 +1,55 @@
 export const injuryRegions = [
   {
     id: "head",
-    label: "Tête",
+    label: "Head",
     y: 1.63,
     height: 0.40
   },
   {
     id: "torso",
-    label: "Haut du corps",
+    label: "Upper body",
     y: 1.26,
     height: 0.65
   },
   {
     id: "arms",
-    label: "Bras",
+    label: "Arms",
     y: 1.16,
     height: 0.72
   },
   {
     id: "hip",
-    label: "Bassin",
+    label: "Pelvis",
     y: 0.96,
     height: 0.40
   },
   {
     id: "thigh",
-    label: "Cuisse",
+    label: "Thigh",
     y: 0.73,
     height: 0.50
   },
   {
     id: "knee",
-    label: "Genou",
+    label: "Knee",
     y: 0.49,
     height: 0.32
   },
   {
     id: "leg",
-    label: "Jambe",
+    label: "Lower leg",
     y: 0.30,
     height: 0.44
   },
   {
     id: "ankle",
-    label: "Cheville",
+    label: "Ankle",
     y: 0.11,
     height: 0.30
   },
   {
     id: "foot",
-    label: "Pied",
+    label: "Foot",
     y: 0.045,
     height: 0.34
   },
@@ -57,11 +57,12 @@ export const injuryRegions = [
 
 // Positions match the 1.75 metre body, with left and right copies for side points
 // direction is used to place each point on the correct body surface
+// muscles lists the model parts to colour; other zones use a small area around the point
 export const injuryZones = [
   {
     id: "head",
     region: "head",
-    label: "Tête",
+    label: "Head",
     central: true,
     x: 0,
     y: 1.68,
@@ -71,7 +72,7 @@ export const injuryZones = [
   {
     id: "torso",
     region: "torso",
-    label: "Haut du corps",
+    label: "Upper body",
     central: true,
     x: 0,
     y: 1.31,
@@ -81,7 +82,7 @@ export const injuryZones = [
   {
     id: "back",
     region: "torso",
-    label: "Dos",
+    label: "Back",
     central: true,
     x: 0,
     y: 1.26,
@@ -91,7 +92,7 @@ export const injuryZones = [
   {
     id: "arm",
     region: "arms",
-    label: "Bras",
+    label: "Arms",
     x: 0.25,
     y: 1.23,
     z: 0,
@@ -101,7 +102,8 @@ export const injuryZones = [
   {
     id: "hip",
     region: "hip",
-    label: "Hanche",
+    label: "Hip",
+    muscles: ["tensor fasciae latae"],
     x: 0.16,
     y: 0.96,
     z: -0.04,
@@ -110,7 +112,8 @@ export const injuryZones = [
   {
     id: "glute",
     region: "hip",
-    label: "Fesse",
+    label: "Buttock",
+    muscles: ["gluteus maximus"],
     x: 0.10,
     y: 0.91,
     z: 0,
@@ -120,6 +123,7 @@ export const injuryZones = [
     id: "quadriceps",
     region: "thigh",
     label: "Quadriceps",
+    muscles: ["rectus femoris", "vastus lateralis", "vastus medialis"],
     x: 0.12,
     y: 0.72,
     z: 0,
@@ -128,7 +132,8 @@ export const injuryZones = [
   {
     id: "hamstring",
     region: "thigh",
-    label: "Ischio-jambiers",
+    label: "Hamstrings",
+    muscles: ["biceps femoris", "semimembranosus", "semitendinosus"],
     x: 0.12,
     y: 0.72,
     z: 0,
@@ -137,7 +142,8 @@ export const injuryZones = [
   {
     id: "adductors",
     region: "thigh",
-    label: "Adducteurs",
+    label: "Adductors",
+    muscles: ["adductor longus", "gracilis"],
     x: 0.07,
     y: 0.77,
     z: -0.04,
@@ -147,7 +153,7 @@ export const injuryZones = [
   {
     id: "knee",
     region: "knee",
-    label: "Genou (avant)",
+    label: "Knee (front)",
     x: 0.12,
     y: 0.49,
     z: 0,
@@ -156,7 +162,7 @@ export const injuryZones = [
   {
     id: "inner-knee",
     region: "knee",
-    label: "Genou (intérieur)",
+    label: "Knee (inside)",
     detail: true,
     x: 0.075,
     y: 0.49,
@@ -166,7 +172,7 @@ export const injuryZones = [
   {
     id: "outer-knee",
     region: "knee",
-    label: "Genou (extérieur)",
+    label: "Knee (outside)",
     detail: true,
     x: 0.17,
     y: 0.49,
@@ -176,7 +182,7 @@ export const injuryZones = [
   {
     id: "back-knee",
     region: "knee",
-    label: "Genou (arrière)",
+    label: "Knee (back)",
     detail: true,
     x: 0.12,
     y: 0.49,
@@ -187,7 +193,7 @@ export const injuryZones = [
   {
     id: "shin",
     region: "leg",
-    label: "Tibia",
+    label: "Shin",
     x: 0.12,
     y: 0.30,
     z: 0,
@@ -196,7 +202,7 @@ export const injuryZones = [
   {
     id: "inner-shin",
     region: "leg",
-    label: "Tibia (bord interne)",
+    label: "Shin (inner edge)",
     detail: true,
     x: 0.08,
     y: 0.28,
@@ -206,7 +212,8 @@ export const injuryZones = [
   {
     id: "calf",
     region: "leg",
-    label: "Mollet",
+    label: "Calf",
+    muscles: ["gastrocnemius lateral", "gastrocnemius medial", "soleus"],
     x: 0.12,
     y: 0.32,
     z: 0,
@@ -216,7 +223,7 @@ export const injuryZones = [
   {
     id: "ankle",
     region: "ankle",
-    label: "Cheville",
+    label: "Ankle",
     x: 0.13,
     y: 0.11,
     z: 0,
@@ -225,7 +232,7 @@ export const injuryZones = [
   {
     id: "inner-ankle",
     region: "ankle",
-    label: "Cheville (intérieur)",
+    label: "Ankle (inside)",
     detail: true,
     x: 0.10,
     y: 0.105,
@@ -235,7 +242,7 @@ export const injuryZones = [
   {
     id: "outer-ankle",
     region: "ankle",
-    label: "Cheville (extérieur)",
+    label: "Ankle (outside)",
     detail: true,
     x: 0.16,
     y: 0.105,
@@ -245,7 +252,7 @@ export const injuryZones = [
   {
     id: "achilles",
     region: "ankle",
-    label: "Tendon d’Achille",
+    label: "Achilles tendon",
     x: 0.13,
     y: 0.145,
     z: 0,
@@ -255,7 +262,7 @@ export const injuryZones = [
   {
     id: "instep",
     region: "foot",
-    label: "Dessus du pied",
+    label: "Top of foot",
     x: 0.125,
     y: 0.06,
     z: 0.045,
@@ -264,7 +271,7 @@ export const injuryZones = [
   {
     id: "arch",
     region: "foot",
-    label: "Voûte plantaire",
+    label: "Foot arch",
     detail: true,
     x: 0.125,
     y: 0.02,
@@ -274,7 +281,7 @@ export const injuryZones = [
   {
     id: "heel",
     region: "foot",
-    label: "Talon",
+    label: "Heel",
     x: 0.13,
     y: 0.045,
     z: 0,
@@ -283,7 +290,7 @@ export const injuryZones = [
   {
     id: "forefoot",
     region: "foot",
-    label: "Avant-pied",
+    label: "Forefoot",
     detail: true,
     x: 0.125,
     y: 0.025,
@@ -293,7 +300,7 @@ export const injuryZones = [
   {
     id: "outer-foot",
     region: "foot",
-    label: "Pied (bord externe)",
+    label: "Foot (outer edge)",
     detail: true,
     x: 0.16,
     y: 0.035,

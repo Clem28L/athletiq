@@ -1,5 +1,4 @@
 <script setup>
-// Receive the question and the selected answers from the parent.
 const props = defineProps({
   question: {
     type: Object,
@@ -9,23 +8,25 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  showHelp: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
 
-// Update the selected answers when the athlete clicks an option.
 function selectOption(id, checked) {
   const selected = [];
 
   if (props.question.type_answer === "multiple_choice") {
-    // Keep the other selected options.
+    // Keep the other checked options when one box changes
     for (let i = 0; i < props.modelValue.length; i++) {
       if (props.modelValue[i] !== id) {
         selected.push(props.modelValue[i]);
       }
     }
 
-    // Add this option only if its box is checked.
     if (checked) {
       selected.push(id);
     }
@@ -33,29 +34,28 @@ function selectOption(id, checked) {
     selected.push(id);
   }
 
-  // Send the new selection to the parent.
   emit("update:modelValue", selected);
 }
 </script>
 
 <template>
-  <div class="answer-fields">
+  <div class="answer-fields answer-choice">
     <p
-      v-if="question.type_answer === 'multiple_choice'"
+      v-if="showHelp && question.type_answer === 'multiple_choice'"
       class="answer-help"
     >
       Select all correct answers.
     </p>
 
-    <p v-else class="answer-help">
+    <p v-else-if="showHelp" class="answer-help">
       Select one answer.
     </p>
 
-    <!-- Show one input for each option. -->
     <label
       v-for="option in question.options"
       :key="option.id"
       class="answer-option"
+      :class="{ 'answer-option-selected': modelValue.includes(option.id) }"
     >
       <input
         v-if="question.type_answer === 'multiple_choice'"
@@ -76,3 +76,57 @@ function selectOption(id, checked) {
     </label>
   </div>
 </template>
+
+<style scoped>
+.answer-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.answer-help {
+  margin: 0;
+  color: #68686d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.answer-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.answer-option:hover {
+  background: #f7f7f3;
+}
+
+.answer-option-selected {
+  border-color: #373631;
+  background: #f7f7f3;
+}
+
+.answer-option:focus-within {
+  outline: 2px solid #55544f;
+  outline-offset: 2px;
+}
+
+.answer-option span {
+  overflow-wrap: anywhere;
+}
+
+.answer-option input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: #373631;
+}
+</style>

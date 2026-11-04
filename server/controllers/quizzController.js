@@ -129,7 +129,7 @@ exports.createQuiz = (req, res) => {
   // Create the quiz with published set to false
   const query = `
     INSERT INTO quizzes (title, description, module, category, published, id_user)
-    VALUES (?, ?, ?, ?, FALSE,git push -u origin ?)
+    VALUES (?, ?, ?, ?, FALSE, ?)
   `;
 
   db.query(

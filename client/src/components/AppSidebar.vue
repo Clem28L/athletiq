@@ -23,7 +23,7 @@
         <button
           class="mobile-toggle"
           @click="isMobileOpen = !isMobileOpen"
-          :aria-label="isMobileOpen ? 'Fermer le menu' : 'Ouvrir le menu'"
+          :aria-label="isMobileOpen ? 'Close menu' : 'Open menu'"
         >
           {{ isMobileOpen ? "‹" : "☰" }}
         </button>
@@ -33,11 +33,11 @@
         <RouterLink
           to="/"
           class="sidebar-link"
-          title="Accueil"
+          title="Home"
           @click="closeMobile"
         >
           <span class="sidebar-icon">⌂</span>
-          <span class="sidebar-label">Accueil</span>
+          <span class="sidebar-label">Home</span>
         </RouterLink>
 
         <RouterLink
@@ -68,21 +68,21 @@
         <RouterLink
           to="/prevention"
           class="sidebar-link"
-          title="Prévention"
+          title="Prevention"
           @click="closeMobile"
         >
           <span class="sidebar-icon">✚</span>
-          <span class="sidebar-label">Prévention</span>
+          <span class="sidebar-label">Prevention</span>
         </RouterLink>
 
         <RouterLink
           to="/equipment"
           class="sidebar-link"
-          title="Équipement"
+          title="Equipment"
           @click="closeMobile"
         >
           <span class="sidebar-icon">⚙</span>
-          <span class="sidebar-label">Équipement</span>
+          <span class="sidebar-label">Equipment</span>
         </RouterLink>
       </nav>
     </aside>
@@ -108,8 +108,8 @@ const quizLink = computed(() => {
 
 // Texte du lien Quiz selon le rôle
 const quizLabel = computed(() => {
-  if (user.value?.role === "expert") return "Gérer les quiz";
-  return "Quiz";
+  if (user.value?.role === "expert") return "Manage quizzes";
+  return "Quizzes";
 });
 
 // Détecte si on est sur mobile

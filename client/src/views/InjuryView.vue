@@ -62,7 +62,7 @@ function restartQuestionnaire() {
       <template v-if="step === 'result' && result" #info>
         <div class="injury-result">
           <button class="injury-text-button" type="button" @click="changeArea">
-            ← Changer de zone
+            ← Change area
           </button>
 
           <h1 id="injury-result-title" ref="resultHeading" tabindex="-1">
@@ -72,12 +72,12 @@ function restartQuestionnaire() {
           <p class="injury-result-advice">{{ result.advice }}</p>
 
           <details class="injury-result-sources">
-            <summary>Pourquoi cette piste ?</summary>
+            <summary>Why this result?</summary>
             <ul v-if="result.reasons.length">
               <li v-for="reason in result.reasons" :key="reason">{{ reason }}</li>
             </ul>
             <p v-if="result.trainingAdvice">{{ result.trainingAdvice }}</p>
-            <p v-if="result.alternative">Autre hypothèse : {{ result.alternative.title }}</p>
+            <p v-if="result.alternative">Another possibility: {{ result.alternative.title }}</p>
             <h2>Sources</h2>
             <ul>
               <li v-for="source in result.sources" :key="source.url">
@@ -88,10 +88,10 @@ function restartQuestionnaire() {
 
           <div class="injury-result-actions">
             <button class="button button-outline" type="button" @click="step = 'questions'">
-              Modifier mes réponses
+              Edit my answers
             </button>
             <button class="injury-text-button" type="button" @click="restartQuestionnaire">
-              Recommencer
+              Start again
             </button>
           </div>
         </div>
@@ -110,10 +110,10 @@ function restartQuestionnaire() {
 
     <section v-if="step === 'unsupported'" class="injury-question-page" aria-labelledby="unsupported-title">
       <div class="injury-unsupported">
-        <h1 id="unsupported-title" ref="messageHeading" tabindex="-1">Cette zone n’est pas encore prise en charge</h1>
-        <p>Le prototype se concentre sur les douleurs de course à pied, des hanches jusqu’aux pieds.</p>
+        <h1 id="unsupported-title" ref="messageHeading" tabindex="-1">This area is not supported yet</h1>
+        <p>This prototype covers running pain from the hips to the feet.</p>
         <button class="button button-dark" type="button" @click="changeArea">
-          Revenir au corps
+          Back to the body
         </button>
       </div>
     </section>
