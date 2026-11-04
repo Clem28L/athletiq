@@ -119,16 +119,11 @@
   line-height: 1.3;
 }
 
-.injury-selection-help,
-.injury-confirmation {
+.injury-selection-help {
   margin: 0 0 20px;
   font-size: 14px;
   line-height: 1.7;
   color: #777770;
-}
-
-.injury-confirmation {
-  margin-bottom: 0;
 }
 
 .injury-selection button {
