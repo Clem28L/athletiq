@@ -31,6 +31,15 @@ const routes = [
     component: QuizzesManager,
     meta: { role: "expert" },
   },
+
+  {
+    path: "/injuries",
+    alias: "/blessures",
+    name: "injury",
+    component: () => import("../views/InjuryView.vue"),
+    meta: { fullHeight: true },
+  },
+
   {
     path: "/expert/quizzes/new",
     name: "expert-quiz-new",

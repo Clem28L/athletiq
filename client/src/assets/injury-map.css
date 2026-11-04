@@ -1,0 +1,244 @@
+/* Page and 3D body */
+
+.injury-lab {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+
+  color: #343434;
+  background-color: #f3f3f1;
+  background-image: radial-gradient(#c9c9c5 0.8px, transparent 0.8px);
+  background-size: 20px 20px;
+}
+
+.injury-canvas {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+
+.injury-lab::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 360px;
+
+  background: linear-gradient(to right, #f3f3f1f5, #f3f3f100);
+  pointer-events: none;
+}
+
+.injury-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.injury-canvas canvas:active {
+  cursor: grabbing;
+}
+
+/* Text and buttons on the left */
+
+.injury-info {
+  position: absolute;
+  top: 38px;
+  left: 38px;
+
+  width: 310px;
+  max-width: calc(100% - 76px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.injury-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.injury-description {
+  margin: 14px 0 0;
+
+  color: #797973;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.injury-reset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 20px;
+  padding: 8px 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #53534e;
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+.injury-reset:hover {
+  color: #25241f;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.injury-reset:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Selected point and confirm button */
+
+.injury-selection {
+  margin-top: 26px;
+  padding: 24px 0 0;
+
+  border-top: 1px solid #d0cfca;
+  pointer-events: auto;
+}
+
+.injury-selection-caption {
+  margin: 0 0 10px;
+  color: #77756f;
+  font-size: 14px;
+}
+
+.injury-selection h2 {
+  margin: 0 0 14px;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.injury-selection-help,
+.injury-confirmation {
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #777770;
+}
+
+.injury-confirmation {
+  margin-bottom: 0;
+}
+
+.injury-selection button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 16px;
+
+  border: 1px solid #373631;
+  border-radius: 4px;
+  background: #373631;
+
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.injury-selection button:hover {
+  background: #504e48;
+}
+
+/* Name near the mouse and page messages */
+
+.injury-tooltip {
+  position: absolute;
+  z-index: 3;
+
+  max-width: 230px;
+  padding: 12px 16px;
+
+  border-radius: 4px;
+  background: #373631;
+
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  box-shadow: 0 3px 12px #00000016;
+  pointer-events: none;
+}
+
+.injury-help {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  color: #85857e;
+  text-align: center;
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.injury-status {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  right: 20px;
+  color: #777770;
+  text-align: center;
+  font-size: 13px;
+  z-index: 2;
+}
+
+.injury-lab button:focus-visible {
+  outline: 2px solid #555550;
+  outline-offset: 4px;
+}
+
+/* Small screens */
+
+@media (max-width: 600px) {
+  .injury-info {
+    top: 20px;
+    left: 16px;
+    width: calc(100% - 32px);
+    max-width: none;
+  }
+
+  .injury-title {
+    font-size: 24px;
+  }
+
+  .injury-description {
+    margin-top: 8px;
+    font-size: 11px;
+  }
+
+  .injury-selection {
+    margin-top: 14px;
+    padding: 14px 0 0;
+    max-width: 260px;
+  }
+
+  .injury-selection h2 {
+    margin-bottom: 8px;
+    font-size: 18px;
+  }
+
+  .injury-selection-help {
+    margin-bottom: 12px;
+  }
+
+  .injury-help {
+    bottom: 78px;
+    padding: 0 15px;
+  }
+}
