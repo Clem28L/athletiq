@@ -1,4 +1,5 @@
 <script setup>
+import { ArrowLeft } from "@lucide/vue";
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { logoutUser } from "@/stores/auth";
@@ -341,7 +342,7 @@ onMounted(loadQuiz);
       :disabled="checking || submitting"
       @click="goBack"
     >
-      ← Back to quizzes
+      <ArrowLeft :size="16" aria-hidden="true" /> Back to quizzes
     </button>
 
     <p v-if="loading" class="athlete-state" role="status">

@@ -1,4 +1,5 @@
 <script setup>
+import { ArrowRight } from "@lucide/vue";
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -995,7 +996,7 @@ onBeforeUnmount(() => {
             @click="confirmZone"
           >
             This is the spot
-            <span aria-hidden="true">→</span>
+            <ArrowRight :size="16" aria-hidden="true" />
           </button>
         </div>
       </slot>

@@ -1,4 +1,5 @@
 <script setup>
+import { ArrowLeft, ArrowRight } from "@lucide/vue";
 import { computed, nextTick, ref, watch } from "vue";
 import questionnaire from "../data/injuryQuestionnaire.json";
 import { getInjuryResult } from "../utils/injuryQuestionnaire";
@@ -107,7 +108,7 @@ watch([questionId, () => props.active], async () => {
     <div class="injury-question-shell">
       <div class="injury-question-top">
         <button class="injury-text-button" type="button" @click="emit('back')">
-          ← Change area
+          <ArrowLeft :size="16" aria-hidden="true" /> Change area
         </button>
       </div>
 
@@ -132,10 +133,10 @@ watch([questionId, () => props.active], async () => {
 
         <div class="injury-question-actions">
           <button class="injury-text-button" type="button" @click="previousQuestion">
-            ← Back
+            <ArrowLeft :size="16" aria-hidden="true" /> Back
           </button>
           <button class="button button-dark" type="submit" :disabled="!answerId">
-            Continue <span aria-hidden="true">→</span>
+            Continue <ArrowRight :size="16" aria-hidden="true" />
           </button>
         </div>
       </form>

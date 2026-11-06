@@ -26,6 +26,10 @@ a {
   color: inherit;
 }
 
+button .lucide {
+  vertical-align: middle;
+}
+
 .app {
   min-height: 100vh;
   display: flex;
@@ -36,24 +40,6 @@ a {
 
 .main-content {
   flex: 1;
-}
-
-/* Some pages use all the space next to the sidebar, without page scroll */
-.app.app-full-height {
-  position: fixed;
-  inset: 0 0 0 72px;
-  margin-left: 0;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.app-full-height .main-content {
-  position: relative;
-  min-height: 0;
-}
-
-.app-full-height .header {
-  flex-shrink: 0;
 }
 
 .header {

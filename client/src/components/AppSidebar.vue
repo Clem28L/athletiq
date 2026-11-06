@@ -25,7 +25,8 @@
           @click="isMobileOpen = !isMobileOpen"
           :aria-label="isMobileOpen ? 'Close menu' : 'Open menu'"
         >
-          {{ isMobileOpen ? "‹" : "☰" }}
+          <ChevronLeft v-if="isMobileOpen" :size="20" aria-hidden="true" />
+          <Menu v-else :size="20" aria-hidden="true" />
         </button>
       </div>
 
@@ -36,7 +37,7 @@
           title="Home"
           @click="closeMobile"
         >
-          <span class="sidebar-icon">⌂</span>
+          <House class="sidebar-icon" :size="20" aria-hidden="true" />
           <span class="sidebar-label">Home</span>
         </RouterLink>
 
@@ -46,12 +47,12 @@
           :title="quizLabel"
           @click="closeMobile"
         >
-          <span class="sidebar-icon">▤</span>
+          <ClipboardList class="sidebar-icon" :size="20" aria-hidden="true" />
           <span class="sidebar-label">{{ quizLabel }}</span>
         </RouterLink>
 
         <RouterLink to="/injuries" class="sidebar-link" title="Find your pain" @click="closeMobile">
-          <span class="sidebar-icon">◎</span>
+          <Crosshair class="sidebar-icon" :size="20" aria-hidden="true" />
           <span class="sidebar-label">Injuries</span>
         </RouterLink>
 
@@ -61,7 +62,7 @@
           title="Nutrition"
           @click="closeMobile"
         >
-          <span class="sidebar-icon">◉</span>
+          <Salad class="sidebar-icon" :size="20" aria-hidden="true" />
           <span class="sidebar-label">Nutrition</span>
         </RouterLink>
 
@@ -71,7 +72,7 @@
           title="Prevention"
           @click="closeMobile"
         >
-          <span class="sidebar-icon">✚</span>
+          <ShieldPlus class="sidebar-icon" :size="20" aria-hidden="true" />
           <span class="sidebar-label">Prevention</span>
         </RouterLink>
 
@@ -81,7 +82,7 @@
           title="Equipment"
           @click="closeMobile"
         >
-          <span class="sidebar-icon">⚙</span>
+          <Settings class="sidebar-icon" :size="20" aria-hidden="true" />
           <span class="sidebar-label">Equipment</span>
         </RouterLink>
       </nav>
@@ -90,6 +91,7 @@
 </template>
 
 <script setup>
+import { ChevronLeft, Menu, House, ClipboardList, Crosshair, Salad, ShieldPlus, Settings } from "@lucide/vue";
 import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
 import { user } from "@/stores/auth";
@@ -240,8 +242,6 @@ const closeMobile = () => {
 .sidebar-icon {
   width: 26px;
   flex-shrink: 0;
-  text-align: center;
-  font-size: 21px;
 }
 
 /* Bouton réservé aux petits écrans */

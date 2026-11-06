@@ -1,4 +1,5 @@
 <script setup>
+import { ArrowLeft } from "@lucide/vue";
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
@@ -139,7 +140,7 @@ onMounted(loadQuiz);
     <!-- Header -->
     <header class="page-header">
       <div>
-        <button class="btn-back" @click="goBack">← Retour</button>
+        <button class="btn-back" @click="goBack"><ArrowLeft :size="16" aria-hidden="true" /> Retour</button>
         <h1>{{ isEditMode ? "Modifier le quiz" : "Nouveau quiz" }}</h1>
         <p class="subtitle">
           {{

@@ -1,41 +1,31 @@
 <script setup>
-import { nextTick, ref } from "vue";
+import { ArrowLeft } from "@lucide/vue";
+import { computed, ref } from "vue";
 import BodyInjuryMap from "../components/BodyInjuryMap.vue";
 import InjuryQuestionnaire from "../components/InjuryQuestionnaire.vue";
 import questionnaire from "../data/injuryQuestionnaire.json";
 import "../assets/injury-questionnaire.css";
 
-const step = ref("map");
-const selectedZone = ref(null);
-const result = ref(null);
-const quizKey = ref(0);
-const resultHeading = ref(null);
-const messageHeading = ref(null);
+const step = ref("map"); // select the different steps of the paege: map, questions, result, unsupported
+const selectedZone = ref(null);// store the selected zone for the injury questionnaire
+const result = ref(null); // store the result of the injury questionnaire
+const quizKey = ref(0); // used to reset or go back for the questionnaire
 
-async function startQuestionnaire(zone) {
-  selectedZone.value = zone;
+// Function to start the injury questionnaire for a selected zone
+function startQuestionnaire(zone) {
+  selectedZone.value = zone; // record the selected zone
   result.value = null;
   quizKey.value += 1;
-
-  if (!questionnaire.zones[zone.id]) {
+  if (!questionnaire.zones[zone.id]) { // check if the selected zone is supported in the questionnaire
     step.value = "unsupported";
-    await nextTick();
-    if (messageHeading.value) {
-      messageHeading.value.focus();
-    }
     return;
   }
-
   step.value = "questions";
 }
-
-async function showResult(value) {
+// Function to show the result of the injury questionnaire
+function showResult(value) {
   result.value = value;
   step.value = "result";
-  await nextTick();
-  if (resultHeading.value) {
-    resultHeading.value.focus();
-  }
 }
 
 function changeArea() {
@@ -48,24 +38,26 @@ function restartQuestionnaire() {
   result.value = null;
   step.value = "questions";
 }
+const isResult = computed(() => step.value === "result");
+const showBody = computed(() => step.value === "map" || isResult.value);
 </script>
 
 <template>
   <div class="injury-flow">
     <BodyInjuryMap
-      v-show="step === 'map' || step === 'result'"
-      :active="step === 'map' || step === 'result'"
-      :read-only="step === 'result'"
-      :class="{ 'injury-lab-result': step === 'result' }"
+      v-show="showBody"
+      :active="showBody"
+      :read-only="isResult"
+      :class="{ 'injury-lab-result': isResult }"
       @zone-confirmed="startQuestionnaire"
     >
-      <template v-if="step === 'result' && result" #info>
+      <template v-if="isResult && result" #info>
         <div class="injury-result">
           <button class="injury-text-button" type="button" @click="changeArea">
-            ← Change area
+            <ArrowLeft :size="16" aria-hidden="true" /> Change area
           </button>
 
-          <h1 id="injury-result-title" ref="resultHeading" tabindex="-1">
+          <h1 id="injury-result-title">
             {{ result.details.title }}
           </h1>
           <p>{{ result.details.description }}</p>
@@ -110,7 +102,7 @@ function restartQuestionnaire() {
 
     <section v-if="step === 'unsupported'" class="injury-question-page" aria-labelledby="unsupported-title">
       <div class="injury-unsupported">
-        <h1 id="unsupported-title" ref="messageHeading" tabindex="-1">This area is not supported yet</h1>
+        <h1 id="unsupported-title">This area is not supported yet</h1>
         <p>This prototype covers running pain from the hips to the feet.</p>
         <button class="button button-dark" type="button" @click="changeArea">
           Back to the body
