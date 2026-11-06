@@ -7,6 +7,67 @@ const {
 } = require("../services/quizData");
 
 const { checkAnswer } = require("../services/answerValidation");
+const { getAnswerFeedback } = require("../services/answerFeedback");
+
+// Check one answer without creating an attempt yet.
+exports.checkQuestionAnswer = async (req, res) => {
+  const quizId = Number(req.params.id);
+  const questionId = Number(req.params.questionId);
+  const body = req.body;
+
+  if (
+    !Number.isInteger(quizId) || quizId < 1 ||
+    !Number.isInteger(questionId) || questionId < 1 ||
+    !body || typeof body.version !== "string"
+  ) {
+    return res.status(400).json({ error: "Invalid answer request." });
+  }
+
+  try {
+    const connection = db.promise();
+    const [quizzes] = await connection.execute(
+      "SELECT id_quiz FROM quizzes WHERE id_quiz = ? AND published = 1",
+      [quizId]
+    );
+
+    if (quizzes.length === 0) {
+      return res.status(404).json({ error: "This quiz is not available." });
+    }
+
+    const questions = await loadQuizQuestions(connection, quizId);
+
+    if (body.version !== getQuizVersion(quizId, questions)) {
+      return res.status(409).json({
+        error: "This quiz has changed. Reload it before answering again.",
+      });
+    }
+
+    let question = null;
+
+    // Only look for a question belonging to this quiz.
+    for (let i = 0; i < questions.length; i++) {
+      if (questions[i].id_question === questionId) {
+        question = questions[i];
+        break;
+      }
+    }
+
+    if (!question) {
+      return res.status(404).json({ error: "Question not found." });
+    }
+
+    const checked = checkAnswer(question, body.value);
+
+    if (checked.error) {
+      return res.status(400).json({ error: checked.error });
+    }
+
+    return res.json(getAnswerFeedback(question, body.value, checked));
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Unable to check this answer." });
+  }
+};
 
 // Check the answers, calculate the score and save the attempt.
 exports.submitQuiz = async (req, res) => {

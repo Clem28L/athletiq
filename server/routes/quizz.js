@@ -25,5 +25,6 @@ router.patch("/:id/publish", verifyToken, requireRole("expert"), quizController.
 router.patch("/:id/unpublish", verifyToken, requireRole("expert"), quizController.unpublishQuiz);
 router.post("/:id/questions", verifyToken, requireRole("expert"), quizController.addQuestionToQuiz);
 router.post("/:id/attempts",verifyToken,requireRole("athlete"),attemptController.submitQuiz);
+router.post("/:id/questions/:questionId/check",verifyToken,requireRole("athlete"),attemptController.checkQuestionAnswer);
 
 module.exports = router;

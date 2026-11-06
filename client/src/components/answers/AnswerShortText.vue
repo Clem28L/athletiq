@@ -1,4 +1,6 @@
 <script setup>
+import { getFeedbackClass } from "@/utils/QuizAnswers";
+import AnswerStatusIcon from "./AnswerStatusIcon.vue";
 // Receive the question and the current text from the parent.
 defineProps({
   question: {
@@ -8,6 +10,10 @@ defineProps({
   modelValue: {
     type: String,
     required: true,
+  },
+  feedback: {
+    type: Object,
+    default: null,
   },
 });
 
@@ -23,12 +29,16 @@ function updateAnswer(event) {
   <div class="answer-fields">
     <label for="text-answer">Your answer</label>
 
-    <input
-      id="text-answer"
-      type="text"
-      maxlength="255"
-      :value="modelValue"
-      @input="updateAnswer"
-    />
+    <div class="answer-control">
+      <input
+        :class="getFeedbackClass(feedback)"
+        id="text-answer"
+        type="text"
+        maxlength="255"
+        :value="modelValue"
+        @input="updateAnswer"
+      />
+      <AnswerStatusIcon v-if="feedback" :correct="feedback.correct" />
+    </div>
   </div>
 </template>

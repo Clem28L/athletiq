@@ -60,3 +60,33 @@ export function isAnswerComplete(question, value) {
   // Choice questions need at least one selected option.
   return Array.isArray(value) && value.length > 0;
 }
+
+// Return a colour only after the server has checked the answer.
+export function getFeedbackClass(feedback, key) {
+  if (!feedback) {
+    return "";
+  }
+
+  let correct = feedback.correct;
+
+  if (key !== undefined) {
+    correct = null;
+
+    for (let i = 0; i < feedback.items.length; i++) {
+      if (feedback.items[i].key === key) {
+        correct = feedback.items[i].correct;
+        break;
+      }
+    }
+  }
+
+  if (correct === true) {
+    return "answer-correct";
+  }
+
+  if (correct === false) {
+    return "answer-wrong";
+  }
+
+  return "";
+}

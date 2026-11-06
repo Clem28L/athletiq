@@ -1,4 +1,6 @@
 <script setup>
+import { getFeedbackClass } from "@/utils/QuizAnswers";
+import AnswerStatusIcon from "./AnswerStatusIcon.vue";
 import { computed } from "vue";
 
 // Receive the question and the current answers from the parent.
@@ -10,6 +12,10 @@ const props = defineProps({
   modelValue: {
     type: Object,
     required: true,
+  },
+  feedback: {
+    type: Object,
+    default: null,
   },
 });
 
@@ -95,23 +101,30 @@ function updatePair(id, value) {
         {{ option.text }}
       </label>
 
-      <select
-        :id="'match-' + option.id"
-        :value="getSelection(option.id)"
-        @change="updatePair(option.id, $event.target.value)"
-      >
-        <option value="">Choose a match</option>
-
-        <!-- An item already used in another pair cannot be selected. -->
-        <option
-          v-for="right in rightOptions"
-          :key="right.id"
-          :value="right.id"
-          :disabled="isUsed(right.id, option.id)"
+      <div class="answer-control">
+        <select
+          :class="getFeedbackClass(feedback, option.id)"
+          :id="'match-' + option.id"
+          :value="getSelection(option.id)"
+          @change="updatePair(option.id, $event.target.value)"
         >
-          {{ right.text }}
-        </option>
-      </select>
+          <option value="">Choose a match</option>
+
+          <!-- An item already used in another pair cannot be selected. -->
+          <option
+            v-for="right in rightOptions"
+            :key="right.id"
+            :value="right.id"
+            :disabled="isUsed(right.id, option.id)"
+          >
+            {{ right.text }}
+          </option>
+        </select>
+        <AnswerStatusIcon
+          v-if="feedback"
+          :correct="getFeedbackClass(feedback, option.id) === 'answer-correct'"
+        />
+      </div>
     </div>
   </div>
 </template>

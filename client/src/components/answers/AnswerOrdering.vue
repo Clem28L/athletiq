@@ -1,4 +1,6 @@
 <script setup>
+import { getFeedbackClass } from "@/utils/QuizAnswers";
+import AnswerStatusIcon from "./AnswerStatusIcon.vue";
 import { computed } from "vue";
 
 // Receive the question and the selected order from the parent.
@@ -10,6 +12,10 @@ const props = defineProps({
   modelValue: {
     type: Array,
     required: true,
+  },
+  feedback: {
+    type: Object,
+    default: null,
   },
 });
 
@@ -87,10 +93,16 @@ function confirmOrder() {
       v-for="(id, index) in displayedIds"
       :key="id"
       class="answer-row"
+      :class="getFeedbackClass(feedback, id)"
     >
       <span>{{ index + 1 }}. {{ getText(id) }}</span>
 
-      <div class="answer-move-buttons">
+      <AnswerStatusIcon
+        v-if="feedback"
+        :correct="getFeedbackClass(feedback, id) === 'answer-correct'"
+      />
+
+      <div v-else class="answer-move-buttons">
         <button
           type="button"
           class="refresh-button"

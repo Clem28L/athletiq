@@ -1,4 +1,6 @@
 <script setup>
+import { getFeedbackClass } from "@/utils/QuizAnswers";
+import AnswerStatusIcon from "./AnswerStatusIcon.vue";
 // Receive the question and the current answer from the parent.
 defineProps({
   question: {
@@ -7,6 +9,10 @@ defineProps({
   },
   modelValue: {
     type: Number,
+    default: null,
+  },
+  feedback: {
+    type: Object,
     default: null,
   },
 });
@@ -33,12 +39,16 @@ function updateAnswer(event) {
       <span v-if="question.unit">({{ question.unit }})</span>
     </label>
 
-    <input
-      id="numeric-answer"
-      type="number"
-      step="0.001"
-      :value="modelValue"
-      @input="updateAnswer"
-    />
+    <div class="answer-control">
+      <input
+        :class="getFeedbackClass(feedback)"
+        id="numeric-answer"
+        type="number"
+        step="0.001"
+        :value="modelValue"
+        @input="updateAnswer"
+      />
+      <AnswerStatusIcon v-if="feedback" :correct="feedback.correct" />
+    </div>
   </div>
 </template>

@@ -16,6 +16,7 @@ import AnswerShortText from "@/components/answers/AnswerShortText.vue";
 import AnswerOrdering from "@/components/answers/AnswerOrdering.vue";
 import AnswerMatching from "@/components/answers/AnswerMatching.vue";
 import AnswerCategories from "@/components/answers/AnswerCategories.vue";
+import AnswerCorrection from "@/components/answers/AnswerCorrection.vue";
 
 import "@/assets/athlete-quizzes.css";
 import "@/assets/quiz-answers.css";
@@ -27,10 +28,12 @@ const router = useRouter();
 const quiz = ref(null);
 const questions = ref([]);
 const answers = ref({});
+const feedbacks = ref({});
 const questionIndex = ref(0);
 
 const loading = ref(true);
 const submitting = ref(false);
+const checking = ref(false);
 const error = ref("");
 const submitError = ref("");
 const quizChanged = ref(false);
@@ -43,6 +46,19 @@ const currentQuestion = computed(function () {
   }
 
   return questions.value[questionIndex.value];
+});
+
+// Keep each correction when the athlete visits another question.
+const currentFeedback = computed(function () {
+  if (currentQuestion.value) {
+    const feedback = feedbacks.value[currentQuestion.value.id_question];
+
+    if (feedback) {
+      return feedback;
+    }
+  }
+
+  return null;
 });
 
 // Count completed answers without checking if they are correct.
@@ -71,6 +87,7 @@ async function loadQuiz() {
   quiz.value = null;
   questions.value = [];
   answers.value = {};
+  feedbacks.value = {};
   questionIndex.value = 0;
   result.value = null;
 
@@ -133,15 +150,88 @@ async function loadQuiz() {
   }
 }
 
+// Ask the server to check the current answer before showing its correction.
+async function checkCurrentAnswer() {
+  if (checking.value || submitting.value || currentFeedback.value || quizChanged.value) {
+    return;
+  }
+
+  const question = currentQuestion.value;
+  const value = answers.value[question.id_question];
+  submitError.value = "";
+
+  if (!isAnswerComplete(question, value)) {
+    submitError.value = "Please complete your answer first.";
+    return;
+  }
+
+  checking.value = true;
+
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/quizzes/" + route.params.id +
+        "/questions/" + question.id_question + "/check",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+        body: JSON.stringify({ version: quiz.value.version, value: value }),
+      }
+    );
+
+    if (response.status === 401) {
+      logoutUser();
+      await router.push("/login");
+      return;
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      submitError.value = "Unable to check this answer.";
+
+      if (data.error) {
+        submitError.value = data.error;
+      }
+
+      if (response.status === 409) {
+        quizChanged.value = true;
+      }
+
+      return;
+    }
+
+    feedbacks.value[question.id_question] = data;
+  } catch (err) {
+    submitError.value = "Unable to check your answer. Please try again.";
+  } finally {
+    checking.value = false;
+  }
+}
+
 // Show the next question without going past the last one.
 function nextQuestion() {
-  if (questionIndex.value < questions.value.length - 1) {
+  if (checking.value || submitting.value) {
+    return;
+  }
+
+  submitError.value = "";
+
+  if (currentFeedback.value && questionIndex.value < questions.value.length - 1) {
     questionIndex.value++;
   }
 }
 
 // Show the previous question without going before the first one.
 function previousQuestion() {
+  if (checking.value || submitting.value) {
+    return;
+  }
+
+  submitError.value = "";
+
   if (questionIndex.value > 0) {
     questionIndex.value--;
   }
@@ -150,7 +240,7 @@ function previousQuestion() {
 // Send all answers and let the server calculate the score.
 async function submitQuiz() {
   // Stop if we are already sending, have a result, or must reload the quiz.
-  if (submitting.value || result.value || quizChanged.value) {
+  if (checking.value || submitting.value || result.value || quizChanged.value) {
     return;
   }
 
@@ -162,10 +252,10 @@ async function submitQuiz() {
     const question = questions.value[i];
     const value = answers.value[question.id_question];
 
-    // Open the first question that still needs an answer.
-    if (!isAnswerComplete(question, value)) {
+    // Open the first question that still needs to be checked.
+    if (!feedbacks.value[question.id_question] || !isAnswerComplete(question, value)) {
       questionIndex.value = i;
-      submitError.value = "Please answer question " + (i + 1) + ".";
+      submitError.value = "Please check your answer to question " + (i + 1) + ".";
       return;
     }
 
@@ -248,7 +338,7 @@ onMounted(loadQuiz);
     <button
       type="button"
       class="quiz-back-button"
-      :disabled="submitting"
+      :disabled="checking || submitting"
       @click="goBack"
     >
       ← Back to quizzes
@@ -337,9 +427,9 @@ onMounted(loadQuiz);
         <fieldset
           :key="currentQuestion.id_question"
           class="quiz-answer-area"
-          :disabled="submitting || quizChanged"
+          :disabled="checking || submitting || quizChanged || currentFeedback"
         >
-          <legend class="answer-help">Your answer</legend>
+          <legend class="answer-legend">Your answer</legend>
 
           <!-- Show the right component and keep its answer under the question ID. -->
           <AnswerChoice
@@ -348,51 +438,61 @@ onMounted(loadQuiz);
               currentQuestion.type_answer === 'multiple_choice'
             "
             :question="currentQuestion"
+            :feedback="currentFeedback"
             v-model="answers[currentQuestion.id_question]"
           />
 
           <AnswerTrueFalse
             v-else-if="currentQuestion.type_answer === 'true_false'"
             :question="currentQuestion"
+            :feedback="currentFeedback"
             v-model="answers[currentQuestion.id_question]"
           />
 
           <AnswerNumber
             v-else-if="currentQuestion.type_answer === 'numeric'"
             :question="currentQuestion"
+            :feedback="currentFeedback"
             v-model="answers[currentQuestion.id_question]"
           />
 
           <AnswerSlider
             v-else-if="currentQuestion.type_answer === 'slider'"
             :question="currentQuestion"
+            :feedback="currentFeedback"
             v-model="answers[currentQuestion.id_question]"
           />
 
           <AnswerShortText
             v-else-if="currentQuestion.type_answer === 'short_text'"
             :question="currentQuestion"
+            :feedback="currentFeedback"
             v-model="answers[currentQuestion.id_question]"
           />
 
           <AnswerOrdering
             v-else-if="currentQuestion.type_answer === 'ordering'"
             :question="currentQuestion"
+            :feedback="currentFeedback"
             v-model="answers[currentQuestion.id_question]"
           />
 
           <AnswerMatching
             v-else-if="currentQuestion.type_answer === 'matching'"
             :question="currentQuestion"
+            :feedback="currentFeedback"
             v-model="answers[currentQuestion.id_question]"
           />
 
           <AnswerCategories
             v-else-if="currentQuestion.type_answer === 'categorization'"
             :question="currentQuestion"
+            :feedback="currentFeedback"
             v-model="answers[currentQuestion.id_question]"
           />
         </fieldset>
+
+        <AnswerCorrection v-if="currentFeedback" :feedback="currentFeedback" />
 
         <p class="answer-help">
           {{ answeredCount }} / {{ questions.length }} answered
@@ -415,14 +515,25 @@ onMounted(loadQuiz);
           <button
             type="button"
             class="refresh-button"
-            :disabled="questionIndex === 0 || submitting"
+            :disabled="questionIndex === 0 || checking || submitting"
             @click="previousQuestion"
           >
             Previous
           </button>
 
           <button
-            v-if="questionIndex < questions.length - 1"
+            v-if="!currentFeedback"
+            type="button"
+            class="start-quiz-button"
+            :disabled="checking || submitting || quizChanged"
+            @click="checkCurrentAnswer"
+          >
+            <span v-if="checking">Checking...</span>
+            <span v-else>Check answer</span>
+          </button>
+
+          <button
+            v-else-if="questionIndex < questions.length - 1"
             type="button"
             class="start-quiz-button"
             :disabled="submitting"

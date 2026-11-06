@@ -11,6 +11,10 @@ defineProps({
     type: Array,
     required: true,
   },
+  feedback: {
+    type: Object,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -26,6 +30,7 @@ function updateAnswer(value) {
   <AnswerChoice
     :question="question"
     :model-value="modelValue"
+    :feedback="feedback"
     @update:modelValue="updateAnswer"
   />
 </template>

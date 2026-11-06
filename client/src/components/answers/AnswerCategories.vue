@@ -1,4 +1,6 @@
 <script setup>
+import { getFeedbackClass } from "@/utils/QuizAnswers";
+import AnswerStatusIcon from "./AnswerStatusIcon.vue";
 // Receive the question and the current answers from the parent.
 const props = defineProps({
   question: {
@@ -8,6 +10,10 @@ const props = defineProps({
   modelValue: {
     type: Object,
     required: true,
+  },
+  feedback: {
+    type: Object,
+    default: null,
   },
 });
 
@@ -53,21 +59,28 @@ function updateCategory(id, value) {
         {{ option.text }}
       </label>
 
-      <select
-        :id="'category-' + option.id"
-        :value="getSelection(option.id)"
-        @change="updateCategory(option.id, $event.target.value)"
-      >
-        <option value="">Choose a category</option>
-
-        <option
-          v-for="category in question.categories"
-          :key="category"
-          :value="category"
+      <div class="answer-control">
+        <select
+          :class="getFeedbackClass(feedback, option.id)"
+          :id="'category-' + option.id"
+          :value="getSelection(option.id)"
+          @change="updateCategory(option.id, $event.target.value)"
         >
-          {{ category }}
-        </option>
-      </select>
+          <option value="">Choose a category</option>
+
+          <option
+            v-for="category in question.categories"
+            :key="category"
+            :value="category"
+          >
+            {{ category }}
+          </option>
+        </select>
+        <AnswerStatusIcon
+          v-if="feedback"
+          :correct="getFeedbackClass(feedback, option.id) === 'answer-correct'"
+        />
+      </div>
     </div>
   </div>
 </template>

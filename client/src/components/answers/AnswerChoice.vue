@@ -1,4 +1,6 @@
 <script setup>
+import { getFeedbackClass } from "@/utils/QuizAnswers";
+import AnswerStatusIcon from "./AnswerStatusIcon.vue";
 const props = defineProps({
   question: {
     type: Object,
@@ -12,11 +14,20 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  feedback: {
+    type: Object,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
 
+// Update the selection before the answer is checked.
 function selectOption(id, checked) {
+  if (props.feedback) {
+    return;
+  }
+
   const selected = [];
 
   if (props.question.type_answer === "multiple_choice") {
@@ -55,7 +66,10 @@ function selectOption(id, checked) {
       v-for="option in question.options"
       :key="option.id"
       class="answer-option"
-      :class="{ 'answer-option-selected': modelValue.includes(option.id) }"
+      :class="[
+        { 'answer-option-selected': modelValue.includes(option.id) },
+        getFeedbackClass(feedback, option.id),
+      ]"
     >
       <input
         v-if="question.type_answer === 'multiple_choice'"
@@ -73,6 +87,9 @@ function selectOption(id, checked) {
       />
 
       <span>{{ option.text }}</span>
+      <span v-if="getFeedbackClass(feedback, option.id)" class="answer-mark">
+        <AnswerStatusIcon :correct="getFeedbackClass(feedback, option.id) === 'answer-correct'" />
+      </span>
     </label>
   </div>
 </template>

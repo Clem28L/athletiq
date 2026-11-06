@@ -1,4 +1,6 @@
 <script setup>
+import { getFeedbackClass } from "@/utils/QuizAnswers";
+import AnswerStatusIcon from "./AnswerStatusIcon.vue";
 import { computed } from "vue";
 
 // Receive the question and the current answer from the parent.
@@ -9,6 +11,10 @@ const props = defineProps({
   },
   modelValue: {
     type: Number,
+    default: null,
+  },
+  feedback: {
+    type: Object,
     default: null,
   },
 });
@@ -38,14 +44,18 @@ function confirmValue() {
 
 <template>
   <div class="answer-fields">
-    <label for="slider-answer">
-      Your answer: {{ previewValue }} {{ question.unit }}
-    </label>
+    <div class="answer-value-label">
+      <label for="slider-answer">
+        Your answer: {{ previewValue }} {{ question.unit }}
+      </label>
+      <AnswerStatusIcon v-if="feedback" :correct="feedback.correct" />
+    </div>
 
     <!-- Use the limits and step chosen by the expert. -->
     <input
       id="slider-answer"
       type="range"
+      :class="getFeedbackClass(feedback)"
       :min="question.min_value"
       :max="question.max_value"
       :step="question.step_value"
