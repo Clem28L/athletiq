@@ -1,4 +1,4 @@
-export const injuryRegions = [
+export const injuryRegions = [ // define  global region of the body
   {
     id: "head",
     label: "Head",
@@ -54,10 +54,7 @@ export const injuryRegions = [
     height: 0.34
   },
 ];
-
-// Positions match the 1.75 metre body, with left and right copies for side points
-// direction is used to place each point on the correct body surface
-// muscles lists the model parts to colour; other zones use a small area around the point
+// mapping the different point in the body and defining the coordinates of each point
 export const injuryZones = [
   {
     id: "head",

@@ -18,7 +18,7 @@ const props = defineProps({
 
 const emit = defineEmits(["complete", "back"]);
 
-const questionId = ref(questionnaire.zones[props.zone.id].start);
+const questionId = ref(questionnaire.zones[props.zone.id].start); // Start with the first question for the selected zone
 const answerId = ref("");
 const history = ref([]);
 const heading = ref(null);
@@ -30,7 +30,7 @@ const choiceQuestion = computed(() => ({
   type_answer: "single_choice",
   options: question.value.options,
 }));
-
+// Compute the selected answers for current question
 const selectedAnswers = computed({
   get() {
     if (!answerId.value) {
@@ -43,7 +43,7 @@ const selectedAnswers = computed({
     answerId.value = answers[0] || "";
   },
 });
-
+// go to the next question, or finish the questionnaire if the current question is the last one
 function nextQuestion() {
   let choice = null;
 
@@ -73,7 +73,10 @@ function nextQuestion() {
   const nextId = choice.next;
 
   if (!questionnaire.questions[nextId]) {
-    emit("complete", getInjuryResult(questionnaire, props.zone, [...history.value, answer]));
+    emit(
+      "complete",
+      getInjuryResult(questionnaire, props.zone, [...history.value, answer]),
+    );
     return;
   }
 
@@ -81,7 +84,7 @@ function nextQuestion() {
   questionId.value = nextId;
   answerId.value = "";
 }
-
+// go to the previous question
 function previousQuestion() {
   if (history.value.length === 0) {
     emit("back");
@@ -94,13 +97,17 @@ function previousQuestion() {
   answerId.value = previous.optionId;
 }
 
-watch([questionId, () => props.active], async () => {
-  await nextTick();
+watch(
+  [questionId, () => props.active],
+  async () => {
+    await nextTick();
 
-  if (props.active && heading.value) {
-    heading.value.focus();
-  }
-}, { immediate: true });
+    if (props.active && heading.value) {
+      heading.value.focus();
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
@@ -132,15 +139,22 @@ watch([questionId, () => props.active], async () => {
         </fieldset>
 
         <div class="injury-question-actions">
-          <button class="injury-text-button" type="button" @click="previousQuestion">
+          <button
+            class="injury-text-button"
+            type="button"
+            @click="previousQuestion"
+          >
             <ArrowLeft :size="16" aria-hidden="true" /> Back
           </button>
-          <button class="button button-dark" type="submit" :disabled="!answerId">
+          <button
+            class="button button-dark"
+            type="submit"
+            :disabled="!answerId"
+          >
             Continue <ArrowRight :size="16" aria-hidden="true" />
           </button>
         </div>
       </form>
-
     </div>
   </section>
 </template>
