@@ -1,4 +1,5 @@
 <script setup>
+import { ArrowLeftRight, X } from "@lucide/vue";
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -53,7 +54,7 @@ function removePair(index) {
         @input="updatePair(index, 'left', $event.target.value)"
       />
 
-      <span>↔</span>
+      <ArrowLeftRight :size="16" aria-hidden="true" />
 
       <input
         type="text"
@@ -71,7 +72,7 @@ function removePair(index) {
         aria-label="Supprimer cette paire"
         @click="removePair(index)"
       >
-        ✕
+        <X :size="16" aria-hidden="true" />
       </button>
     </div>
 

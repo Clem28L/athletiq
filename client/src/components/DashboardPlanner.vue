@@ -1,4 +1,5 @@
 <script setup>
+import { ChevronLeft, ChevronRight } from "@lucide/vue";
 import { ref, computed, onMounted } from "vue";
 
 const props = defineProps({
@@ -130,7 +131,7 @@ onMounted(loadNotes);
           aria-label="Previous month"
           @click="changeMonth(-1)"
         >
-          ‹
+          <ChevronLeft :size="16" aria-hidden="true" />
         </button>
 
         <button
@@ -139,7 +140,7 @@ onMounted(loadNotes);
           aria-label="Next month"
           @click="changeMonth(1)"
         >
-          ›
+          <ChevronRight :size="16" aria-hidden="true" />
         </button>
       </div>
     </div>

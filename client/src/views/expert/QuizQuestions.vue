@@ -1,4 +1,5 @@
 <script setup>
+import { ArrowLeft, X } from "@lucide/vue";
 import { ref, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -294,7 +295,7 @@ function getAnswerLines(question) {
     for (let i = 0; i < answers.matching.length; i++) {
       const pair = answers.matching[i];
 
-      lines.push(pair.left + " ↔ " + pair.right);
+      lines.push(pair.left + " / " + pair.right);
     }
   }
 
@@ -302,7 +303,7 @@ function getAnswerLines(question) {
     for (let i = 0; i < answers.categories.length; i++) {
       const item = answers.categories[i];
 
-      lines.push(item.text + " → " + item.category);
+      lines.push(item.text + " : " + item.category);
     }
   }
 
@@ -314,10 +315,10 @@ function getAnswerLines(question) {
 
     for (let i = 0; i < options.length; i++) {
       const option = options[i];
-      let marker = "○ ";
+      let marker = "Incorrect : ";
 
       if (Number(option.is_correct) === 1) {
-        marker = "✓ ";
+        marker = "Correct : ";
       }
 
       lines.push(marker + option.text);
@@ -342,7 +343,7 @@ onMounted(loadQuiz);
         :disabled="saving || deleting"
         @click="goBack"
       >
-        ← Retour aux quiz
+        <ArrowLeft :size="16" aria-hidden="true" /> Retour aux quiz
       </button>
 
       <div class="page-heading">
@@ -486,7 +487,7 @@ onMounted(loadQuiz);
                 aria-label="Fermer le formulaire"
                 @click="closeEditor"
               >
-                ✕
+                <X :size="16" aria-hidden="true" />
               </button>
             </div>
 

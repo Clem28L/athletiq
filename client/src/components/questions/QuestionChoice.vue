@@ -1,4 +1,5 @@
 <script setup>
+import { X } from "@lucide/vue";
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -69,7 +70,7 @@ function removeOption(index) {
         aria-label="Supprimer cette option"
         @click="removeOption(index)"
       >
-        ✕
+        <X :size="16" aria-hidden="true" />
       </button>
     </div>
 

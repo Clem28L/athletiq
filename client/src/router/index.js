@@ -8,6 +8,10 @@ import NotFound from "../views/NotFound.vue";
 
 import QuizzesManager from "../views/expert/QuizzesManager.vue";
 import QuizForm from "../views/expert/QuizForm.vue";
+import QuizQuestions from "../views/expert/QuizQuestions.vue";
+import InjuryView from "../views/InjuryView.vue";
+import AthleteQuizzes from "../views/athlete/AthleteQuizzes.vue";
+import AthleteQuizView from "../views/athlete/AthleteQuizView.vue";
 
 const routes = [
   {
@@ -36,8 +40,7 @@ const routes = [
     path: "/injuries",
     alias: "/blessures",
     name: "injury",
-    component: () => import("../views/InjuryView.vue"),
-    meta: { fullHeight: true },
+    component: InjuryView,
   },
 
   {
@@ -55,19 +58,19 @@ const routes = [
   {
     path: "/expert/quizzes/:id/questions",
     name: "expert-quiz-questions",
-    component: () => import("../views/expert/QuizQuestions.vue"),
+    component: QuizQuestions,
     meta: { role: "expert" },
   },
   {
     path: "/athlete/quizzes",
     name: "athlete-quizzes",
-    component: () => import("../views/athlete/AthleteQuizzes.vue"),
+    component: AthleteQuizzes,
     meta: { role: "athlete" },
   },
   {
     path: "/athlete/quizzes/:id",
     name: "athlete-quiz",
-    component: () => import("../views/athlete/AthleteQuizView.vue"),
+    component: AthleteQuizView,
     meta: { role: "athlete" },
   },
   {
@@ -83,13 +86,13 @@ const router = createRouter({
 });
 
 // Check the user and role before opening protected pages
-router.beforeEach(function (to) {
-  if (to.meta.role) {
+router.beforeEach(function (targetRoute) {
+  if (targetRoute.meta.role) {
     if (!getCurrentUser()) {
       return "/login";
     }
 
-    if (!hasRole(to.meta.role)) {
+    if (!hasRole(targetRoute.meta.role)) {
       return "/";
     }
   }
