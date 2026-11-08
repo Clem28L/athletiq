@@ -6,6 +6,7 @@ const testRoutes = require("./routes/test");
 const quizRoutes = require("./routes/quizz");
 const optionRoutes = require("./routes/options");
 const questionRoutes = require("./routes/questions");
+const nutritionRoutes = require("./routes/nutrition");
 require("dotenv").config();
 require("./config/db");
 
@@ -20,6 +21,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/questions", questionRoutes);
+app.use("/api/nutrition", nutritionRoutes);
 app.use("/api", optionRoutes);
 
 //Démarrage
