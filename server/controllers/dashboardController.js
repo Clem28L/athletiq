@@ -10,13 +10,14 @@ exports.getDashboard = (req, res) => {
   let recentQuery = "";
 
   if (role === "athlete") {
-    // Count all attempts made by this athlete.
+    // Count educational quiz attempts made by this athlete.
     statsQuery = `
       SELECT COUNT(*) AS total_attempts,
-             COUNT(DISTINCT id_quiz) AS completed_quizzes,
-             ROUND(AVG(score), 1) AS average_score
-      FROM attempts
-      WHERE id_user = ?
+             COUNT(DISTINCT a.id_quiz) AS completed_quizzes,
+             ROUND(AVG(a.score), 1) AS average_score
+      FROM attempts a
+      JOIN quizzes q ON q.id_quiz = a.id_quiz
+      WHERE a.id_user = ? AND q.kind = 'educational'
     `;
 
     // Keep published quizzes and only this athlete's results.
@@ -27,7 +28,7 @@ exports.getDashboard = (req, res) => {
       FROM quizzes q
       LEFT JOIN attempts a
         ON a.id_quiz = q.id_quiz AND a.id_user = ?
-      WHERE q.published = 1
+      WHERE q.published = 1 AND q.kind = 'educational'
       GROUP BY q.id_quiz, q.title, q.module, q.published, q.created_at
       ORDER BY q.created_at DESC, q.id_quiz DESC
     `;
@@ -36,7 +37,7 @@ exports.getDashboard = (req, res) => {
       SELECT a.id_attempt, a.score, a.attempt_date, q.title
       FROM attempts a
       JOIN quizzes q ON q.id_quiz = a.id_quiz
-      WHERE a.id_user = ?
+      WHERE a.id_user = ? AND q.kind = 'educational'
       ORDER BY a.attempt_date DESC, a.id_attempt DESC
       LIMIT 5
     `;
@@ -48,7 +49,7 @@ exports.getDashboard = (req, res) => {
              ROUND(AVG(a.score), 1) AS average_score
       FROM quizzes q
       LEFT JOIN attempts a ON a.id_quiz = q.id_quiz
-      WHERE q.id_user = ?
+      WHERE q.id_user = ? AND q.kind = 'educational'
     `;
 
     quizzesQuery = `
@@ -57,7 +58,7 @@ exports.getDashboard = (req, res) => {
              ROUND(AVG(a.score), 1) AS average_score
       FROM quizzes q
       LEFT JOIN attempts a ON a.id_quiz = q.id_quiz
-      WHERE q.id_user = ?
+      WHERE q.id_user = ? AND q.kind = 'educational'
       GROUP BY q.id_quiz, q.title, q.module, q.published, q.created_at
       ORDER BY q.created_at DESC, q.id_quiz DESC
     `;
@@ -66,7 +67,7 @@ exports.getDashboard = (req, res) => {
       SELECT a.id_attempt, a.score, a.attempt_date, q.title
       FROM attempts a
       JOIN quizzes q ON q.id_quiz = a.id_quiz
-      WHERE q.id_user = ?
+      WHERE q.id_user = ? AND q.kind = 'educational'
       ORDER BY a.attempt_date DESC, a.id_attempt DESC
       LIMIT 5
     `;

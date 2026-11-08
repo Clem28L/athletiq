@@ -65,7 +65,7 @@ exports.updateQuestion = async (req, res) => {
       SELECT questions.id_question, quizzes.id_user
       FROM questions
       JOIN quizzes ON questions.id_quiz = quizzes.id_quiz
-      WHERE questions.id_question = ?
+      WHERE questions.id_question = ? AND quizzes.kind = 'educational'
       FOR UPDATE
     `;
 
@@ -202,7 +202,7 @@ exports.deleteQuestion = (req, res) => {
     SELECT questions.id_question, quizzes.id_user
     FROM questions
     JOIN quizzes ON questions.id_quiz = quizzes.id_quiz
-    WHERE questions.id_question = ?
+    WHERE questions.id_question = ? AND quizzes.kind = 'educational'
   `;
 
   db.query(checkQuery, [questionId], (err, results) => {
@@ -232,6 +232,7 @@ exports.deleteQuestion = (req, res) => {
       JOIN quizzes ON questions.id_quiz = quizzes.id_quiz
       WHERE questions.id_question = ?
         AND quizzes.id_user = ?
+        AND quizzes.kind = 'educational'
     `;
 
     db.query(

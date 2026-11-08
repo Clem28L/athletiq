@@ -12,34 +12,29 @@ exports.addOption = (req, res) => {
     return res.status(400).json({ error: "Option text is required" });
   }
 
-  // Check the question exists
-  const checkQuery = "SELECT id_question FROM questions WHERE id_question = ?";
+  let isCorrectValue = 0;
+  if (is_correct) {
+    isCorrectValue = 1;
+  }
+  const query = `
+    INSERT INTO options (text, is_correct, id_question)
+    SELECT ?, ?, q.id_question
+    FROM questions q
+    JOIN quizzes ON quizzes.id_quiz = q.id_quiz
+    WHERE q.id_question = ? AND quizzes.kind = 'educational'
+  `;
 
-  db.query(checkQuery, [questionId], (err, results) => {
+  db.query(query, [text, isCorrectValue, questionId], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    if (results.length === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Question not found" });
     }
 
-    // Convert boolean to 1/0 for MySQL
-    const isCorrectValue = is_correct ? 1 : 0;
-
-    const insertQuery = `
-      INSERT INTO options (text, is_correct, id_question)
-      VALUES (?, ?, ?)
-    `;
-
-    db.query(insertQuery, [text, isCorrectValue, questionId], (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-
-      res.status(201).json({
-        message: "Option created",
-        optionId: result.insertId,
-      });
+    res.status(201).json({
+      message: "Option created",
+      optionId: result.insertId,
     });
   });
 };
@@ -55,12 +50,17 @@ exports.updateOption = (req, res) => {
     return res.status(400).json({ error: "Option text is required" });
   }
 
-  const isCorrectValue = is_correct ? 1 : 0;
+  let isCorrectValue = 0;
+  if (is_correct) {
+    isCorrectValue = 1;
+  }
 
   const query = `
-    UPDATE options
-    SET text = ?, is_correct = ?
-    WHERE id_option = ?
+    UPDATE options o
+    JOIN questions q ON q.id_question = o.id_question
+    JOIN quizzes ON quizzes.id_quiz = q.id_quiz
+    SET o.text = ?, o.is_correct = ?
+    WHERE o.id_option = ? AND quizzes.kind = 'educational'
   `;
 
   db.query(query, [text, isCorrectValue, optionId], (err, result) => {
@@ -80,7 +80,12 @@ exports.updateOption = (req, res) => {
 // ============================================================
 exports.deleteOption = (req, res) => {
   const optionId = req.params.id;
-  const query = "DELETE FROM options WHERE id_option = ?";
+  const query = `
+    DELETE o FROM options o
+    JOIN questions q ON q.id_question = o.id_question
+    JOIN quizzes ON quizzes.id_quiz = q.id_quiz
+    WHERE o.id_option = ? AND quizzes.kind = 'educational'
+  `;
 
   db.query(query, [optionId], (err, result) => {
     if (err) {
