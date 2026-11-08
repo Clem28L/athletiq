@@ -25,3 +25,5 @@ Thumbs.db
 
 # MySQL dumps locaux
 *.sql.bak
+docs
+README.md

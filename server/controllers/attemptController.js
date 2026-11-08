@@ -26,7 +26,9 @@ exports.checkQuestionAnswer = async (req, res) => {
   try {
     const connection = db.promise();
     const [quizzes] = await connection.execute(
-      "SELECT id_quiz FROM quizzes WHERE id_quiz = ? AND published = 1",
+      `SELECT id_quiz
+       FROM quizzes
+       WHERE id_quiz = ? AND published = 1 AND kind = 'educational'`,
       [quizId]
     );
 
@@ -105,7 +107,7 @@ exports.submitQuiz = async (req, res) => {
     const [quizzes] = await connection.execute(
       `SELECT id_quiz, published
        FROM quizzes
-       WHERE id_quiz = ?
+       WHERE id_quiz = ? AND kind = 'educational'
        FOR UPDATE`,
       [quizId]
     );
@@ -312,6 +314,7 @@ exports.getMyResults = (req, res) => {
     FROM attempts a
     JOIN quizzes q ON q.id_quiz = a.id_quiz
     WHERE a.id_user = ?
+      AND q.kind = 'educational'
       AND a.id_attempt = (
         SELECT latest.id_attempt
         FROM attempts latest

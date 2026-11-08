@@ -1,10 +1,12 @@
 function getOption(data, answer) {
+  // Récupérer la question correspondant à la réponse
   const question = data.questions[answer.questionId];
 
   if (!question) {
     return null;
   }
 
+  // Chercher l'option sélectionnée par l'utilisateur
   for (const option of question.options) {
     if (option.id === answer.optionId) {
       return option;
@@ -14,7 +16,7 @@ function getOption(data, answer) {
   return null;
 }
 
-// Only compare injuries that can fit the selected body area
+// Classer les blessures possibles selon la zone du corps et les réponses
 export function rankInjuries(data, zone, answers) {
   const area = data.zones[zone.id];
   const ranked = [];
@@ -23,6 +25,7 @@ export function rankInjuries(data, zone, answers) {
     return ranked;
   }
 
+  // Parcourir les blessures associées à cette zone
   for (const id of area.injuries) {
     let score = 0;
     let signs = 0;
@@ -31,28 +34,32 @@ export function rankInjuries(data, zone, answers) {
       const question = data.questions[answer.questionId];
       const option = getOption(data, answer);
 
+      // Ignorer les réponses qui n'apportent aucun point à cette blessure
       if (!option || !option.scores || !option.scores[id]) {
         continue;
       }
 
+      // Ajouter les points associés à la réponse
       const points = option.scores[id];
       score += points;
 
-      // Training history adds context, but cannot identify an injury on its own
+      // Compter les symptômes significatifs
       if (!question.context && points >= 2) {
         signs += 1;
       }
     }
 
-    // These are simple prototype rules, not a medical probability
+    // Conserver uniquement les blessures avec un score suffisant et au moins deux symptômes significatifs
     if (score >= 6 && signs >= 2) {
       const candidate = { id: id, score: score };
       let position = 0;
 
+      // Trouver la position pour classer les blessures par score décroissant
       while (position < ranked.length && ranked[position].score >= score) {
         position += 1;
       }
 
+      // Insérer la blessure à la bonne position
       ranked.splice(position, 0, candidate);
     }
   }
@@ -60,8 +67,10 @@ export function rankInjuries(data, zone, answers) {
   return ranked;
 }
 
+// Générer le résultat final à partir des blessures classées
 export function getInjuryResult(data, zone, answers) {
   const ranked = rankInjuries(data, zone, answers);
+
   let id = "unclear";
   let alternative = null;
   let trainingAdvice = "";
@@ -69,14 +78,17 @@ export function getInjuryResult(data, zone, answers) {
   const reasons = [];
   const sources = [];
 
+  // Sélectionner la blessure ayant le score le plus élevé
   if (ranked.length > 0) {
     id = ranked[0].id;
   }
 
+  // Proposer une deuxième blessure si les scores sont proches
   if (ranked.length > 1 && ranked[0].score - ranked[1].score <= 3) {
     alternative = data.results[ranked[1].id];
   }
 
+  // Parcourir les réponses pour récupérer les explications et conseils
   for (const answer of answers) {
     const question = data.questions[answer.questionId];
     const option = getOption(data, answer);
@@ -88,7 +100,6 @@ export function getInjuryResult(data, zone, answers) {
     if (option.reason && option.scores && option.scores[id] > 0) {
       reasons.push(option.reason);
     }
-
     if (option.trainingAdvice) {
       trainingAdvice = option.trainingAdvice;
     }
@@ -102,18 +113,21 @@ export function getInjuryResult(data, zone, answers) {
     }
   }
 
+  // Récupérer les détails de la blessure principale
   const details = data.results[id];
-  const sourceIds = [...details.sources];
+  const sourceIds = details.sources.slice();
 
   if (alternative) {
-    sourceIds.push(...alternative.sources);
+    for (const source of alternative.sources) {
+      sourceIds.push(source);
+    }
   }
 
+  // Ajouter la source liée aux conseils d'entraînement
   if (trainingAdvice) {
     sourceIds.push("clinic-load");
   }
 
-  // Keep each source once when two hypotheses share the same reference
   for (const sourceId of sourceIds) {
     const source = data.sources[sourceId];
 
@@ -128,14 +142,15 @@ export function getInjuryResult(data, zone, answers) {
     advice = care;
   }
 
+  // Retourner toutes les informations nécessaires à l'affichage du résultat
   return {
-    id: id,
-    details: details,
-    advice: advice,
-    alternative: alternative,
-    reasons: reasons,
-    sources: sources,
-    trainingAdvice: trainingAdvice,
-    answers: answers,
+    id: id, // Identifiant de la blessure détectée
+    details: details, // Informations détaillées sur la blessure
+    advice: advice, // Conseils de soins adaptés à la blessure
+    alternative: alternative, // Autre blessure possible si les scores sont proches
+    reasons: reasons, // Raisons qui expliquent le résultat obtenu
+    sources: sources, // Sources médicales utilisées pour le résultat
+    trainingAdvice: trainingAdvice, // Conseils pour adapter l'entraînement
+    answers: answers, // Réponses données par l'utilisateur au questionnaire
   };
 }

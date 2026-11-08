@@ -11,6 +11,7 @@ exports.getAllQuizzes = (req, res) => {
   const query = `
     SELECT id_quiz, title, description, module, category, published, created_at
     FROM quizzes
+    WHERE kind = 'educational'
     ORDER BY created_at DESC
   `;
 
@@ -28,7 +29,7 @@ exports.getPublishedQuizzes = (req, res) => {
   const query = `
     SELECT id_quiz, title, description, module, category
     FROM quizzes
-    WHERE published = TRUE
+    WHERE published = TRUE AND kind = 'educational'
     ORDER BY created_at DESC
   `;
 
@@ -65,7 +66,7 @@ exports.getQuizById = async (req, res) => {
       `SELECT id_quiz, title, description, module, category,
               published, created_at, id_user
        FROM quizzes
-       WHERE id_quiz = ?`,
+       WHERE id_quiz = ? AND kind = 'educational'`,
       [quizId]
     );
 
@@ -128,8 +129,8 @@ exports.createQuiz = (req, res) => {
 
   // Create the quiz with published set to false
   const query = `
-    INSERT INTO quizzes (title, description, module, category, published, id_user)
-    VALUES (?, ?, ?, ?, FALSE, ?)
+    INSERT INTO quizzes (title, description, module, category, kind, published, id_user)
+    VALUES (?, ?, ?, ?, 'educational', FALSE, ?)
   `;
 
   db.query(
@@ -172,7 +173,7 @@ exports.updateQuiz = (req, res) => {
   const checkQuery = `
     SELECT id_quiz
     FROM quizzes
-    WHERE id_quiz = ?
+    WHERE id_quiz = ? AND kind = 'educational'
   `;
 
   db.query(checkQuery, [quizId], (err, results) => {
@@ -190,7 +191,7 @@ exports.updateQuiz = (req, res) => {
     const query = `
       UPDATE quizzes
       SET title = ?, description = ?, module = ?, category = ?, published = ?
-      WHERE id_quiz = ?
+      WHERE id_quiz = ? AND kind = 'educational'
     `;
 
     db.query(
@@ -216,7 +217,7 @@ exports.deleteQuiz = (req, res) => {
   // Delete the quiz from the database
   const query = `
     DELETE FROM quizzes
-    WHERE id_quiz = ?
+    WHERE id_quiz = ? AND kind = 'educational'
   `;
 
   db.query(query, [quizId], (err, result) => {
@@ -243,7 +244,7 @@ exports.publishQuiz = (req, res) => {
   const checkQuery = `
     SELECT id_quiz
     FROM quizzes
-    WHERE id_quiz = ?
+    WHERE id_quiz = ? AND kind = 'educational'
   `;
 
   db.query(checkQuery, [quizId], (err, results) => {
@@ -261,7 +262,7 @@ exports.publishQuiz = (req, res) => {
     const query = `
       UPDATE quizzes
       SET published = TRUE
-      WHERE id_quiz = ?
+      WHERE id_quiz = ? AND kind = 'educational'
     `;
 
     db.query(query, [quizId], (err) => {
@@ -283,7 +284,7 @@ exports.unpublishQuiz = (req, res) => {
   const checkQuery = `
     SELECT id_quiz
     FROM quizzes
-    WHERE id_quiz = ?
+    WHERE id_quiz = ? AND kind = 'educational'
   `;
 
   db.query(checkQuery, [quizId], (err, results) => {
@@ -301,7 +302,7 @@ exports.unpublishQuiz = (req, res) => {
     const query = `
       UPDATE quizzes
       SET published = FALSE
-      WHERE id_quiz = ?
+      WHERE id_quiz = ? AND kind = 'educational'
     `;
 
     db.query(query, [quizId], (err) => {
@@ -372,7 +373,10 @@ exports.addQuestionToQuiz = async (req, res) => {
 
     // Check the quiz and its owner
     const [quizzes] = await connection.execute(
-      "SELECT id_quiz, id_user FROM quizzes WHERE id_quiz = ? FOR UPDATE",
+      `SELECT id_quiz, id_user
+       FROM quizzes
+       WHERE id_quiz = ? AND kind = 'educational'
+       FOR UPDATE`,
       [quizId]
     );
 
