@@ -13,8 +13,15 @@ import InjuryView from "../views/InjuryView.vue";
 import AthleteQuizzes from "../views/athlete/AthleteQuizzes.vue";
 import AthleteQuizView from "../views/athlete/AthleteQuizView.vue";
 import NutritionPlans from "../views/athlete/NutritionPlans.vue";
+import AthleteProfile from "../views/athlete/AthleteProfile.vue";
 
 const routes = [
+  {
+    path: "/athlete/profile",
+    name: "athlete-profile",
+    component: AthleteProfile,
+    meta: { role: "athlete" },
+  },
   {
     path: "/nutrition",
     name: "nutrition-plans",
