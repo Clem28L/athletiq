@@ -60,6 +60,10 @@ onMounted(async () => {
       <template v-else>
         <span class="nav-link">Welcome, {{ user.name }}</span>
 
+        <RouterLink v-if="user.role === 'athlete'" to="/athlete/profile" class="button button-outline">
+          My Profile
+        </RouterLink>
+
         <button class="button button-dark" @click="logoutUser">
           Log out
         </button>
@@ -67,3 +71,15 @@ onMounted(async () => {
     </nav>
   </header>
 </template>
+
+<style scoped>
+/* Let account buttons wrap on small screens. */
+.header,
+.header-nav {
+  flex-wrap: wrap;
+}
+
+.header-nav {
+  justify-content: flex-end;
+}
+</style>
