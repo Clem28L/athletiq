@@ -12,6 +12,7 @@ import QuizQuestions from "../views/expert/QuizQuestions.vue";
 import InjuryView from "../views/InjuryView.vue";
 import AthleteQuizzes from "../views/athlete/AthleteQuizzes.vue";
 import AthleteQuizView from "../views/athlete/AthleteQuizView.vue";
+import EquipmentView from "../views/athlete/EquipmentView.vue";
 
 const routes = [
   {
@@ -71,6 +72,12 @@ const routes = [
     path: "/athlete/quizzes/:id",
     name: "athlete-quiz",
     component: AthleteQuizView,
+    meta: { role: "athlete" },
+  },
+  {
+    path: "/equipment",
+    name: "equipment",
+    component: EquipmentView,
     meta: { role: "athlete" },
   },
   {
