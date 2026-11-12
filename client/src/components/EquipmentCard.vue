@@ -11,8 +11,8 @@ defineProps({
   },
 });
 
-// Envoie le choix à la page
-defineEmits(["choose"]);
+// Envoie le choix ou la demande de questionnaire
+defineEmits(["choose", "find"]);
 </script>
 
 <template>
@@ -39,8 +39,8 @@ defineEmits(["choose"]);
           type="button"
           class="button button-outline equipment-missing"
           :aria-pressed="item.has_equipment === false"
-          :aria-disabled="item.saving || item.has_equipment === false"
-          @click="$emit('choose', false)"
+          :aria-disabled="item.saving"
+          @click="$emit('find')"
         >
           {{ details.findLabel }}
         </button>

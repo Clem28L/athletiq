@@ -13,6 +13,7 @@ import InjuryView from "../views/InjuryView.vue";
 import AthleteQuizzes from "../views/athlete/AthleteQuizzes.vue";
 import AthleteQuizView from "../views/athlete/AthleteQuizView.vue";
 import EquipmentView from "../views/athlete/EquipmentView.vue";
+import EquipmentQuestionnaireView from "../views/athlete/EquipmentQuestionnaireView.vue";
 import NutritionPlans from "../views/athlete/NutritionPlans.vue";
 import AthleteProfile from "../views/athlete/AthleteProfile.vue";
 
@@ -92,6 +93,12 @@ const routes = [
     path: "/equipment",
     name: "equipment",
     component: EquipmentView,
+    meta: { role: "athlete" },
+  },
+  {
+    path: "/equipment/:category/questionnaire",
+    name: "equipment-questionnaire",
+    component: EquipmentQuestionnaireView,
     meta: { role: "athlete" },
   },
   {
