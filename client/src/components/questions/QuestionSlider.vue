@@ -17,8 +17,15 @@ function updateField(field, value) {
   emit("update:modelValue", data);
 }
 
+// Keep an empty field empty, or change its text into a number.
 function updateNumber(field, value) {
-  updateField(field, value === "" ? "" : Number(value));
+  let number = "";
+
+  if (value !== "") {
+    number = Number(value);
+  }
+
+  updateField(field, number);
 }
 
 // Show the preview only with valid limits
@@ -106,7 +113,6 @@ const validSlider = computed(() => {
     <label for="slider-unit">Unité (facultatif)</label>
     <input
       id="slider-unit"
-      type="text"
       maxlength="30"
       placeholder="Ex : minutes"
       :value="modelValue.unit"

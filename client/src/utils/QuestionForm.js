@@ -34,14 +34,8 @@ export function prepareQuestionData(form) {
   }
 
   if (form.type === "true_false") {
-    let trueIsCorrect = false;
-    let falseIsCorrect = false;
-
-    if (answers.boolean === "true") {
-      trueIsCorrect = true;
-    } else {
-      falseIsCorrect = true;
-    }
+    // Only one of the two answers is correct.
+    const trueIsCorrect = answers.boolean === "true";
 
     data.options.push({
       text: "Vrai",
@@ -50,7 +44,7 @@ export function prepareQuestionData(form) {
 
     data.options.push({
       text: "Faux",
-      is_correct: falseIsCorrect,
+      is_correct: !trueIsCorrect,
     });
   }
 
@@ -188,11 +182,8 @@ export function readQuestionData(question = null) {
 
     for (let i = 0; i < options.length; i++) {
       const option = options[i];
-      let isCorrect = false;
-
-      if (Number(option.is_correct) === 1) {
-        isCorrect = true;
-      }
+      // Change the saved value into true or false.
+      const isCorrect = Number(option.is_correct) === 1;
 
       form.answers.choice.push({
         text: option.text,
@@ -241,10 +232,8 @@ export function readQuestionData(question = null) {
     }
   }
 
-  if (form.type === "short_text") {
-    if (Array.isArray(question.accepted_texts)) {
-      form.answers.shortText = question.accepted_texts.join("\n");
-    }
+  if (form.type === "short_text" && Array.isArray(question.accepted_texts)) {
+    form.answers.shortText = question.accepted_texts.join("\n");
   }
 
   if (form.type === "ordering") {

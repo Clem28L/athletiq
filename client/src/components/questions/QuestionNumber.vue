@@ -16,9 +16,15 @@ function updateField(field, value) {
   emit("update:modelValue", data);
 }
 
-// Keep empty inputs empty
+// Keep an empty field empty, or change its text into a number.
 function updateNumber(field, value) {
-  updateField(field, value === "" ? "" : Number(value));
+  let number = "";
+
+  if (value !== "") {
+    number = Number(value);
+  }
+
+  updateField(field, number);
 }
 </script>
 
@@ -53,7 +59,6 @@ function updateNumber(field, value) {
     <label for="number-unit">Unité (facultatif)</label>
     <input
       id="number-unit"
-      type="text"
       maxlength="30"
       placeholder="Ex : minutes, km, g"
       :value="modelValue.unit"

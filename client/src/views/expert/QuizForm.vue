@@ -6,17 +6,9 @@ import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 
-// Get the quiz ID from the URL (undefined if we are on /new)
+// An ID in the URL means we are editing a quiz.
 const quizId = route.params.id;
-
-// We are in edit mode if the URL contains an ID
-let isEditMode_bool = false;
-if (quizId !== undefined) {
-  isEditMode_bool = true;
-}
-
-// Wrap it in ref() so Vue can react to changes
-const isEditMode = ref(isEditMode_bool);
+const isEditMode = quizId !== undefined;
 // Form fields
 const title = ref("");
 const description = ref("");
@@ -32,7 +24,9 @@ const loadingQuiz = ref(false);
 
 // Load the quiz data if we are in edit mode
 async function loadQuiz() {
-  if (!isEditMode.value) return;
+  if (!isEditMode) {
+    return;
+  }
 
   loadingQuiz.value = true;
 
@@ -90,7 +84,7 @@ async function handleSubmit() {
     let url = "http://localhost:3000/api/quizzes";
     let method = "POST";
 
-    if (isEditMode.value) {
+    if (isEditMode) {
       url = url + "/" + quizId;
       method = "PUT";
     }
@@ -118,7 +112,7 @@ async function handleSubmit() {
       return;
     }
 
-    // Success → go back to the list
+    // Go back to the list after saving.
     router.push("/expert/quizzes");
   } catch (err) {
     error.value = "Cannot reach the server.";
@@ -137,38 +131,30 @@ onMounted(loadQuiz);
 
 <template>
   <div class="quiz-form-page">
-    <!-- Header -->
     <header class="page-header">
       <div>
         <button class="btn-back" @click="goBack"><ArrowLeft :size="16" aria-hidden="true" /> Retour</button>
-        <h1>{{ isEditMode ? "Modifier le quiz" : "Nouveau quiz" }}</h1>
+        <h1 v-if="isEditMode">Modifier le quiz</h1>
+        <h1 v-else>Nouveau quiz</h1>
         <p class="subtitle">
-          {{
-            isEditMode
-              ? "Modifie les informations du quiz."
-              : "Remplis les informations de base."
-          }}
+          <template v-if="isEditMode">Modifie les informations du quiz.</template>
+          <template v-else>Remplis les informations de base.</template>
         </p>
       </div>
     </header>
 
-    <!-- Loading -->
     <div v-if="loadingQuiz" class="state-msg">Chargement du quiz...</div>
 
-    <!-- Form -->
     <form v-else class="quiz-form" @submit.prevent="handleSubmit">
-      <!-- Title -->
       <div class="form-group">
         <label for="title">Titre</label>
         <input
           id="title"
           v-model="title"
-          type="text"
           placeholder="Ex: Prévention des blessures au genou"
         />
       </div>
 
-      <!-- Description -->
       <div class="form-group">
         <label for="description">Description</label>
         <textarea
@@ -179,7 +165,6 @@ onMounted(loadQuiz);
         ></textarea>
       </div>
 
-      <!-- Type + Module -->
       <div class="form-row">
         <div class="form-group">
           <label for="type">Type</label>
@@ -203,18 +188,15 @@ onMounted(loadQuiz);
         </div>
       </div>
 
-      <!-- Category -->
       <div class="form-group">
         <label for="category">Catégorie</label>
         <input
           id="category"
           v-model="category"
-          type="text"
           placeholder="Ex: Mobilité, Hydratation, Chaussures..."
         />
       </div>
 
-      <!-- Published (only in edit mode) -->
       <div v-if="isEditMode" class="form-group checkbox-group">
         <label>
           <input type="checkbox" v-model="published" />
@@ -222,22 +204,16 @@ onMounted(loadQuiz);
         </label>
       </div>
 
-      <!-- Error -->
       <p v-if="error" class="error-msg">{{ error }}</p>
 
-      <!-- Actions -->
       <div class="form-actions">
         <button type="button" class="btn-secondary" @click="goBack">
           Annuler
         </button>
         <button type="submit" class="btn-primary" :disabled="loading">
-          {{
-            loading
-              ? "Sauvegarde..."
-              : isEditMode
-              ? "Enregistrer"
-              : "Créer le quiz"
-          }}
+          <template v-if="loading">Sauvegarde...</template>
+          <template v-else-if="isEditMode">Enregistrer</template>
+          <template v-else>Créer le quiz</template>
         </button>
       </div>
     </form>
@@ -245,8 +221,6 @@ onMounted(loadQuiz);
 </template>
 
 <style scoped>
-/* Reprends exactement le CSS du QuizForm.vue précédent + ces ajouts */
-
 .quiz-form-page {
   padding: 40px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
@@ -313,13 +287,6 @@ onMounted(loadQuiz);
   color: #1d1d1f;
 }
 
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #1d1d1f;
-}
-
 .form-group textarea {
   resize: vertical;
   line-height: 1.5;
@@ -358,15 +325,19 @@ onMounted(loadQuiz);
   border-top: 1px solid #e5e5e7;
 }
 
-.btn-primary {
-  background: #1d1d1f;
-  color: white;
-  border: none;
+.btn-primary,
+.btn-secondary {
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+}
+
+.btn-primary {
+  background: #1d1d1f;
+  color: white;
+  border: none;
 }
 .btn-primary:hover {
   background: #000;
@@ -380,11 +351,6 @@ onMounted(loadQuiz);
   background: white;
   color: #1d1d1f;
   border: 1px solid #d2d2d7;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
 }
 .btn-secondary:hover {
   background: #f5f5f7;

@@ -62,7 +62,11 @@ function getSelection(id) {
 
 // Check if another left item already uses this right item.
 function isUsed(rightId, leftId) {
-  for (const key in props.modelValue) {
+  const keys = Object.keys(props.modelValue);
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+
     if (key !== leftId && props.modelValue[key] === rightId) {
       return true;
     }
@@ -73,13 +77,8 @@ function isUsed(rightId, leftId) {
 
 // Update the match selected for one left item.
 function updatePair(id, value) {
-  const answer = {};
-
-  // Copy the other answers before changing this pair.
-  for (const key in props.modelValue) {
-    answer[key] = props.modelValue[key];
-  }
-
+  // Copy the answers before changing this pair.
+  const answer = { ...props.modelValue };
   answer[id] = value;
 
   emit("update:modelValue", answer);

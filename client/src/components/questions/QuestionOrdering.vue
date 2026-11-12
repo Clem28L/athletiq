@@ -44,7 +44,6 @@ function removeItem(index) {
       <span>{{ index + 1 }}.</span>
 
       <input
-        type="text"
         :value="item"
         :aria-label="'Position ' + (index + 1)"
         placeholder="Texte de l’élément"

@@ -29,7 +29,7 @@ const profile = ref({
 const activityFactor = ref("");
 const calorieChange = ref(0);
 
-// Use the local date so the birthday does not move to another day.
+// Calculate the age from the birth date.
 const age = computed(function () {
   if (!profile.value.birth_date) {
     return null;
@@ -37,50 +37,44 @@ const age = computed(function () {
 
   const birth = new Date(profile.value.birth_date + "T00:00:00");
   const now = new Date();
-  if (Number.isNaN(birth.getTime())) {
-    return null;
-  }
 
-  if (birth > now) {
+  // Stop if the date is invalid or in the future.
+  if (Number.isNaN(birth.getTime()) || birth > now) {
     return null;
   }
 
   let years = now.getFullYear() - birth.getFullYear();
-  // Remove one year if this year's birthday has not happened yet.
-  if (now.getMonth() < birth.getMonth()) {
+
+  const birthdayMonthIsLater = now.getMonth() < birth.getMonth();
+  const sameMonth = now.getMonth() === birth.getMonth();
+  const birthdayDayIsLater = now.getDate() < birth.getDate();
+
+  // Remove one year if the birthday has not happened yet.
+  if (birthdayMonthIsLater || (sameMonth && birthdayDayIsLater)) {
     years--;
-  } else if (now.getMonth() === birth.getMonth()) {
-    if (now.getDate() < birth.getDate()) {
-      years--;
-    }
   }
+
   return years;
 });
 
-// BMI uses kilograms and height in metres. Adult ranges start at age 18.
+
+// Calculate BMI for adults with a valid weight and height.
 const bmi = computed(function () {
   const weight = profile.value.weight_kg;
   const height = profile.value.height_cm;
-  // Wait for a valid birth date before using the adult calculation.
-  if (age.value === null) {
+
+  // Stop if the age is missing or below 18.
+  if (age.value === null || age.value < 18) {
     return null;
   }
 
-  if (age.value < 18) {
-    return null;
-  }
-  if (!Number.isFinite(weight)) {
-    return null;
-  }
-
-  if (weight <= 0) {
-    return null;
-  }
-  if (!Number.isFinite(height)) {
+  // The weight must be a number above zero.
+  if (!Number.isFinite(weight) || weight <= 0) {
     return null;
   }
 
-  if (height <= 0) {
+  // The height must be a number above zero.
+  if (!Number.isFinite(height) || height <= 0) {
     return null;
   }
 
@@ -109,15 +103,19 @@ const bmiRange = computed(function () {
   return "Obesity range";
 });
 
-// Estimate resting energy with the Mifflin-St Jeor formula.
+// Calculate resting energy and daily energy.
 const energy = computed(function () {
+  const weight = profile.value.weight_kg;
+  const height = profile.value.height_cm;
+  const sex = profile.value.sex;
+
+  // Wait for valid adult BMI data.
   if (bmi.value === null) {
     return null;
   }
 
-  const allowedSex = ["male", "female"];
-
-  if (!allowedSex.includes(profile.value.sex)) {
+  // The formula needs one of these two values.
+  if (sex !== "male" && sex !== "female") {
     return null;
   }
 
@@ -125,40 +123,37 @@ const energy = computed(function () {
     return null;
   }
 
-  // Apply each part of the formula separately: weight, height, then age.
-  let rest = 10 * profile.value.weight_kg;
-  rest += 6.25 * profile.value.height_cm;
-  rest -= 5 * age.value;
+  let rest = 10 * weight + 6.25 * height - 5 * age.value;
 
-  if (profile.value.sex === "male") {
+  if (sex === "male") {
     rest += 5;
   } else {
     rest -= 161;
   }
+
   if (rest <= 0) {
     return null;
   }
 
-  // Daily activity includes sport. Do not add running calories a second time.
   const daily = rest * activityFactor.value;
+
   return {
     rest: rest,
     daily: daily,
   };
 });
 
-// Compare a percentage change with estimated maintenance calories.
+// Apply the selected percentage to daily calories.
 const calorieScenario = computed(function () {
   if (!energy.value) {
     return null;
   }
 
-  // Do not show a weight-loss scenario below the adult underweight threshold.
-  if (bmi.value < 18.5) {
-    if (calorieChange.value < 0) {
-      return null;
-    }
+  // Hide a deficit when BMI is below 18.5.
+  if (bmi.value < 18.5 && calorieChange.value < 0) {
+    return null;
   }
+
   const changeFactor = 1 + calorieChange.value / 100;
   return energy.value.daily * changeFactor;
 });
@@ -198,7 +193,7 @@ async function request(method, body) {
   return data;
 }
 
-// Read the account profile before enabling the Save button.
+// Load the saved profile into the form.
 async function loadProfile() {
   loading.value = true;
   clearMessages();
@@ -207,22 +202,28 @@ async function loadProfile() {
     let data = await request("GET");
     profileExists.value = data !== null;
 
+    // Load old browser data when there is no server profile.
     if (!data) {
-      // Offer the old browser details for the first save to the account.
-      const saved = localStorage.getItem("athlete-profile-" + currentUser.id);
+      const saved = localStorage.getItem(
+        "athlete-profile-" + currentUser.id
+      );
+
       if (saved) {
         data = JSON.parse(saved);
-        message.value = "Your previous browser profile was loaded. Save it to your account below.";
+        message.value =
+          "Your previous browser profile was loaded. Save it to your account below.";
       }
     }
 
     if (data) {
-      // Copy only profile fields, not old calculator settings or running counts.
+      // Copy only the fields used by the form.
       const fields = Object.keys(profile.value);
       for (let i = 0; i < fields.length; i++) {
         const field = fields[i];
         let value = data[field];
-        if (value === null) {
+
+        // Show an empty field when no value is saved.
+        if (value === null || value === undefined) {
           value = "";
         }
 
@@ -236,26 +237,26 @@ async function loadProfile() {
   }
 }
 
-// Create the first profile, then update it on later saves.
+// Create or update the athlete's profile.
 async function saveProfile() {
-  // Wait for the current request, or for the first profile load.
-  if (loading.value) {
+  // Wait until the profile is loaded and no request is running.
+  if (loading.value || profileExists.value === null) {
     return;
   }
 
-  if (profileExists.value === null) {
-    return;
-  }
   clearMessages();
-  if (profile.value.birth_date) {
-    if (age.value === null) {
-      error.value = "Enter a valid birth date that is not in the future.";
-      return;
-    }
+
+  // Check the birth date only when the field is filled.
+  if (profile.value.birth_date && age.value === null) {
+    error.value = "Enter a valid birth date that is not in the future.";
+    return;
   }
 
   loading.value = true;
+
+  // Use POST for a new profile and PUT for a saved profile.
   let method = "POST";
+
   if (profileExists.value) {
     method = "PUT";
   }
@@ -267,10 +268,10 @@ async function saveProfile() {
   } catch (err) {
     error.value = "Unable to save your profile. " + err.message;
   } finally {
+    // Enable the form after success or failure.
     loading.value = false;
   }
 }
-
 // Clear the save message when the athlete changes a field.
 function clearMessages() {
   message.value = "";

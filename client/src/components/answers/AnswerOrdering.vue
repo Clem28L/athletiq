@@ -49,12 +49,8 @@ function getText(id) {
 
 // Move an item up with -1 or down with 1.
 function moveItem(index, direction) {
-  const ids = [];
-
   // Copy the displayed order before changing it.
-  for (let i = 0; i < displayedIds.value.length; i++) {
-    ids.push(displayedIds.value[i]);
-  }
+  const ids = [...displayedIds.value];
 
   const nextIndex = index + direction;
 
@@ -73,11 +69,7 @@ function moveItem(index, direction) {
 
 // Use the displayed order without moving an item.
 function confirmOrder() {
-  const ids = [];
-
-  for (let i = 0; i < displayedIds.value.length; i++) {
-    ids.push(displayedIds.value[i]);
-  }
+  const ids = [...displayedIds.value];
 
   emit("update:modelValue", ids);
 }

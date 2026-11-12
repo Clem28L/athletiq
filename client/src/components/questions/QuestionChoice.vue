@@ -9,10 +9,10 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-// Copy the options before changing them
+// Copy the list and the option before changing its field.
 function updateOption(index, field, value) {
-  const options = props.modelValue.map((option) => ({ ...option }));
-
+  const options = [...props.modelValue];
+  options[index] = { ...options[index] };
   options[index][field] = value;
 
   emit("update:modelValue", options);
@@ -55,7 +55,6 @@ function removeOption(index) {
       />
 
       <input
-        type="text"
         :value="option.text"
         :aria-label="'Option ' + (index + 1)"
         placeholder="Texte de l’option"

@@ -131,11 +131,6 @@ function selectOption(id, checked) {
   background: #f7f7f3;
 }
 
-.answer-option:focus-within {
-  outline: 2px solid #55544f;
-  outline-offset: 2px;
-}
-
 .answer-option span {
   overflow-wrap: anywhere;
 }

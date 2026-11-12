@@ -43,14 +43,13 @@ export function isAnswerComplete(question, value) {
       return false;
     }
 
-    // Check all category items, but only the left items for matching questions.
+    // Each category item needs an answer. For pairs, check only the left side.
     for (let i = 0; i < question.options.length; i++) {
       const option = question.options[i];
+      const needsAnswer = type === "categorization" || option.pair_side === "left";
 
-      if (type === "categorization" || option.pair_side === "left") {
-        if (!value[option.id]) {
-          return false;
-        }
+      if (needsAnswer && !value[option.id]) {
+        return false;
       }
     }
 

@@ -38,7 +38,7 @@
 }
 
 .athlete-quizzes-page .answer-fields input[type="number"],
-.athlete-quizzes-page .answer-fields input[type="text"],
+.athlete-quizzes-page .answer-fields input:not([type]),
 .athlete-quizzes-page .answer-fields select {
   width: 100%;
   min-width: 0;
@@ -49,14 +49,6 @@
   color: #33322f;
   font: inherit;
   font-size: 14px;
-}
-
-.athlete-quizzes-page .answer-fields input[type="number"]:focus,
-.athlete-quizzes-page .answer-fields input[type="text"]:focus,
-.athlete-quizzes-page .answer-fields input[type="range"]:focus,
-.athlete-quizzes-page .answer-fields select:focus {
-  outline: 2px solid #55544f;
-  outline-offset: 2px;
 }
 
 .athlete-quizzes-page .answer-fields input[type="range"] {

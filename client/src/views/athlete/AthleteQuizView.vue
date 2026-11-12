@@ -49,20 +49,23 @@ const currentQuestion = computed(function () {
   return questions.value[questionIndex.value];
 });
 
-// Keep each correction when the athlete visits another question.
+// Get the saved feedback for the current question.
 const currentFeedback = computed(function () {
-  if (currentQuestion.value) {
-    const feedback = feedbacks.value[currentQuestion.value.id_question];
-
-    if (feedback) {
-      return feedback;
-    }
+  if (!currentQuestion.value) {
+    return null;
   }
 
-  return null;
+  const questionId = currentQuestion.value.id_question;
+  const feedback = feedbacks.value[questionId];
+
+  if (!feedback) {
+    return null;
+  }
+
+  return feedback;
 });
 
-// Count completed answers without checking if they are correct.
+// Count complete answers, even when they are wrong.
 const answeredCount = computed(function () {
   let count = 0;
 
@@ -141,7 +144,6 @@ async function loadQuiz() {
     // Use each question's ID to store its own answer.
     for (let i = 0; i < questions.value.length; i++) {
       const question = questions.value[i];
-
       answers.value[question.id_question] = createAnswer(question);
     }
   } catch (err) {
@@ -349,17 +351,9 @@ onMounted(loadQuiz);
       Loading quiz...
     </p>
 
-    <div v-else-if="error" class="athlete-state" role="alert">
-      <p class="athlete-error">{{ error }}</p>
-
-      <button
-        type="button"
-        class="refresh-button"
-        @click="loadQuiz"
-      >
-        Retry
-      </button>
-    </div>
+    <p v-else-if="error" class="athlete-state athlete-error" role="alert">
+      {{ error }}
+    </p>
 
     <div v-else-if="quiz" class="quiz-player">
       <header class="athlete-page-header">
@@ -466,7 +460,6 @@ onMounted(loadQuiz);
 
           <AnswerShortText
             v-else-if="currentQuestion.type_answer === 'short_text'"
-            :question="currentQuestion"
             :feedback="currentFeedback"
             v-model="answers[currentQuestion.id_question]"
           />
@@ -503,14 +496,6 @@ onMounted(loadQuiz);
           {{ submitError }}
         </p>
 
-        <button
-          v-if="quizChanged"
-          type="button"
-          class="refresh-button"
-          @click="loadQuiz"
-        >
-          Reload quiz
-        </button>
 
         <div class="quiz-player-actions">
           <button

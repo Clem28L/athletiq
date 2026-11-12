@@ -19,9 +19,7 @@ const filteredQuizzes = computed(function () {
   for (let i = 0; i < quizzes.value.length; i++) {
     const quiz = quizzes.value[i];
 
-    if (filterModule.value === "all") {
-      results.push(quiz);
-    } else if (quiz.module === filterModule.value) {
+    if (filterModule.value === "all" || quiz.module === filterModule.value) {
       results.push(quiz);
     }
   }
@@ -58,7 +56,9 @@ async function loadQuizzes() {
 
 // Delete a quiz
 async function deleteQuiz(id) {
-  if (!confirm("Delete this quiz?")) return;
+  if (!confirm("Delete this quiz?")) {
+    return;
+  }
 
   try {
     const response = await fetch("http://localhost:3000/api/quizzes/" + id, {
@@ -73,7 +73,9 @@ async function deleteQuiz(id) {
       return;
     }
 
-    quizzes.value = quizzes.value.filter((q) => q.id_quiz !== id);
+    quizzes.value = quizzes.value.filter(function (quiz) {
+      return quiz.id_quiz !== id;
+    });
   } catch (err) {
     alert("Server error");
   }
@@ -138,7 +140,7 @@ onMounted(loadQuizzes);
 
         <p class="subtitle">
           {{ quizzes.length }} quizzes ·
-          {{ quizzes.filter((q) => q.published).length }} published
+          {{ quizzes.filter((quiz) => quiz.published).length }} published
         </p>
       </div>
 

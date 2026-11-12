@@ -30,13 +30,8 @@ function getSelection(id) {
 
 // Update the category selected for one item.
 function updateCategory(id, value) {
-  const answer = {};
-
-  // Copy the other answers before changing this item.
-  for (const key in props.modelValue) {
-    answer[key] = props.modelValue[key];
-  }
-
+  // Copy the answers before changing this item.
+  const answer = { ...props.modelValue };
   answer[id] = value;
 
   emit("update:modelValue", answer);

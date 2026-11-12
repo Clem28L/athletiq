@@ -188,14 +188,6 @@ async function toggleResults() {
   }
 }
 
-// Reload the list currently displayed.
-async function refreshPage() {
-  if (showResults.value) {
-    await loadResults();
-  } else {
-    await loadQuizzes();
-  }
-}
 
 // Open the selected quiz without creating an attempt yet.
 function startQuiz(id) {
@@ -222,15 +214,7 @@ onMounted(loadQuizzes);
         </p>
       </div>
 
-      <button
-        type="button"
-        class="refresh-button"
-        :disabled="loading"
-        @click="refreshPage"
-      >
-        <span v-if="loading">Loading...</span>
-        <span v-else>Refresh</span>
-      </button>
+
     </header>
 
     <div class="athlete-quiz-toolbar">
@@ -267,17 +251,9 @@ onMounted(loadQuizzes);
       Loading...
     </p>
 
-    <div v-else-if="error" class="athlete-state" role="alert">
-      <p class="athlete-error">{{ error }}</p>
-
-      <button
-        type="button"
-        class="refresh-button"
-        @click="refreshPage"
-      >
-        Retry
-      </button>
-    </div>
+    <p v-else-if="error" class="athlete-state athlete-error" role="alert">
+      {{ error }}
+    </p>
 
     <!-- Show saved results after loading has finished without an error. -->
     <div v-else-if="showResults">

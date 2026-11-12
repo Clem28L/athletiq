@@ -193,13 +193,6 @@
   resize: vertical;
 }
 
-.quiz-questions-page input:focus,
-.quiz-questions-page select:focus,
-.quiz-questions-page textarea:focus {
-  outline: 2px solid #55544f;
-  outline-offset: 2px;
-}
-
 .quiz-questions-page input[type="checkbox"] {
   flex-shrink: 0;
   width: 20px;

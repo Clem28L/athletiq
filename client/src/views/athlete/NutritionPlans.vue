@@ -48,7 +48,9 @@ async function request(path, method, body) {
 
 // Load the athlete's plans from the database.
 async function loadPlans(number = listPage.value) {
-  if (loading.value) return;
+  if (loading.value) {
+    return;
+  }
   loading.value = true;
   error.value = "";
 
@@ -99,11 +101,20 @@ function removeStop(index) {
   form.value.aid_stations.splice(index, 1);
 }
 
-// Add a food and let the athlete choose its share of food carbs.
+// Add an empty food product.
 function addFood() {
   let share = 0;
-  if (form.value.foods.length === 0) share = 100;
-  form.value.foods.push({ name: "", carbs_per_portion: "", share_percent: share });
+
+  // The first food gets the full share.
+  if (form.value.foods.length === 0) {
+    share = 100;
+  }
+
+  form.value.foods.push({
+    name: "",
+    carbs_per_portion: "",
+    share_percent: share,
+  });
 }
 
 // Remove the selected food from the form.
@@ -111,12 +122,23 @@ function removeFood(index) {
   form.value.foods.splice(index, 1);
 }
 
-// Add a drink. Its share is a percentage of the total fluid volume.
+// Add an empty drink.
 function addDrink() {
   let share = 0;
-  if (form.value.drinks.length === 0) share = 100;
-  form.value.drinks.push({ name: "", carbs_per_litre: 0, share_percent: share, sodium_mg_per_litre: "" });
+
+  // The first drink gets the full share.
+  if (form.value.drinks.length === 0) {
+    share = 100;
+  }
+
+  form.value.drinks.push({
+    name: "",
+    carbs_per_litre: 0,
+    share_percent: share,
+    sodium_mg_per_litre: "",
+  });
 }
+
 
 // Remove the selected drink from the form.
 function removeDrink(index) {
@@ -125,7 +147,9 @@ function removeDrink(index) {
 
 // Ask the server to calculate and save the plan in one request.
 async function validatePlan() {
-  if (loading.value) return;
+  if (loading.value) {
+    return;
+  }
   loading.value = true;
   error.value = "";
 
@@ -165,7 +189,9 @@ async function validatePlan() {
 
 // Open the full result saved in the database.
 async function openPlan(id) {
-  if (loading.value) return;
+  if (loading.value) {
+    return;
+  }
   loading.value = true;
   error.value = "";
 
@@ -179,30 +205,43 @@ async function openPlan(id) {
   }
 }
 
-// Delete the selected plan, then reload the current list page.
+// Delete a plan and update the list.
 async function deletePlan(id) {
-  if (loading.value) return;
-  if (!window.confirm("Delete this nutrition plan?")) return;
+  if (loading.value) {
+    return;
+  }
+
+  const confirmed = window.confirm("Delete this nutrition plan?");
+
+  if (!confirmed) {
+    return;
+  }
 
   loading.value = true;
   error.value = "";
+
   let deleted = false;
   let nextPage = listPage.value;
 
   try {
     await request("/" + id, "DELETE");
     deleted = true;
-    // Go back one page if we deleted its last card.
-    if (plans.value.length === 1 && nextPage > 1) nextPage--;
+
+    // Go back one page when its last plan is deleted.
+    if (plans.value.length === 1 && nextPage > 1) {
+      nextPage--;
+    }
   } catch (err) {
     error.value = "Unable to delete the plan. " + err.message;
   } finally {
     loading.value = false;
   }
 
-  if (deleted) await loadPlans(nextPage);
+  // Reload after loading is false so loadPlans can run.
+  if (deleted) {
+    await loadPlans(nextPage);
+  }
 }
-
 // Return to the list and load the latest saved plans.
 function showPlans() {
   page.value = "list";
@@ -223,7 +262,9 @@ function getShareTotal(products) {
 function hasHydrationProblem(plan) {
   for (let i = 0; i < plan.segments.length; i++) {
     const segment = plan.segments[i];
-    if (segment.fluid_ml > plan.flask_capacity_ml) return true;
+    if (segment.fluid_ml > plan.flask_capacity_ml) {
+      return true;
+    }
   }
   return false;
 }

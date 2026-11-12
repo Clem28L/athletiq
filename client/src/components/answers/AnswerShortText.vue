@@ -1,12 +1,8 @@
 <script setup>
 import { getFeedbackClass } from "@/utils/QuizAnswers";
 import AnswerStatusIcon from "./AnswerStatusIcon.vue";
-// Receive the question and the current text from the parent.
+// Receive the current text and feedback from the parent.
 defineProps({
-  question: {
-    type: Object,
-    required: true,
-  },
   modelValue: {
     type: String,
     required: true,
@@ -33,7 +29,6 @@ function updateAnswer(event) {
       <input
         :class="getFeedbackClass(feedback)"
         id="text-answer"
-        type="text"
         maxlength="255"
         :value="modelValue"
         @input="updateAnswer"

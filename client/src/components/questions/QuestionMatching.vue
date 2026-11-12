@@ -9,9 +9,10 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-// Each row contains one correct pair
+// Copy the list and the pair before changing its field.
 function updatePair(index, field, value) {
-  const pairs = props.modelValue.map((pair) => ({ ...pair }));
+  const pairs = [...props.modelValue];
+  pairs[index] = { ...pairs[index] };
   pairs[index][field] = value;
 
   emit("update:modelValue", pairs);
@@ -46,7 +47,6 @@ function removePair(index) {
       class="answer-row"
     >
       <input
-        type="text"
         :value="pair.left"
         :aria-label="'Paire ' + (index + 1) + ', élément de gauche'"
         placeholder="Ex : Un kilomètre"
@@ -57,7 +57,6 @@ function removePair(index) {
       <ArrowLeftRight :size="16" aria-hidden="true" />
 
       <input
-        type="text"
         :value="pair.right"
         :aria-label="'Paire ' + (index + 1) + ', élément de droite'"
         placeholder="Ex : 1000 mètres"

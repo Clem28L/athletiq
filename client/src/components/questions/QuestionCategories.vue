@@ -9,8 +9,10 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
+// Copy the list and the item before changing its field.
 function updateItem(index, field, value) {
-  const items = props.modelValue.map((item) => ({ ...item }));
+  const items = [...props.modelValue];
+  items[index] = { ...items[index] };
   items[index][field] = value;
 
   emit("update:modelValue", items);
@@ -46,7 +48,6 @@ function removeItem(index) {
       class="answer-row"
     >
       <input
-        type="text"
         :value="item.text"
         :aria-label="'Élément ' + (index + 1)"
         placeholder="Ex : Football"
@@ -55,7 +56,6 @@ function removeItem(index) {
       />
 
       <input
-        type="text"
         :value="item.category"
         :aria-label="'Catégorie de l’élément ' + (index + 1)"
         placeholder="Ex : Sport collectif"

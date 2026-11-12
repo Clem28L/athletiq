@@ -76,13 +76,7 @@ async function request(path, method = "GET", body = null) {
   const data = await response.json();
 
   if (!response.ok) {
-    let message = "La requête a échoué.";
-
-    if (data.error) {
-      message = data.error;
-    }
-
-    throw new Error(message);
+    throw new Error(data.error || "La requête a échoué.");
   }
 
   return data;
@@ -97,11 +91,7 @@ async function loadQuiz() {
     const data = await request("/quizzes/" + quizId);
 
     quiz.value = data;
-    questions.value = [];
-
-    if (Array.isArray(data.questions)) {
-      questions.value = data.questions;
-    }
+    questions.value = data.questions;
   } catch (err) {
     error.value = err.message;
   } finally {
@@ -165,34 +155,20 @@ async function saveQuestion() {
     return;
   }
 
-  if (
-    !Number.isInteger(form.value.points) ||
-    form.value.points < 1
-  ) {
-    formError.value = "Les points doivent être un entier supérieur à 0.";
-    return;
-  }
-
   saving.value = true;
 
   try {
     const data = prepareQuestionData(form.value);
-    let result;
+    let path = "/quizzes/" + quizId + "/questions";
+    let method = "POST";
 
+    // Update the question when it already exists.
     if (editingId.value !== null) {
-      result = await request(
-        "/questions/" + editingId.value,
-        "PUT",
-        data
-      );
-    } else {
-      result = await request(
-        "/quizzes/" + quizId + "/questions",
-        "POST",
-        data
-      );
+      path = "/questions/" + editingId.value;
+      method = "PUT";
     }
 
+    const result = await request(path, method, data);
     closeEditor();
     success.value = result.message;
 
@@ -244,35 +220,25 @@ function getAnswerLines(question) {
   const questionForm = readQuestionData(question);
   const answers = questionForm.answers;
 
-  if (questionForm.type === "numeric") {
-    lines.push(
-      "Réponse : " +
-        answers.number.correct_number +
-        " " +
-        answers.number.unit
-    );
+  // Number and slider questions share the same answer fields.
+  if (questionForm.type === "numeric" || questionForm.type === "slider") {
+    let answer = answers.number;
 
-    lines.push("Tolérance : " + answers.number.tolerance);
-  }
+    if (questionForm.type === "slider") {
+      answer = answers.slider;
+    }
 
-  if (questionForm.type === "slider") {
-    lines.push(
-      "Réponse : " +
-        answers.slider.correct_number +
-        " " +
-        answers.slider.unit
-    );
+    lines.push("Réponse : " + answer.correct_number + " " + answer.unit);
 
-    lines.push(
-      "Minimum : " +
-        answers.slider.min_value +
-        " / Maximum : " +
-        answers.slider.max_value +
-        " / Pas : " +
-        answers.slider.step_value
-    );
+    if (questionForm.type === "slider") {
+      lines.push(
+        "Minimum : " + answer.min_value +
+        " / Maximum : " + answer.max_value +
+        " / Pas : " + answer.step_value
+      );
+    }
 
-    lines.push("Tolérance : " + answers.slider.tolerance);
+    lines.push("Tolérance : " + answer.tolerance);
   }
 
   if (questionForm.type === "short_text") {
@@ -574,37 +540,37 @@ onMounted(loadQuiz);
                 />
 
                 <QuestionTrueFalse
-                  v-if="form.type === 'true_false'"
+                  v-else-if="form.type === 'true_false'"
                   v-model="form.answers.boolean"
                 />
 
                 <QuestionNumber
-                  v-if="form.type === 'numeric'"
+                  v-else-if="form.type === 'numeric'"
                   v-model="form.answers.number"
                 />
 
                 <QuestionSlider
-                  v-if="form.type === 'slider'"
+                  v-else-if="form.type === 'slider'"
                   v-model="form.answers.slider"
                 />
 
                 <QuestionShortText
-                  v-if="form.type === 'short_text'"
+                  v-else-if="form.type === 'short_text'"
                   v-model="form.answers.shortText"
                 />
 
                 <QuestionOrdering
-                  v-if="form.type === 'ordering'"
+                  v-else-if="form.type === 'ordering'"
                   v-model="form.answers.ordering"
                 />
 
                 <QuestionMatching
-                  v-if="form.type === 'matching'"
+                  v-else-if="form.type === 'matching'"
                   v-model="form.answers.matching"
                 />
 
                 <QuestionCategories
-                  v-if="form.type === 'categorization'"
+                  v-else-if="form.type === 'categorization'"
                   v-model="form.answers.categories"
                 />
 
