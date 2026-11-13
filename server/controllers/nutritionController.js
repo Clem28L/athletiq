@@ -3,32 +3,64 @@ const {
   validateNutritionPlan,
   calculateNutritionPlan,
 } = require("../services/nutritionService");
+const { validateRacePlan, calculateRacePlan, completeRacePlan } = require("../services/raceNutritionService");
+
+// Keep older saved plans working with their original calculator.
+function validatePlan(data) {
+  if (data && data.format === "timeline") {
+    return validateRacePlan(data);
+  }
+  return validateNutritionPlan(data);
+}
+
+// Use the calculator for this plan format.
+function calculatePlan(data) {
+  if (data.format === "timeline") {
+    return calculateRacePlan(data);
+  }
+  return calculateNutritionPlan(data);
+}
 
 // Calculate a plan without saving it.
 exports.calculatePlan = (req, res) => {
   const data = req.body;
-  const error = validateNutritionPlan(data);
+  const error = validatePlan(data);
 
   if (error) {
     return res.status(400).json({ error: error });
   }
 
-  const plan = calculateNutritionPlan(data);
+  const plan = calculatePlan(data);
   res.json(plan);
+};
+
+// Suggest additions without changing or saving the current plan.
+exports.suggestPlan = (req, res) => {
+  const error = validateRacePlan(req.body);
+  if (error) {
+    return res.status(400).json({ error: error });
+  }
+  const proposal = completeRacePlan(req.body);
+  // Keep generated items inside the same limits as manual items.
+  const proposalError = validateRacePlan(proposal.draft);
+  if (proposalError) {
+    return res.status(400).json({ error: "Unable to complete this plan. " + proposalError });
+  }
+  res.json(proposal);
 };
 
 // Calculate and save the athlete's plan.
 exports.createPlan = (req, res) => {
   const data = req.body;
   const userId = req.user.id_user;
-  const error = validateNutritionPlan(data);
+  const error = validatePlan(data);
 
   if (error) {
     return res.status(400).json({ error: error });
   }
 
   // Save the server result, not a result sent by the browser.
-  const plan = calculateNutritionPlan(data);
+  const plan = calculatePlan(data);
   let elevation = 0;
   let temperature = null;
 
@@ -63,6 +95,7 @@ exports.createPlan = (req, res) => {
     JSON.stringify(plan),
   ];
 
+  // Return the saved plan or a database error.
   db.query(query, values, (err, result) => {
     if (err) {
       return res.status(500).json({
@@ -101,6 +134,7 @@ exports.getMyPlans = (req, res) => {
     LIMIT 13 OFFSET ?
   `;
 
+  // Return this page of plans.
   db.query(query, [userId, offset], (err, results) => {
     if (err) {
       return res.status(500).json({
@@ -132,6 +166,7 @@ exports.getPlanById = (req, res) => {
     WHERE id_nutplan = ? AND id_user = ?
   `;
 
+  // Open the plan only if this athlete owns it.
   db.query(query, [planId, userId], (err, results) => {
     if (err) {
       return res.status(500).json({
@@ -147,8 +182,13 @@ exports.getPlanById = (req, res) => {
 
     const plan = results[0];
 
+    // Recheck saved timelines with the current comparison rules.
+    if (plan.plan_data.format === "timeline") {
+      plan.plan_data = calculateRacePlan(plan.plan_data.draft);
+    }
+
     // Add the new details to older plans without changing the saved data.
-    if (plan.plan_data.totals.food_packed_carbs_g === undefined) {
+    if (plan.plan_data.format !== "timeline" && plan.plan_data.totals.food_packed_carbs_g === undefined) {
       const saved = plan.plan_data;
       let foods = saved.foods;
       let drinks = saved.drinks;
@@ -180,6 +220,43 @@ exports.getPlanById = (req, res) => {
   });
 };
 
+// Update only a plan owned by the logged-in athlete.
+exports.updatePlan = (req, res) => {
+  const data = req.body;
+  const error = validateRacePlan(data);
+  if (error) {
+    return res.status(400).json({ error: error });
+  }
+  const plan = calculateRacePlan(data);
+  const query = `
+    UPDATE nutrition_plans
+    SET name = ?, distance_km = ?, estimated_duration = ?,
+        carbs_per_hour = ?, hydration_ml_per_hour = ?, aid_stations = ?, plan_data = ?
+    WHERE id_nutplan = ? AND id_user = ?
+  `;
+  const values = [
+    data.name.trim(),
+    data.distance_km,
+    data.estimated_duration,
+    data.carbs_per_hour,
+    data.hydration_ml_per_hour,
+    JSON.stringify(data.aid_stations),
+    JSON.stringify(plan),
+    req.params.id,
+    req.user.id_user
+  ];
+  // Return the saved plan or a database error.
+  db.query(query, values, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: "Unable to update the nutrition plan." });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Nutrition plan not found." });
+    }
+    res.json({ message: "Nutrition plan saved.", planId: Number(req.params.id), plan: plan });
+  });
+};
+
 // Delete one of the athlete's plans.
 exports.deletePlan = (req, res) => {
   const planId = req.params.id;
@@ -190,6 +267,7 @@ exports.deletePlan = (req, res) => {
     WHERE id_nutplan = ? AND id_user = ?
   `;
 
+  // Confirm that this athlete owned the deleted plan.
   db.query(query, [planId, userId], (err, result) => {
     if (err) {
       return res.status(500).json({
