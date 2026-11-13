@@ -4,6 +4,7 @@ const {
   getCategories,
   getQuestionnaire,
   submitQuestionnaire,
+  getSubmission,
   saveStatus,
 } = require("../controllers/equipmentController");
 
@@ -14,6 +15,7 @@ router.use(verifyToken, requireRole("athlete"));
 router.get("/categories", getCategories);
 router.get("/categories/:category/questionnaire", getQuestionnaire);
 router.post("/categories/:category/submissions", submitQuestionnaire);
+router.get("/submissions/:id", getSubmission);
 router.put("/categories/:category/status", saveStatus);
 
 module.exports = router;

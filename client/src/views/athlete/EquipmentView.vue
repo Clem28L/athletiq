@@ -1,23 +1,14 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { Backpack, Footprints, MountainSnow, Watch } from "@lucide/vue";
 import EquipmentCard from "@/components/EquipmentCard.vue";
 import { isAuthenticated } from "@/stores/auth";
 import { equipmentRequest } from "@/utils/equipmentApi";
-
-// Textes et icônes des catégories
-const categoryDetails = {
-  shoes: { name: "Running shoes", icon: Footprints, findLabel: "Find my shoes" },
-  trail_packs: { name: "Trail packs", icon: Backpack, findLabel: "Find my trail pack" },
-  gps_watches: { name: "GPS watches", icon: Watch, findLabel: "Find my GPS watch" },
-  trail_poles: { name: "Trail poles", icon: MountainSnow, findLabel: "Find my trail poles" },
-};
+import { categoryDetails } from "@/utils/equipmentCategories";
 
 const router = useRouter();
 const equipment = ref([]);
 const loading = ref(true);
-const loadError = ref("");
 
 // Retour à la connexion après déconnexion
 watch(isAuthenticated, (authenticated) => {
@@ -29,7 +20,6 @@ watch(isAuthenticated, (authenticated) => {
 // Charge les choix enregistrés
 async function loadEquipment() {
   loading.value = true;
-  loadError.value = "";
 
   try {
     const data = await equipmentRequest("/categories", "GET");
@@ -43,7 +33,7 @@ async function loadEquipment() {
       equipment.value = data;
     }
   } catch {
-    loadError.value = "Unable to load your equipment.";
+    router.replace("/");
   } finally {
     loading.value = false;
   }
@@ -102,13 +92,6 @@ onMounted(loadEquipment);
     <h1>Equipment</h1>
 
     <p v-if="loading" role="status">Loading…</p>
-    <div v-else-if="loadError">
-      <p role="alert">{{ loadError }}</p>
-      <button type="button" class="button button-outline" @click="loadEquipment">
-        Retry
-      </button>
-    </div>
-
     <div v-else class="equipment-grid">
       <EquipmentCard
         v-for="item in equipment"

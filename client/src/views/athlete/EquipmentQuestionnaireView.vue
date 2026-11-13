@@ -20,7 +20,6 @@ const questionTitle = ref(null);
 const loading = ref(true);
 const submitting = ref(false);
 const submitError = ref("");
-const saved = ref(false);
 let loadId = 0;
 
 // Question à afficher
@@ -48,7 +47,6 @@ async function loadQuestionnaire() {
   loading.value = true;
   submitting.value = false;
   submitError.value = "";
-  saved.value = false;
   questionnaire.value = null;
   questionIndex.value = 0;
   answers.value = {};
@@ -92,7 +90,7 @@ async function moveQuestion(step) {
 
 // Envoie les réponses quand l'athlète termine
 async function submitQuestionnaire() {
-  if (submitting.value || saved.value || !canContinue.value) {
+  if (submitting.value || !canContinue.value) {
     return;
   }
 
@@ -110,7 +108,10 @@ async function submitQuestionnaire() {
 
     const result = await equipmentRequest(path, "POST", body);
     if (result && requestId === loadId) {
-      saved.value = true;
+      await router.replace({
+        name: "equipment-recommendations",
+        params: { id: result.id_submission },
+      });
     }
   } catch (err) {
     if (requestId !== loadId) {
@@ -147,8 +148,6 @@ watch(isAuthenticated, (authenticated) => {
       </RouterLink>
 
       <p v-if="loading" class="athlete-state" role="status">Loading…</p>
-
-      <p v-else-if="saved" class="athlete-state" role="status">Answers saved.</p>
 
       <template v-else-if="currentQuestion">
         <header class="athlete-page-header">

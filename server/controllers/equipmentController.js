@@ -1,6 +1,8 @@
 const db = require("../config/db");
 const { loadQuizQuestions, getQuizVersion } = require("../services/quizData");
 const { normalizeEquipmentAnswers } = require("../services/equipmentAnswers");
+const { recommendEquipment, describeEquipmentMatch } = require("../services/equipmentRecommendations");
+const { loadCatalogue, loadSavedProducts, saveEquipmentSelection } = require("../services/equipmentSelections");
 
 const categories = ["shoes", "trail_packs", "gps_watches", "trail_poles"];
 
@@ -146,7 +148,7 @@ exports.getQuestionnaire = async (req, res) => {
   }
 };
 
-// Enregistre les réponses du questionnaire
+// Calcule et enregistre la sélection après validation
 exports.submitQuestionnaire = async (req, res) => {
   const category = req.params.category;
 
@@ -184,16 +186,72 @@ exports.submitQuestionnaire = async (req, res) => {
       return res.status(400).json({ error: "Invalid questionnaire answers." });
     }
 
-    const [result] = await connection.execute(
-      `INSERT INTO equipment_submissions (id_user, id_quiz, category, answers, created_at)
-       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-      [req.user.id_user, quiz.id_quiz, category, JSON.stringify(normalized)],
+    const catalogue = await loadCatalogue(connection, category, normalized.budget_max);
+    const products = recommendEquipment(category, normalized, catalogue);
+    const submissionId = await saveEquipmentSelection(
+      req.user.id_user, quiz.id_quiz, category, normalized, products,
     );
 
-    return res.status(201).json({ id_submission: result.insertId });
+    return res.status(201).json({ id_submission: submissionId });
   } catch (err) {
     console.error("Unable to save equipment answers:", err);
     return res.status(500).json({ error: "Unable to save the answers." });
+  }
+};
+
+// Rouvre la sélection du compte connecté
+exports.getSubmission = async (req, res) => {
+  const submissionId = Number(req.params.id);
+  if (!Number.isSafeInteger(submissionId) || submissionId < 1) {
+    return res.status(404).json({ error: "Selection not found." });
+  }
+
+  try {
+    const connection = db.promise();
+    const [rows] = await connection.execute(
+      `SELECT id_submission, category, answers
+       FROM equipment_submissions
+       WHERE id_submission = ? AND id_user = ?`,
+      [submissionId, req.user.id_user],
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Selection not found." });
+    }
+
+    const submission = rows[0];
+    let answers = submission.answers;
+    if (typeof answers === "string") {
+      answers = JSON.parse(answers);
+    }
+    const selectionSaved = answers._selection_saved === true;
+    delete answers._selection_saved;
+
+    let products = await loadSavedProducts(connection, submissionId);
+    if (!selectionSaved && products.length === 0) {
+      // Les anciennes réponses n'avaient pas encore de classement
+      const catalogue = await loadCatalogue(connection, submission.category, answers.budget_max);
+      products = recommendEquipment(submission.category, answers, catalogue);
+    } else {
+      for (const product of products) {
+        product.highlights = describeEquipmentMatch(submission.category, answers, product);
+      }
+    }
+
+    // Les cartes n'ont besoin que des champs affichés
+    for (const product of products) {
+      delete product.attributes;
+    }
+
+    return res.json({
+      id_submission: submission.id_submission,
+      category: submission.category,
+      answers,
+      products,
+    });
+  } catch (err) {
+    console.error("Unable to load equipment selection:", err);
+    return res.status(500).json({ error: "Unable to load the selection." });
   }
 };
 
