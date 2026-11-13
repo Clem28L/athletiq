@@ -1,9 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { logoutUser } from "@/stores/auth";
-import "@/assets/nutrition-plans.css";
+import { nutritionRequest } from "@/utils/nutritionApi";
 import NutritionPlanCard from "@/components/NutritionPlanCard.vue";
+import RaceNutritionPlanner from "@/components/RaceNutritionPlanner.vue";
+import "@/assets/nutrition-plans.css";
 
 const router = useRouter();
 const plans = ref([]);
@@ -12,50 +13,17 @@ const hasMore = ref(false);
 const page = ref("list");
 const loading = ref(false);
 const error = ref("");
-const form = ref(null);
 const selectedPlan = ref(null);
 
-// Call the server using the logged-in athlete's token.
-async function request(path, method, body) {
-  const options = {
-    method: method,
-    headers: {
-      Authorization: "Bearer " + localStorage.getItem("token"),
-    },
-  };
-
-  if (body) {
-    options.headers["Content-Type"] = "application/json";
-    options.body = JSON.stringify(body);
-  }
-
-  const response = await fetch("http://localhost:3000/api/nutrition" + path, options);
-
-  if (response.status === 401) {
-    logoutUser();
-    await router.push("/login");
-    throw new Error("Please log in again.");
-  }
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error);
-  }
-
-  return data;
-}
-
-// Load the athlete's plans from the database.
+// Load one page of saved plans.
 async function loadPlans(number = listPage.value) {
   if (loading.value) {
     return;
   }
   loading.value = true;
   error.value = "";
-
   try {
-    const data = await request("?page=" + number, "GET");
+    const data = await nutritionRequest(router, "?page=" + number);
     plans.value = data.plans;
     hasMore.value = data.has_more;
     listPage.value = number;
@@ -66,138 +34,28 @@ async function loadPlans(number = listPage.value) {
   }
 }
 
-// Open an empty form. Hourly targets are entered by the athlete.
+// Start a new plan with an empty race form.
 function newPlan() {
-  form.value = {
-    name: "",
-    distance_km: "",
-    elevation_gain: "",
-    estimated_duration: "",
-    temperature: "",
-    carbs_per_hour: "",
-    hydration_ml_per_hour: "",
-    flask_capacity_ml: "",
-    reuse_leftovers: false,
-    foods: [],
-    drinks: [{ name: "Water", carbs_per_litre: 0, share_percent: 100, sodium_mg_per_litre: "" }],
-    aid_stations: [],
-  };
+  selectedPlan.value = null;
   error.value = "";
-  page.value = "form";
+  page.value = "planner";
 }
 
-// Add a stop after the previous one.
-function addStop() {
-  form.value.aid_stations.push({
-    name: "",
-    distance_km: "",
-    time_minutes: "",
-    collect_products: false,
-  });
-}
-
-// Remove a stop from the form.
-function removeStop(index) {
-  form.value.aid_stations.splice(index, 1);
-}
-
-// Add an empty food product.
-function addFood() {
-  let share = 0;
-
-  // The first food gets the full share.
-  if (form.value.foods.length === 0) {
-    share = 100;
-  }
-
-  form.value.foods.push({
-    name: "",
-    carbs_per_portion: "",
-    share_percent: share,
-  });
-}
-
-// Remove the selected food from the form.
-function removeFood(index) {
-  form.value.foods.splice(index, 1);
-}
-
-// Add an empty drink.
-function addDrink() {
-  let share = 0;
-
-  // The first drink gets the full share.
-  if (form.value.drinks.length === 0) {
-    share = 100;
-  }
-
-  form.value.drinks.push({
-    name: "",
-    carbs_per_litre: 0,
-    share_percent: share,
-    sodium_mg_per_litre: "",
-  });
-}
-
-
-// Remove the selected drink from the form.
-function removeDrink(index) {
-  form.value.drinks.splice(index, 1);
-}
-
-// Ask the server to calculate and save the plan in one request.
-async function validatePlan() {
-  if (loading.value) {
-    return;
-  }
-  loading.value = true;
-  error.value = "";
-
-  // Empty optional fields are saved as null, not as empty text.
-  if (form.value.elevation_gain === "") {
-    form.value.elevation_gain = null;
-  }
-  if (form.value.temperature === "") {
-    form.value.temperature = null;
-  }
-
-  for (let i = 0; i < form.value.drinks.length; i++) {
-    if (form.value.drinks[i].sodium_mg_per_litre === "") {
-      form.value.drinks[i].sodium_mg_per_litre = null;
-    }
-  }
-
-  try {
-    const data = await request("", "POST", form.value);
-
-    selectedPlan.value = {
-      id_nutplan: data.planId,
-      name: form.value.name,
-      distance_km: form.value.distance_km,
-      elevation_gain: form.value.elevation_gain,
-      estimated_duration: form.value.estimated_duration,
-      temperature: form.value.temperature,
-      plan_data: data.plan,
-    };
-    page.value = "result";
-  } catch (err) {
-    error.value = "Unable to save the plan. " + err.message;
-  } finally {
-    loading.value = false;
-  }
-}
-
-// Open the full result saved in the database.
+// Open the saved plan in its matching view.
 async function openPlan(id) {
   if (loading.value) {
     return;
   }
   loading.value = true;
   error.value = "";
-
   try {
-    selectedPlan.value = await request("/" + id, "GET");
-    page.value = "result";
+    selectedPlan.value = await nutritionRequest(router, "/" + id);
+    // Older plans keep their original result view.
+    if (selectedPlan.value.plan_data.format === "timeline") {
+      page.value = "planner";
+    } else {
+      page.value = "result";
+    }
   } catch (err) {
     error.value = "Unable to open the plan. " + err.message;
   } finally {
@@ -205,88 +63,62 @@ async function openPlan(id) {
   }
 }
 
-// Delete a plan and update the list.
+// Delete the plan and refresh the list.
 async function deletePlan(id) {
-  if (loading.value) {
+  if (loading.value || !window.confirm("Delete this nutrition plan?")) {
     return;
   }
-
-  const confirmed = window.confirm("Delete this nutrition plan?");
-
-  if (!confirmed) {
-    return;
-  }
-
   loading.value = true;
   error.value = "";
-
-  let deleted = false;
   let nextPage = listPage.value;
-
   try {
-    await request("/" + id, "DELETE");
-    deleted = true;
-
-    // Go back one page when its last plan is deleted.
+    await nutritionRequest(router, "/" + id, "DELETE");
     if (plans.value.length === 1 && nextPage > 1) {
       nextPage--;
     }
   } catch (err) {
     error.value = "Unable to delete the plan. " + err.message;
+    return;
   } finally {
     loading.value = false;
   }
-
-  // Reload after loading is false so loadPlans can run.
-  if (deleted) {
-    await loadPlans(nextPage);
-  }
+  await loadPlans(nextPage);
 }
-// Return to the list and load the latest saved plans.
+
+// Return to the first page of saved plans.
 function showPlans() {
   page.value = "list";
   selectedPlan.value = null;
   loadPlans(1);
 }
 
-// Add the product shares so the athlete can check the total.
-function getShareTotal(products) {
-  let total = 0;
-  for (let i = 0; i < products.length; i++) {
-    total += Number(products[i].share_percent);
-  }
-  return total;
-}
-
-// Check all sections, including those from older saved plans.
+// Check flask capacity in older saved plans.
 function hasHydrationProblem(plan) {
   for (let i = 0; i < plan.segments.length; i++) {
-    const segment = plan.segments[i];
-    if (segment.fluid_ml > plan.flask_capacity_ml) {
+    if (plan.segments[i].fluid_ml > plan.flask_capacity_ml) {
       return true;
     }
   }
   return false;
 }
 
-// Show fractional food portions with enough detail to understand the split.
+// Show food portions with up to two decimals.
 function formatPortions(value) {
   return Number(value).toLocaleString("en-GB", { maximumFractionDigits: 2 });
 }
 
-// Show amounts with at most one decimal place.
+// Keep saved amounts easy to read.
 function formatNumber(value) {
   return Number(value).toLocaleString("en-GB", { maximumFractionDigits: 1 });
 }
 
-// Show elapsed minutes as hours and minutes.
+// Show the race duration in hours and minutes.
 function formatTime(minutes) {
-  const totalMinutes = Math.round(minutes);
-  const hours = Math.floor(totalMinutes / 60);
-  const rest = totalMinutes % 60;
-  return hours + " h " + rest + " min";
+  const total = Math.round(minutes);
+  return Math.floor(total / 60) + " h " + (total % 60) + " min";
 }
 
+// Load the plan list when the page opens.
 onMounted(function () {
   loadPlans(1);
 });
@@ -294,10 +126,9 @@ onMounted(function () {
 
 <template>
   <div class="nutrition-page">
-    <header class="nutrition-header">
+    <header class="nutrition-header race-no-print">
       <div>
         <h1>Nutrition Plans</h1>
-        <p>Plan your food and drinks between aid stations.</p>
       </div>
       <div class="nutrition-actions">
         <button v-if="page !== 'list'" class="button button-outline" :disabled="loading" @click="showPlans">
@@ -306,16 +137,13 @@ onMounted(function () {
         <button v-if="page === 'list'" class="button button-outline" :disabled="loading" @click="loadPlans()">
           Refresh
         </button>
-        <button v-if="page !== 'form'" class="button button-dark" :disabled="loading" @click="newPlan">
+        <button v-if="page !== 'planner'" class="button button-dark" :disabled="loading" @click="newPlan">
           + New Nutrition Plan
         </button>
       </div>
     </header>
-
     <p v-if="error" class="nutrition-error" role="alert">{{ error }}</p>
-    <p v-if="loading" class="nutrition-message">Loading...</p>
-
-    <!-- Saved plans -->
+    <p v-if="loading && page !== 'planner'" class="nutrition-message">Loading...</p>
     <section v-if="page === 'list' && !loading">
       <div v-if="plans.length === 0 && !error" class="nutrition-empty">
         <h2>No plans yet</h2>
@@ -323,133 +151,27 @@ onMounted(function () {
         <button class="button button-dark" @click="newPlan">Create a Plan</button>
       </div>
       <div v-else class="nutrition-grid">
-        <NutritionPlanCard v-for="plan in plans" :key="plan.id_nutplan" :plan="plan" @open="openPlan" @delete="deletePlan" />
+        <NutritionPlanCard
+          v-for="plan in plans"
+          :key="plan.id_nutplan"
+          :plan="plan"
+          @open="openPlan"
+          @delete="deletePlan"
+        />
       </div>
       <div v-if="listPage > 1 || hasMore" class="nutrition-pagination">
-        <button class="button button-outline" :disabled="listPage === 1" @click="loadPlans(listPage - 1)">Previous</button>
+        <button class="button button-outline" :disabled="listPage === 1" @click="loadPlans(listPage - 1)">
+          Previous
+        </button>
         <span>Page {{ listPage }}</span>
-        <button class="button button-outline" :disabled="!hasMore" @click="loadPlans(listPage + 1)">Next</button>
+        <button class="button button-outline" :disabled="!hasMore" @click="loadPlans(listPage + 1)">
+          Next
+        </button>
       </div>
     </section>
+    <RaceNutritionPlanner v-if="page === 'planner'" :saved-plan="selectedPlan" @busy="loading = $event" />
 
-    <!-- The browser checks required fields. The server checks the full form. -->
-    <form v-if="page === 'form'" @submit.prevent="validatePlan">
-      <fieldset class="nutrition-form" :disabled="loading">
-        <section class="nutrition-panel">
-          <h2>1. Your race</h2>
-          <p class="nutrition-help">Elevation and temperature are saved for information. They do not change this calculation.</p>
-          <div class="nutrition-fields">
-            <label>Race name
-              <input v-model="form.name" maxlength="100" required />
-            </label>
-            <label>Distance (km)
-              <input v-model.number="form.distance_km" type="number" min="0.01" max="9999.99" step="0.01" required />
-            </label>
-            <label>Estimated duration (minutes)
-              <input v-model.number="form.estimated_duration" type="number" min="1" step="1" required />
-            </label>
-            <label>Elevation gain (m, optional)
-              <input v-model.number="form.elevation_gain" type="number" min="0" step="1" />
-            </label>
-            <label>Temperature (°C, optional)
-              <input v-model.number="form.temperature" type="number" min="-99.9" max="99.9" step="0.1" />
-            </label>
-          </div>
-        </section>
-
-        <section class="nutrition-panel">
-          <h2>2. Your hourly targets</h2>
-          <p class="nutrition-help">Enter your planned targets. This calculator does not choose them from your weight or level.</p>
-          <div class="nutrition-fields">
-            <label>Carbohydrates (g/hour)
-              <input v-model.number="form.carbs_per_hour" type="number" min="0.01" step="0.01" required />
-            </label>
-            <label>Total fluid (ml/hour)
-              <input v-model.number="form.hydration_ml_per_hour" type="number" min="1" step="1" required />
-            </label>
-            <label>Total flask capacity (ml)
-              <input v-model.number="form.flask_capacity_ml" type="number" min="1" step="1" required />
-              <small>Add the capacity of all your flasks.</small>
-            </label>
-          </div>
-        </section>
-
-        <section class="nutrition-panel">
-          <h2>3. Your food and drink</h2>
-          <p class="nutrition-help">Use the amounts on your product labels. Choose your own split between products.</p>
-          <h3>Food products</h3>
-          <p class="nutrition-help">Shares split the food carbohydrates left after drinks. Food shares must total 100%. You can leave this list empty if drinks cover the full carb target.</p>
-          <div v-for="(food, index) in form.foods" :key="index" class="nutrition-stop">
-            <div class="nutrition-section-header">
-              <h3>Food {{ index + 1 }}</h3>
-              <button type="button" class="button button-outline" @click="removeFood(index)">Remove</button>
-            </div>
-            <div class="nutrition-fields">
-              <label>Product name<input v-model="food.name" required /></label>
-              <label>Carbohydrates per portion (g)<input v-model.number="food.carbs_per_portion" type="number" min="0.01" step="0.01" required /></label>
-              <label>Share of food carbohydrates (%)<input v-model.number="food.share_percent" type="number" min="0" max="100" step="1" required /></label>
-            </div>
-          </div>
-          <button type="button" class="button button-outline" @click="addFood">+ Add Food Product</button>
-          <p v-if="form.foods.length > 0" class="nutrition-help nutrition-share-total">Food shares: {{ getShareTotal(form.foods) }} / 100%</p>
-          <label class="nutrition-checkbox">
-            <input v-model="form.reuse_leftovers" type="checkbox" />
-            Reuse leftover food at the next collection point
-          </label>
-          <p class="nutrition-help">Off by default. Enable only if you can carry and use the remaining food, including opened portions. Food targets stay the same.</p>
-
-          <h3 class="nutrition-drinks-title">Drinks</h3>
-          <p class="nutrition-help">Include plain water as a drink with 0 g/L. Drink shares split the fluid volume and must total 100%. Sodium is optional label information; it does not set a sodium target.</p>
-          <div v-for="(drink, index) in form.drinks" :key="index" class="nutrition-stop">
-            <div class="nutrition-section-header">
-              <h3>Drink {{ index + 1 }}</h3>
-              <button type="button" class="button button-outline" @click="removeDrink(index)">Remove</button>
-            </div>
-            <div class="nutrition-fields">
-              <label>Drink name<input v-model="drink.name" required /></label>
-              <label>Carbohydrates (g/litre)<input v-model.number="drink.carbs_per_litre" type="number" min="0" step="0.01" required /></label>
-              <label>Share of total fluid (%)<input v-model.number="drink.share_percent" type="number" min="0" max="100" step="1" required /></label>
-              <label>Sodium (mg/litre, optional)<input v-model.number="drink.sodium_mg_per_litre" type="number" min="0" step="0.1" /></label>
-            </div>
-          </div>
-          <button type="button" class="button button-outline" @click="addDrink">+ Add Drink</button>
-          <p class="nutrition-help nutrition-share-total">Drink shares: {{ getShareTotal(form.drinks) }} / 100%</p>
-        </section>
-
-        <section class="nutrition-panel">
-          <h2>4. Aid stations</h2>
-          <p class="nutrition-help">Add stops in race order. Times are minutes from the start. Water refills are assumed available at every stop.</p>
-          <p v-if="form.aid_stations.length === 0" class="nutrition-help">No stops added: carry everything from the start.</p>
-          <div v-for="(stop, index) in form.aid_stations" :key="index" class="nutrition-stop">
-            <div class="nutrition-section-header">
-              <h3>Stop {{ index + 1 }}</h3>
-              <button type="button" class="button button-outline" @click="removeStop(index)">Remove</button>
-            </div>
-            <div class="nutrition-fields">
-              <label>Aid station name (optional)<input v-model="stop.name" placeholder="Leave empty for Stop 1, Stop 2..." /></label>
-              <label>Distance from start (km)
-                <input v-model.number="stop.distance_km" type="number" min="0.01" :max="form.distance_km" step="0.01" required />
-              </label>
-              <label>Elapsed time from start (minutes)
-                <input v-model.number="stop.time_minutes" type="number" min="1" :max="form.estimated_duration" step="1" required />
-              </label>
-            </div>
-            <label class="nutrition-checkbox">
-              <input v-model="stop.collect_products" type="checkbox" />
-              I can collect my own food products here
-            </label>
-          </div>
-          <button type="button" class="button button-outline" @click="addStop">+ Add Aid Station</button>
-        </section>
-
-        <div class="nutrition-submit">
-          <p class="nutrition-help">Validate Plan calculates and saves your plan.</p>
-          <button type="submit" class="button button-dark">Validate Plan</button>
-        </div>
-      </fieldset>
-    </form>
-
-    <!-- Both new and previously saved plans use the same result view. -->
+    <!-- Keep previously saved plans readable. -->
     <section v-if="page === 'result' && selectedPlan" class="nutrition-result">
       <div v-if="hasHydrationProblem(selectedPlan.plan_data)" class="nutrition-alert" role="status">
         <strong>Your hydration plan is not fully feasible.</strong>
