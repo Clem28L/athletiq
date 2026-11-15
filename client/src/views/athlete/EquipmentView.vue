@@ -1,22 +1,14 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { Backpack, Footprints, MountainSnow, Watch } from "@lucide/vue";
 import EquipmentCard from "@/components/EquipmentCard.vue";
-import { isAuthenticated, logoutUser } from "@/stores/auth";
-
-// Textes et icônes des catégories
-const categoryDetails = {
-  shoes: { name: "Running shoes", icon: Footprints, findLabel: "Find my shoes" },
-  trail_packs: { name: "Trail packs", icon: Backpack, findLabel: "Find my trail pack" },
-  gps_watches: { name: "GPS watches", icon: Watch, findLabel: "Find my GPS watch" },
-  trail_poles: { name: "Trail poles", icon: MountainSnow, findLabel: "Find my trail poles" },
-};
+import { isAuthenticated } from "@/stores/auth";
+import { equipmentRequest } from "@/utils/equipmentApi";
+import { categoryDetails } from "@/utils/equipmentCategories";
 
 const router = useRouter();
 const equipment = ref([]);
 const loading = ref(true);
-const loadError = ref("");
 
 // Retour à la connexion après déconnexion
 watch(isAuthenticated, (authenticated) => {
@@ -25,33 +17,9 @@ watch(isAuthenticated, (authenticated) => {
   }
 });
 
-// Appelle l'API avec le token
-async function equipmentRequest(path, method, body) {
-  const response = await fetch("http://localhost:3000/api/equipment" + path, {
-    method,
-    headers: {
-      Authorization: "Bearer " + localStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-    body,
-  });
-
-  // Session expirée
-  if (response.status === 401) {
-    logoutUser();
-    return null;
-  }
-
-  if (!response.ok) {
-    throw new Error("Equipment request failed.");
-  }
-  return response.json();
-}
-
 // Charge les choix enregistrés
 async function loadEquipment() {
   loading.value = true;
-  loadError.value = "";
 
   try {
     const data = await equipmentRequest("/categories", "GET");
@@ -65,7 +33,7 @@ async function loadEquipment() {
       equipment.value = data;
     }
   } catch {
-    loadError.value = "Unable to load your equipment.";
+    router.replace("/");
   } finally {
     loading.value = false;
   }
@@ -73,9 +41,13 @@ async function loadEquipment() {
 
 // Enregistre le choix d'une tuile
 async function saveStatus(item, hasEquipment) {
-  // Évite les envois en double
-  if (item.saving || item.has_equipment === hasEquipment) {
-    return;
+  if (item.saving) {
+    return false;
+  }
+
+  // Le choix est déjà enregistré
+  if (item.has_equipment === hasEquipment) {
+    return true;
   }
 
   item.saving = true;
@@ -86,14 +58,28 @@ async function saveStatus(item, hasEquipment) {
     const body = JSON.stringify({ has_equipment: hasEquipment });
     const saved = await equipmentRequest(path, "PUT", body);
 
-    // Sauvegarde confirmée
-    if (saved) {
-      item.has_equipment = saved.has_equipment;
+    if (!saved) {
+      return false;
     }
+
+    item.has_equipment = saved.has_equipment;
+    return true;
   } catch {
     item.error = "Couldn't save. Try again.";
+    return false;
   } finally {
     item.saving = false;
+  }
+}
+
+// Ouvre le questionnaire après avoir enregistré le choix
+async function openQuestionnaire(item) {
+  const saved = await saveStatus(item, false);
+  if (saved && isAuthenticated.value) {
+    router.push({
+      name: "equipment-questionnaire",
+      params: { category: item.category },
+    });
   }
 }
 
@@ -106,13 +92,6 @@ onMounted(loadEquipment);
     <h1>Equipment</h1>
 
     <p v-if="loading" role="status">Loading…</p>
-    <div v-else-if="loadError">
-      <p role="alert">{{ loadError }}</p>
-      <button type="button" class="button button-outline" @click="loadEquipment">
-        Retry
-      </button>
-    </div>
-
     <div v-else class="equipment-grid">
       <EquipmentCard
         v-for="item in equipment"
@@ -120,6 +99,7 @@ onMounted(loadEquipment);
         :item="item"
         :details="categoryDetails[item.category]"
         @choose="saveStatus(item, $event)"
+        @find="openQuestionnaire(item)"
       />
     </div>
   </div>

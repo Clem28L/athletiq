@@ -82,4 +82,10 @@ onMounted(async () => {
 .header-nav {
   justify-content: flex-end;
 }
+
+@media (max-width: 560px) {
+  .header {
+    padding-left: 88px;
+  }
+}
 </style>

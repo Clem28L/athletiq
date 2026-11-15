@@ -11,8 +11,8 @@ defineProps({
   },
 });
 
-// Envoie le choix à la page
-defineEmits(["choose"]);
+// Envoie le choix ou la demande de questionnaire
+defineEmits(["choose", "find"]);
 </script>
 
 <template>
@@ -39,12 +39,21 @@ defineEmits(["choose"]);
           type="button"
           class="button button-outline equipment-missing"
           :aria-pressed="item.has_equipment === false"
-          :aria-disabled="item.saving || item.has_equipment === false"
-          @click="$emit('choose', false)"
+          :aria-disabled="item.saving"
+          @click="$emit('find')"
         >
-          {{ details.findLabel }}
+          <span v-if="item.latest_submission_id && item.has_equipment === false">Retake questionnaire</span>
+          <span v-else>{{ details.findLabel }}</span>
         </button>
       </div>
+
+      <RouterLink
+        v-if="item.latest_submission_id"
+        class="button button-outline equipment-selection"
+        :to="{ name: 'equipment-recommendations', params: { id: item.latest_submission_id } }"
+      >
+        View my selection
+      </RouterLink>
 
       <p v-if="item.error" class="equipment-error" role="alert">{{ item.error }}</p>
     </div>
@@ -110,6 +119,11 @@ h2 {
 
 .equipment-choices .button[aria-disabled="true"] {
   cursor: default;
+}
+
+.equipment-selection {
+  width: 100%;
+  margin-top: 10px;
 }
 
 /* Couleur du choix enregistré */
