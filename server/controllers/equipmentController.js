@@ -1,8 +1,13 @@
 const db = require("../config/db");
 const { loadQuizQuestions, getQuizVersion } = require("../services/quizData");
 const { normalizeEquipmentAnswers } = require("../services/equipmentAnswers");
-const { recommendEquipment, describeEquipmentMatch } = require("../services/equipmentRecommendations");
-const { loadCatalogue, loadSavedProducts, saveEquipmentSelection } = require("../services/equipmentSelections");
+const { recommendEquipment } = require("../services/equipmentRecommendations");
+const {
+  loadCatalogue,
+  loadSavedProducts,
+  loadProduct,
+  saveEquipmentSelection,
+} = require("../services/equipmentSelections");
 
 const categories = ["shoes", "trail_packs", "gps_watches", "trail_poles"];
 
@@ -224,21 +229,18 @@ exports.getSubmission = async (req, res) => {
     if (typeof answers === "string") {
       answers = JSON.parse(answers);
     }
-    const selectionSaved = answers._selection_saved === true;
+    const fullSelection = answers._selection_saved === "all_matches";
     delete answers._selection_saved;
 
-    let products = await loadSavedProducts(connection, submissionId);
-    if (!selectionSaved && products.length === 0) {
-      // Les anciennes réponses n'avaient pas encore de classement
+    let products;
+    if (!fullSelection) {
+      // Recalcule les anciennes sélections limitées à cinq produits
       const catalogue = await loadCatalogue(connection, submission.category, answers.budget_max);
       products = recommendEquipment(submission.category, answers, catalogue);
     } else {
-      for (const product of products) {
-        product.highlights = describeEquipmentMatch(submission.category, answers, product);
-      }
+      products = await loadSavedProducts(connection, submissionId);
     }
 
-    // Les cartes n'ont besoin que des champs affichés
     for (const product of products) {
       delete product.attributes;
     }
@@ -252,6 +254,26 @@ exports.getSubmission = async (req, res) => {
   } catch (err) {
     console.error("Unable to load equipment selection:", err);
     return res.status(500).json({ error: "Unable to load the selection." });
+  }
+};
+
+// Charge les caractéristiques et les offres du produit
+exports.getProduct = async (req, res) => {
+  const productId = Number(req.params.id);
+  if (!Number.isSafeInteger(productId) || productId < 1) {
+    return res.status(404).json({ error: "Product not found." });
+  }
+
+  try {
+    const product = await loadProduct(db.promise(), productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found." });
+    }
+
+    return res.json(product);
+  } catch (err) {
+    console.error("Unable to load equipment product:", err);
+    return res.status(500).json({ error: "Unable to load product details." });
   }
 };
 

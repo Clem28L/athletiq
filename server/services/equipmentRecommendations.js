@@ -1,36 +1,7 @@
-const shoeSurfaces = {
-  road: "Road running",
-  trail: "Trail running",
-  mixed: "Road and light trails",
-};
-
-const shoeSessions = {
-  easy: "Easy runs",
-  long_run: "Long runs",
-  tempo: "Tempo sessions",
-  speed: "Speed sessions",
-  race: "Race use",
-};
-
-const shoeTerrains = {
-  gravel: "Gravel and smooth paths",
-  technical: "Technical trails",
-  mud: "Muddy trails",
-};
-
-const shoePlates = {
-  carbon: "Carbon plate",
-  none: "No plate",
-};
-
+const shoeSurfaces = ["road", "trail", "mixed"];
+const shoeSessions = ["easy", "long_run", "tempo", "speed", "race"];
+const shoeTerrains = ["gravel", "technical", "mud"];
 const packVolumes = { short: 3, medium: 6, long: 10, ultra: 15 };
-
-const gpsModes = {
-  "tous systèmes": "all systems",
-  "GPS seul": "GPS only",
-  "précision maximale": "max accuracy",
-  "GPS continu": "continuous GPS",
-};
 
 // Lit un nombre sans assimiler une donnée manquante à zéro.
 function readNumber(value) {
@@ -82,38 +53,33 @@ function getDropBand(drop) {
 // Filtre la surface et classe les préférences de course.
 function matchShoes(answers, attributes) {
   const surface = answers.surface;
-  if (!Object.hasOwn(shoeSurfaces, surface) || attributes.surface !== surface) {
+  if (!shoeSurfaces.includes(surface) || attributes.surface !== surface) {
     return null;
   }
 
-  const highlights = [shoeSurfaces[surface]];
   let score = 0;
 
   const session = answers.session_type;
-  if (Object.hasOwn(shoeSessions, session) && readList(attributes.session_types).includes(session)) {
-    highlights.push(shoeSessions[session]);
+  if (shoeSessions.includes(session) && readList(attributes.session_types).includes(session)) {
     score += 3;
   }
 
   const terrain = answers.terrain_type;
-  if (Object.hasOwn(shoeTerrains, terrain) && readList(attributes.terrain_types).includes(terrain)) {
-    highlights.push(shoeTerrains[terrain]);
+  if (shoeTerrains.includes(terrain) && readList(attributes.terrain_types).includes(terrain)) {
     score += 2;
   }
 
   const plate = answers.plate_preference;
-  if (Object.hasOwn(shoePlates, plate) && attributes.plate_type === plate) {
-    highlights.push(shoePlates[plate]);
+  if (["carbon", "none"].includes(plate) && attributes.plate_type === plate) {
     score += 2;
   }
 
   const drop = readNumber(attributes.drop_mm);
   if (drop !== null && drop >= 0 && getDropBand(drop) === answers.drop_preference) {
-    highlights.push(drop + " mm drop");
     score += 1;
   }
 
-  return { highlights, score, distance: 0 };
+  return { score, distance: 0 };
 }
 
 // Applique les minimums puis préfère le volume adapté à la sortie.
@@ -140,29 +106,13 @@ function matchPacks(answers, attributes) {
     return null;
   }
 
-  const highlights = [];
   let score = 0;
-
-  if (volume !== null && volume > 0) {
-    highlights.push(volume + " L pack volume");
-  }
-
-  if (hydration !== null && hydration > 0) {
-    highlights.push(hydration + " L hydration capacity");
-  }
-
   if (answers.hydration_type === "flasks" && hydrationTypes.includes("flasks")) {
-    highlights.push("Soft flask compatible");
     score += 1;
   }
 
   if (answers.hydration_type === "bladder" && hydrationTypes.includes("bladder")) {
-    highlights.push("Hydration bladder compatible");
     score += 1;
-  }
-
-  if (carriesPoles && !needsAccessory) {
-    highlights.push("Pole carry supported");
   }
 
   const targetVolume = Math.max(minVolume || 0, packVolumes[answers.outing_duration] || 0);
@@ -174,7 +124,7 @@ function matchPacks(answers, attributes) {
     }
   }
 
-  return { highlights, score, distance };
+  return { score, distance };
 }
 
 // Vérifie l'autonomie et la navigation, puis classe l'entraînement.
@@ -195,34 +145,17 @@ function matchWatches(answers, attributes) {
     return null;
   }
 
-  let battery = "Up to " + hours + " h GPS";
-  if (Object.hasOwn(gpsModes, attributes.gps_battery_mode)) {
-    battery += " · " + gpsModes[attributes.gps_battery_mode];
-  }
-
-  const highlights = [battery];
   let score = 0;
-
-  if (navigation === "maps") {
-    highlights.push("Offline maps");
-  } else if (navigation === "trace") {
-    highlights.push("Route tracking");
-  }
-
-  if (answers.training_level === "advanced" && attributes.training_level === "advanced") {
-    highlights.push("Advanced training tools");
-    score += 1;
-  } else if (answers.training_level === "basic" && attributes.training_level === "basic") {
-    highlights.push("Basic training metrics");
+  const training = answers.training_level;
+  if (["basic", "advanced"].includes(training) && training === attributes.training_level) {
     score += 1;
   }
 
-  return { highlights, score, distance: 0 };
+  return { score, distance: 0 };
 }
 
 // Trouve une longueur fixe connue proche du repère.
-function findFixedPoleLength(lengths, target) {
-  let best = null;
+function distanceToFixedLength(lengths, target) {
   let distance = Infinity;
 
   for (const value of lengths) {
@@ -232,8 +165,7 @@ function findFixedPoleLength(lengths, target) {
     }
 
     const difference = Math.abs(length - target);
-    if (difference < distance || (difference === distance && length < best)) {
-      best = length;
+    if (difference < distance) {
       distance = difference;
     }
   }
@@ -242,11 +174,11 @@ function findFixedPoleLength(lengths, target) {
     return null;
   }
 
-  return { highlight: best + " cm fixed option · approximate fit", distance };
+  return distance;
 }
 
 // Vérifie une plage de réglage réellement documentée.
-function findAdjustablePoleLength(attributes, target) {
+function fitsAdjustableLength(attributes, target) {
   let ranges = [[attributes.min_length_cm, attributes.max_length_cm]];
   if (attributes.adjustable_ranges_cm) {
     ranges = readList(attributes.adjustable_ranges_cm);
@@ -260,11 +192,11 @@ function findAdjustablePoleLength(attributes, target) {
     const min = readNumber(range[0]);
     const max = readNumber(range[1]);
     if (min !== null && max !== null && min > 0 && target >= min && target <= max) {
-      return { highlight: "Adjustable from " + min + " to " + max + " cm", distance: 0 };
+      return true;
     }
   }
 
-  return null;
+  return false;
 }
 
 // Compare la longueur estimée et les options du bâton.
@@ -278,37 +210,30 @@ function matchPoles(answers, attributes) {
 
   // Le repère de longueur est une estimation, à confirmer à l'essai.
   const target = Math.round(height * 0.7);
-  let fit = null;
+  let distance = null;
   if (attributes.length_type === "fixed") {
-    fit = findFixedPoleLength(readList(attributes.fixed_lengths_cm), target);
-  } else if (attributes.length_type === "adjustable") {
-    fit = findAdjustablePoleLength(attributes, target);
+    distance = distanceToFixedLength(readList(attributes.fixed_lengths_cm), target);
+  } else if (attributes.length_type === "adjustable" && fitsAdjustableLength(attributes, target)) {
+    distance = 0;
   }
 
-  if (!fit) {
+  if (distance === null) {
     return null;
   }
 
-  const highlights = [fit.highlight];
   let score = 0;
 
   if (attributes.length_type === answers.length_type) {
     score += 2;
   }
 
-  if (foldable) {
-    highlights.push("Foldable");
-  }
-
   if (answers.material === "carbon" && attributes.material === "carbon") {
-    highlights.push("Carbon");
     score += 1;
   } else if (answers.material === "aluminium" && attributes.material === "aluminium") {
-    highlights.push("Aluminium");
     score += 1;
   }
 
-  return { highlights, score, distance: fit.distance };
+  return { score, distance };
 }
 
 const matchByCategory = {
@@ -317,30 +242,6 @@ const matchByCategory = {
   gps_watches: matchWatches,
   trail_poles: matchPoles,
 };
-
-// Vérifie le budget avant d'appliquer les règles de la catégorie.
-function matchProduct(category, answers, product) {
-  if (!answers || !Object.hasOwn(matchByCategory, category)) {
-    return null;
-  }
-
-  if (product.category && product.category !== category) {
-    return null;
-  }
-
-  const budget = readNumber(answers.budget_max);
-  const price = readNumber(product.price);
-  if (budget === null || price === null || price <= 0 || price > budget || product.currency !== "MYR") {
-    return null;
-  }
-
-  const match = matchByCategory[category](answers, product.attributes || {});
-  if (!match) {
-    return null;
-  }
-
-  return { ...match, price, product };
-}
 
 // Départage les produits à score égal de façon stable.
 function compareMatches(left, right) {
@@ -359,29 +260,38 @@ function compareMatches(left, right) {
   return Number(left.product.id_equipment) - Number(right.product.id_equipment);
 }
 
-// Garde jusqu'à cinq produits compatibles.
+// Classe tous les produits compatibles.
 function recommendEquipment(category, answers, products) {
+  if (!answers || !Object.hasOwn(matchByCategory, category)) {
+    return [];
+  }
+
+  const budget = readNumber(answers.budget_max);
+  if (budget === null || budget <= 0) {
+    return [];
+  }
+
+  const matchCategory = matchByCategory[category];
   const matches = [];
 
   for (const product of products) {
-    const match = matchProduct(category, answers, product);
+    if (product.category && product.category !== category) {
+      continue;
+    }
+
+    const price = readNumber(product.price);
+    if (price === null || price <= 0 || price > budget || product.currency !== "MYR") {
+      continue;
+    }
+
+    const match = matchCategory(answers, product.attributes || {});
     if (match) {
-      matches.push(match);
+      matches.push({ ...match, price, product });
     }
   }
 
   matches.sort(compareMatches);
-  return matches.slice(0, 5).map((match) => ({ ...match.product, highlights: match.highlights }));
+  return matches.map((match) => match.product);
 }
 
-// Décrit les correspondances encore vérifiables à la réouverture.
-function describeEquipmentMatch(category, answers, product) {
-  const match = matchProduct(category, answers, product);
-  if (!match) {
-    return [];
-  }
-
-  return match.highlights;
-}
-
-module.exports = { recommendEquipment, describeEquipmentMatch };
+module.exports = { recommendEquipment };

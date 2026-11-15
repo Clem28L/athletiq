@@ -82,7 +82,7 @@
           title="Equipment"
           @click="closeMobile"
         >
-          <Settings class="sidebar-icon" :size="20" aria-hidden="true" />
+          <Backpack class="sidebar-icon" :size="20" aria-hidden="true" />
           <span class="sidebar-label">Equipment</span>
         </RouterLink>
       </nav>
@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import { ChevronLeft, Menu, House, ClipboardList, Crosshair, Salad, ShieldPlus, Settings } from "@lucide/vue";
+import { ChevronLeft, Menu, House, ClipboardList, Crosshair, Salad, ShieldPlus, Backpack } from "@lucide/vue";
 import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
 import { user } from "@/stores/auth";

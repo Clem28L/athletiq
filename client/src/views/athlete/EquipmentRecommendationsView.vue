@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import EquipmentProductSidebar from "@/components/EquipmentProductSidebar.vue";
 import { isAuthenticated } from "@/stores/auth";
 import { equipmentRequest } from "@/utils/equipmentApi";
 import { categoryDetails } from "@/utils/equipmentCategories";
@@ -10,22 +11,11 @@ const router = useRouter();
 const selection = ref(null);
 const loading = ref(true);
 const loadError = ref(false);
-const failedImages = ref({});
+const selectedProduct = ref(null);
 let loadId = 0;
 
 const category = computed(() => categoryDetails[selection.value?.category]);
 const budget = computed(() => selection.value?.answers?.budget_max);
-
-// Formate le prix du catalogue
-function formatPrice(price, currency = "MYR") {
-  return new Intl.NumberFormat("en-MY", {
-    style: "currency",
-    currency,
-    currencyDisplay: "code",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(price);
-}
 
 // Charge la sélection enregistrée
 async function loadSelection(id) {
@@ -33,7 +23,7 @@ async function loadSelection(id) {
   loading.value = true;
   loadError.value = false;
   selection.value = null;
-  failedImages.value = {};
+  selectedProduct.value = null;
 
   try {
     const path = "/submissions/" + encodeURIComponent(id);
@@ -80,13 +70,12 @@ watch(isAuthenticated, (authenticated) => {
 
         <p v-if="Number.isFinite(budget)" class="selection-budget">
           <span>Budget</span>
-          <strong>{{ formatPrice(budget) }}</strong>
+          <strong>{{ budget }} MYR</strong>
         </p>
       </header>
 
       <div v-if="selection.products.length === 0" class="selection-message">
         <h2>No matching products</h2>
-        <p>Change your answers to see other options.</p>
         <RouterLink
           :to="{ name: 'equipment-questionnaire', params: { category: selection.category } }"
           class="button button-outline"
@@ -96,34 +85,38 @@ watch(isAuthenticated, (authenticated) => {
       </div>
 
       <ul v-else class="selection-grid" aria-label="Recommended products">
-        <li v-for="product in selection.products" :key="product.id_equipment" class="selection-card">
-          <div class="selection-image">
-            <img
-              v-if="product.image_url && !failedImages[product.id_equipment]"
-              :src="product.image_url"
-              alt=""
-              loading="lazy"
-              @error="failedImages[product.id_equipment] = true"
-            />
-            <span v-else-if="category" class="selection-symbol" aria-hidden="true">
-              <component :is="category.icon" :size="40" :stroke-width="1.5" />
+        <li v-for="product in selection.products" :key="product.id_equipment">
+          <button
+            type="button"
+            class="selection-card"
+            aria-haspopup="dialog"
+            @click="selectedProduct = product"
+          >
+            <span v-if="product.image_url" class="selection-image">
+              <img
+                :src="product.image_url"
+                alt=""
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                @error="$event.target.parentElement.hidden = true"
+              />
             </span>
-          </div>
-
-          <div class="selection-card-body">
-            <p v-if="product.brand" class="selection-brand">{{ product.brand }}</p>
-            <h2>{{ product.name }}</h2>
-            <p v-if="product.price != null" class="selection-price">
-              {{ formatPrice(product.price, product.currency || 'MYR') }}
-            </p>
-
-            <ul v-if="product.highlights.length" class="selection-highlights">
-              <li v-for="highlight in product.highlights" :key="highlight">{{ highlight }}</li>
-            </ul>
-            <p v-else-if="product.description" class="selection-description">{{ product.description }}</p>
-          </div>
+            <span class="selection-card-body">
+              <span v-if="product.brand" class="selection-brand">{{ product.brand }}</span>
+              <strong class="selection-name">{{ product.name }}</strong>
+              <span v-if="product.price != null" class="selection-price">
+                {{ product.price }} MYR
+              </span>
+            </span>
+          </button>
         </li>
       </ul>
+
+      <EquipmentProductSidebar
+        v-if="selectedProduct"
+        :product="selectedProduct"
+        @close="selectedProduct = null"
+      />
     </template>
   </div>
 </template>
@@ -210,44 +203,59 @@ watch(isAuthenticated, (authenticated) => {
 }
 
 .selection-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
   min-width: 0;
+  padding: 0;
   overflow: hidden;
   border: 1px solid #dddbd4;
   border-radius: 16px;
   background: #fff;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
   box-shadow: 0 4px 12px rgb(40 36 24 / 5%);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+@media (hover: hover) {
+  .selection-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--selection-ink);
+    box-shadow: 0 10px 24px rgb(40 36 24 / 12%);
+  }
+}
+
+.selection-card:focus-visible {
+  outline: 2px solid var(--selection-ink);
+  outline-offset: 3px;
 }
 
 .selection-image {
-  display: grid;
-  height: 132px;
-  place-items: center;
+  width: 100%;
+  isolation: isolate;
   background: var(--selection-art);
 }
 
 .selection-image img {
+  display: block;
   width: 100%;
-  height: 132px;
+  height: 200px;
   padding: 10px;
   object-fit: contain;
-}
-
-.selection-symbol {
-  display: grid;
-  width: 72px;
-  height: 72px;
-  place-items: center;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 55%);
-  color: var(--selection-ink);
+  mix-blend-mode: multiply;
 }
 
 .selection-card-body {
+  display: block;
   padding: 20px;
   overflow-wrap: anywhere;
 }
 
 .selection-brand {
+  display: block;
   margin: 0 0 5px;
   color: #66645c;
   font-size: 12px;
@@ -256,35 +264,18 @@ watch(isAuthenticated, (authenticated) => {
   text-transform: uppercase;
 }
 
-.selection-card h2 {
-  margin: 0;
+.selection-name {
+  display: block;
   font-size: 21px;
   line-height: 1.25;
 }
 
 .selection-price {
+  display: block;
   margin: 10px 0 0;
   color: var(--selection-ink);
   font-size: 18px;
   font-weight: 700;
-}
-
-.selection-highlights,
-.selection-description {
-  margin: 16px 0 0;
-  color: #55544f;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.selection-highlights {
-  display: grid;
-  gap: 4px;
-  padding-left: 19px;
-}
-
-.selection-highlights li::marker {
-  color: var(--selection-ink);
 }
 
 .selection-message {
@@ -296,19 +287,24 @@ watch(isAuthenticated, (authenticated) => {
 }
 
 .selection-message h2 {
-  margin: 0;
+  margin: 0 0 16px;
   font-size: 20px;
-}
-
-.selection-message p {
-  margin: 8px 0 16px;
-  line-height: 1.5;
 }
 
 @media (max-width: 560px) {
   .selection-page {
     width: auto;
     margin-inline: 88px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selection-card {
+    transition: none;
+  }
+
+  .selection-card:hover {
+    transform: none;
   }
 }
 </style>

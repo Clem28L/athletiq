@@ -5,6 +5,7 @@ const {
   getQuestionnaire,
   submitQuestionnaire,
   getSubmission,
+  getProduct,
   saveStatus,
 } = require("../controllers/equipmentController");
 
@@ -16,6 +17,7 @@ router.get("/categories", getCategories);
 router.get("/categories/:category/questionnaire", getQuestionnaire);
 router.post("/categories/:category/submissions", submitQuestionnaire);
 router.get("/submissions/:id", getSubmission);
+router.get("/products/:id", getProduct);
 router.put("/categories/:category/status", saveStatus);
 
 module.exports = router;
