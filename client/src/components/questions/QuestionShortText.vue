@@ -11,19 +11,19 @@ const emit = defineEmits(["update:modelValue"]);
 
 <template>
   <div class="form-group">
-    <label for="accepted-texts">Réponses acceptées</label>
+    <label for="accepted-texts">Accepted answers</label>
 
     <textarea
       id="accepted-texts"
       rows="4"
       :value="modelValue"
-      placeholder="Une réponse acceptée par ligne"
+      placeholder="One answer per line"
       required
       @input="emit('update:modelValue', $event.target.value)"
     ></textarea>
 
     <p class="field-help">
-      Écris chaque formulation acceptée sur une nouvelle ligne.
+      Enter each accepted answer on a new line.
     </p>
   </div>
 </template>

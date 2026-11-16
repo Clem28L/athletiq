@@ -8,7 +8,7 @@ exports.updateQuestion = async (req, res) => {
 
   if (!Number.isInteger(questionId) || questionId < 1) {
     return res.status(400).json({
-      error: "ID de la question invalide.",
+      error: "Invalid question ID.",
     });
   }
 
@@ -41,7 +41,7 @@ exports.updateQuestion = async (req, res) => {
     (typeof unit !== "string" || unit.length > 30)
   ) {
     return res.status(400).json({
-      error: "L’unité doit être un texte de 30 caractères maximum.",
+      error: "The unit must be text with at most 30 characters.",
     });
   }
 
@@ -75,7 +75,7 @@ exports.updateQuestion = async (req, res) => {
       await connection.rollback();
 
       return res.status(404).json({
-        error: "Question non trouvée.",
+        error: "Question not found.",
       });
     }
 
@@ -83,7 +83,7 @@ exports.updateQuestion = async (req, res) => {
       await connection.rollback();
 
       return res.status(403).json({
-        error: "Tu peux seulement modifier tes propres quiz.",
+        error: "You can only edit your own quizzes.",
       });
     }
 
@@ -171,7 +171,7 @@ exports.updateQuestion = async (req, res) => {
     await connection.commit();
 
     return res.json({
-      message: "Question mise à jour avec succès.",
+      message: "Question updated.",
     });
   } catch (err) {
     // Cancel all changes if something fails
@@ -182,7 +182,7 @@ exports.updateQuestion = async (req, res) => {
     console.error(err);
 
     return res.status(500).json({
-      error: "Impossible de modifier la question.",
+      error: "Unable to update the question.",
     });
   } finally {
     // Always close this connection
@@ -214,14 +214,14 @@ exports.deleteQuestion = (req, res) => {
     // Check if the question exists
     if (results.length === 0) {
       return res.status(404).json({
-        error: "Question non trouvée.",
+        error: "Question not found.",
       });
     }
 
     // Check the quiz owner
     if (results[0].id_user !== req.user.id_user) {
       return res.status(403).json({
-        error: "Tu peux seulement modifier tes propres quiz.",
+        error: "You can only edit your own quizzes.",
       });
     }
 
@@ -246,13 +246,13 @@ exports.deleteQuestion = (req, res) => {
 
         if (result.affectedRows === 0) {
           return res.status(404).json({
-            error: "Question introuvable ou inaccessible.",
+            error: "Question not found or inaccessible.",
           });
         }
 
         // Related options are deleted automatically
         return res.json({
-          message: "Question supprimée avec succès.",
+          message: "Question deleted.",
         });
       }
     );

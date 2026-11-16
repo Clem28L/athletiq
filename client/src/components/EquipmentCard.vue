@@ -62,37 +62,36 @@ defineEmits(["choose", "find"]);
 
 <style scoped>
 .equipment-card {
-  --art: #eef0e6;
-  --ink: #4b5638;
+  --gear-art: #eef0e6;
+  --gear-ink: #4b5638;
   overflow: hidden;
-  border: 1px solid #dddbd4;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 4px 12px rgb(40 36 24 / 5%);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
 }
 
 /* Couleurs par catégorie */
 [data-category="trail_packs"] {
-  --art: #f3ece2;
-  --ink: #734f31;
+  --gear-art: #f3ece2;
+  --gear-ink: #734f31;
 }
 
 [data-category="gps_watches"] {
-  --art: #e9eef4;
-  --ink: #385473;
+  --gear-art: #e9eef4;
+  --gear-ink: #385473;
 }
 
 [data-category="trail_poles"] {
-  --art: #f0ebf2;
-  --ink: #654969;
+  --gear-art: #f0ebf2;
+  --gear-ink: #654969;
 }
 
 .equipment-art {
   display: grid;
   min-height: 100px;
   place-items: center;
-  color: var(--ink);
-  background: radial-gradient(circle at center, rgb(255 255 255 / 50%) 37px, transparent 38px), var(--art);
+  color: var(--gear-ink);
+  background: radial-gradient(circle at center, rgb(255 255 255 / 50%) 37px, transparent 38px), var(--gear-art);
 }
 
 .equipment-body {
@@ -112,8 +111,8 @@ h2 {
 
 .equipment-choices .button {
   padding: 8px 4px;
-  border-color: #dad8cf;
-  border-radius: 8px;
+  border-color: var(--line);
+  border-radius: 4px;
   font-size: 13px;
 }
 

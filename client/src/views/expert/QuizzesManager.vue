@@ -215,10 +215,8 @@ onMounted(loadQuizzes);
 <style scoped>
 .quiz-manager {
   padding: 40px;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
-    sans-serif;
-  color: #1d1d1f;
-  background: #ffffff;
+  color: var(--ink);
+  background: var(--page);
   min-height: 100vh;
 }
 
@@ -237,24 +235,24 @@ onMounted(loadQuizzes);
 }
 
 .subtitle {
-  color: #86868b;
+  color: var(--muted);
   font-size: 14px;
   margin-top: 6px;
 }
 
 .btn-primary {
-  background: #1d1d1f;
+  background: var(--primary);
   color: white;
   border: none;
   padding: 12px 22px;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
 }
 
 .btn-primary:hover {
-  background: #000;
+  background: var(--primary-deep);
 }
 
 /* Filter */
@@ -273,9 +271,9 @@ onMounted(loadQuizzes);
 
 /* Card */
 .quiz-card {
-  background: white;
-  border: 1px solid #1d1d1f;
-  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--ink);
+  border-radius: 6px;
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -290,9 +288,9 @@ onMounted(loadQuizzes);
 .tag {
   font-size: 12px;
   padding: 4px 12px;
-  border: 1px solid #d2d2d7;
-  border-radius: 20px;
-  color: #1d1d1f;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
   text-transform: capitalize;
 }
 
@@ -303,14 +301,14 @@ onMounted(loadQuizzes);
 }
 
 .description {
-  color: #86868b;
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.5;
   margin: 0 0 12px 0;
 }
 
 .category {
-  color: #86868b;
+  color: var(--muted);
   font-size: 13px;
   margin: 0 0 20px 0;
   margin-top: auto;
@@ -322,22 +320,22 @@ onMounted(loadQuizzes);
   gap: 8px;
   flex-wrap: wrap;
   padding-top: 16px;
-  border-top: 1px solid #e5e5e7;
+  border-top: 1px solid var(--line);
 }
 
 .btn-action {
   flex: 1;
   min-width: 80px;
   padding: 8px 12px;
-  background: white;
-  border: 1px solid #d2d2d7;
-  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
   font-size: 13px;
   cursor: pointer;
 }
 
 .btn-action:hover {
-  background: #f5f5f7;
+  background: var(--page);
 }
 
 .btn-action.danger {
@@ -354,7 +352,7 @@ onMounted(loadQuizzes);
 .state-msg {
   text-align: center;
   padding: 60px 20px;
-  color: #86868b;
+  color: var(--muted);
 }
 
 .state-msg.error {

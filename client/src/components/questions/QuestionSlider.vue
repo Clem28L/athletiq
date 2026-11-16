@@ -70,7 +70,7 @@ const validSlider = computed(() => {
       </div>
     </div>
 
-    <label for="slider-step">Pas du curseur</label>
+    <label for="slider-step">Slider step</label>
     <input
       id="slider-step"
       type="number"
@@ -82,10 +82,10 @@ const validSlider = computed(() => {
     />
 
     <p class="field-help">
-      Ex : un pas de 5 permet de choisir 0, 5, 10, 15...
+      A step of 5 lets you select values like 0, 5, 10 and 15.
     </p>
 
-    <label for="slider-answer">Réponse attendue</label>
+    <label for="slider-answer">Correct answer</label>
     <input
       id="slider-answer"
       type="number"
@@ -95,7 +95,7 @@ const validSlider = computed(() => {
       @input="updateNumber('correct_number', $event.target.value)"
     />
 
-    <label for="slider-tolerance">Tolérance acceptée</label>
+    <label for="slider-tolerance">Allowed tolerance</label>
     <input
       id="slider-tolerance"
       type="number"
@@ -107,21 +107,21 @@ const validSlider = computed(() => {
     />
 
     <p class="field-help">
-      Mets 0 pour une réponse exacte.
+      Use 0 to require an exact answer.
     </p>
 
-    <label for="slider-unit">Unité (facultatif)</label>
+    <label for="slider-unit">Unit (optional)</label>
     <input
       id="slider-unit"
       maxlength="30"
-      placeholder="Ex : minutes"
+      placeholder="e.g. minutes"
       :value="modelValue.unit"
       @input="updateField('unit', $event.target.value)"
     />
 
     <template v-if="validSlider">
       <label for="slider-preview">
-        Aperçu : {{ modelValue.correct_number }} {{ modelValue.unit }}
+        Preview: {{ modelValue.correct_number }} {{ modelValue.unit }}
       </label>
 
       <input
@@ -135,14 +135,14 @@ const validSlider = computed(() => {
       />
 
       <p class="field-help">
-        De {{ modelValue.min_value }} à {{ modelValue.max_value }}
+        From {{ modelValue.min_value }} to {{ modelValue.max_value }}
         {{ modelValue.unit }}.
-        Déplace le curseur pour choisir la réponse attendue.
+        Move the slider to set the correct answer.
       </p>
     </template>
 
     <p v-else class="field-help">
-      Le maximum doit dépasser le minimum et le pas doit être positif.
+      The maximum must exceed the minimum, and the step must be greater than zero.
     </p>
   </div>
 </template>

@@ -129,10 +129,9 @@ h1 {
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 660px) {
   .equipment-page {
-    width: auto;
-    margin-inline: 88px 16px;
+    width: calc(100% - 28px);
   }
 }
 </style>

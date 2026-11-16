@@ -30,10 +30,10 @@ function removeItem(index) {
 
 <template>
   <div class="form-group">
-    <label>Éléments dans le bon ordre</label>
+    <label>Items in the correct order</label>
 
     <p class="field-help">
-      Saisis les éléments dans l’ordre attendu, du premier au dernier.
+      Enter the items in order, from first to last.
     </p>
 
     <div
@@ -46,7 +46,7 @@ function removeItem(index) {
       <input
         :value="item"
         :aria-label="'Position ' + (index + 1)"
-        placeholder="Texte de l’élément"
+        placeholder="Item text"
         required
         @input="updateItem(index, $event.target.value)"
       />
@@ -55,7 +55,7 @@ function removeItem(index) {
         v-if="modelValue.length > 2"
         type="button"
         class="btn-remove"
-        aria-label="Supprimer cet élément"
+        aria-label="Remove item"
         @click="removeItem(index)"
       >
         <X :size="16" aria-hidden="true" />
@@ -63,7 +63,7 @@ function removeItem(index) {
     </div>
 
     <button type="button" class="btn-add" @click="addItem">
-      + Ajouter un élément
+      + Add item
     </button>
   </div>
 </template>

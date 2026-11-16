@@ -26,7 +26,7 @@
 
 .athlete-quizzes-page .answer-help {
   margin: 0;
-  color: #68686d;
+  color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
 }
@@ -43,17 +43,17 @@
   width: 100%;
   min-width: 0;
   padding: 12px;
-  border: 1px solid #d2d2d7;
-  border-radius: 8px;
-  background: white;
-  color: #33322f;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink);
   font: inherit;
   font-size: 14px;
 }
 
 .athlete-quizzes-page .answer-fields input[type="range"] {
   width: 100%;
-  accent-color: #373631;
+  accent-color: var(--primary);
 }
 
 /* Ordering controls */
@@ -63,8 +63,8 @@
   justify-content: space-between;
   gap: 16px;
   padding: 14px;
-  border: 1px solid #d2d2d7;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
 }
 
 .athlete-quizzes-page .answer-row span {
@@ -166,7 +166,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #68686d;
+  color: var(--muted);
   font-size: 12px;
 }
 

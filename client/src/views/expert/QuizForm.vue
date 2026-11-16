@@ -133,25 +133,25 @@ onMounted(loadQuiz);
   <div class="quiz-form-page">
     <header class="page-header">
       <div>
-        <button class="btn-back" @click="goBack"><ArrowLeft :size="16" aria-hidden="true" /> Retour</button>
-        <h1 v-if="isEditMode">Modifier le quiz</h1>
-        <h1 v-else>Nouveau quiz</h1>
+        <button class="btn-back" @click="goBack"><ArrowLeft :size="16" aria-hidden="true" /> Back to quizzes</button>
+        <h1 v-if="isEditMode">Edit quiz</h1>
+        <h1 v-else>New quiz</h1>
         <p class="subtitle">
-          <template v-if="isEditMode">Modifie les informations du quiz.</template>
-          <template v-else>Remplis les informations de base.</template>
+          <template v-if="isEditMode">Edit the quiz details.</template>
+          <template v-else>Enter the quiz details.</template>
         </p>
       </div>
     </header>
 
-    <div v-if="loadingQuiz" class="state-msg">Chargement du quiz...</div>
+    <div v-if="loadingQuiz" class="state-msg">Loading quiz…</div>
 
     <form v-else class="quiz-form" @submit.prevent="handleSubmit">
       <div class="form-group">
-        <label for="title">Titre</label>
+        <label for="title">Title</label>
         <input
           id="title"
           v-model="title"
-          placeholder="Ex: Prévention des blessures au genou"
+          placeholder="e.g. Knee injury prevention"
         />
       </div>
 
@@ -161,7 +161,7 @@ onMounted(loadQuiz);
           id="description"
           v-model="description"
           rows="4"
-          placeholder="Décris brièvement le contenu du quiz..."
+          placeholder="Briefly describe the quiz"
         ></textarea>
       </div>
 
@@ -169,38 +169,38 @@ onMounted(loadQuiz);
         <div class="form-group">
           <label for="type">Type</label>
           <select id="type" v-model="type">
-            <option value="" disabled>Choisir un type</option>
-            <option value="mcq">QCM</option>
-            <option value="declarative">Déclaratif</option>
-            <option value="calculation">Calcul</option>
-            <option value="recommendation">Recommandation</option>
+            <option value="" disabled>Select a type</option>
+            <option value="mcq">Multiple choice</option>
+            <option value="declarative">Knowledge check</option>
+            <option value="calculation">Calculation</option>
+            <option value="recommendation">Recommendation</option>
           </select>
         </div>
 
         <div class="form-group">
           <label for="module">Module</label>
           <select id="module" v-model="module">
-            <option value="" disabled>Choisir un module</option>
-            <option value="prevention">Prévention</option>
+            <option value="" disabled>Select a module</option>
+            <option value="prevention">Prevention</option>
             <option value="nutrition">Nutrition</option>
-            <option value="equipment">Équipement</option>
+            <option value="equipment">Equipment</option>
           </select>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="category">Catégorie</label>
+        <label for="category">Category</label>
         <input
           id="category"
           v-model="category"
-          placeholder="Ex: Mobilité, Hydratation, Chaussures..."
+          placeholder="e.g. Mobility, hydration, shoes"
         />
       </div>
 
       <div v-if="isEditMode" class="form-group checkbox-group">
         <label>
           <input type="checkbox" v-model="published" />
-          Publier ce quiz (visible pour les athlètes)
+          Publish this quiz so athletes can see it
         </label>
       </div>
 
@@ -208,12 +208,12 @@ onMounted(loadQuiz);
 
       <div class="form-actions">
         <button type="button" class="btn-secondary" @click="goBack">
-          Annuler
+          Cancel
         </button>
         <button type="submit" class="btn-primary" :disabled="loading">
-          <template v-if="loading">Sauvegarde...</template>
-          <template v-else-if="isEditMode">Enregistrer</template>
-          <template v-else>Créer le quiz</template>
+          <template v-if="loading">Saving…</template>
+          <template v-else-if="isEditMode">Save</template>
+          <template v-else>Create quiz</template>
         </button>
       </div>
     </form>
@@ -223,10 +223,8 @@ onMounted(loadQuiz);
 <style scoped>
 .quiz-form-page {
   padding: 40px;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
-    sans-serif;
-  color: #1d1d1f;
-  background: #ffffff;
+  color: var(--ink);
+  background: var(--page);
   min-height: 100vh;
   max-width: 700px;
 }
@@ -238,13 +236,13 @@ onMounted(loadQuiz);
   background: none;
   border: none;
   padding: 0;
-  color: #86868b;
+  color: var(--muted);
   font-size: 14px;
   cursor: pointer;
   margin-bottom: 12px;
 }
 .btn-back:hover {
-  color: #1d1d1f;
+  color: var(--ink);
 }
 .page-header h1 {
   font-size: 32px;
@@ -252,7 +250,7 @@ onMounted(loadQuiz);
   margin: 0;
 }
 .subtitle {
-  color: #86868b;
+  color: var(--muted);
   font-size: 14px;
   margin-top: 8px;
 }
@@ -272,19 +270,19 @@ onMounted(loadQuiz);
 .form-group label {
   font-size: 14px;
   font-weight: 500;
-  color: #1d1d1f;
+  color: var(--ink);
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
   padding: 12px 16px;
-  border: 1px solid #d2d2d7;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
   font-size: 14px;
   font-family: inherit;
-  background: white;
-  color: #1d1d1f;
+  background: var(--surface);
+  color: var(--ink);
 }
 
 .form-group textarea {
@@ -322,25 +320,25 @@ onMounted(loadQuiz);
   justify-content: flex-end;
   gap: 12px;
   padding-top: 16px;
-  border-top: 1px solid #e5e5e7;
+  border-top: 1px solid var(--line);
 }
 
 .btn-primary,
 .btn-secondary {
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
 }
 
 .btn-primary {
-  background: #1d1d1f;
+  background: var(--primary);
   color: white;
   border: none;
 }
 .btn-primary:hover {
-  background: #000;
+  background: var(--primary-deep);
 }
 .btn-primary:disabled {
   opacity: 0.5;
@@ -348,17 +346,17 @@ onMounted(loadQuiz);
 }
 
 .btn-secondary {
-  background: white;
-  color: #1d1d1f;
-  border: 1px solid #d2d2d7;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
 }
 .btn-secondary:hover {
-  background: #f5f5f7;
+  background: var(--page);
 }
 
 .state-msg {
   text-align: center;
   padding: 60px 20px;
-  color: #86868b;
+  color: var(--muted);
 }
 </style>

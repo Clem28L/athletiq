@@ -1,12 +1,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { ArrowLeft } from "@lucide/vue";
 import { nutritionRequest } from "@/utils/nutritionApi";
 import NutritionPlanCard from "@/components/NutritionPlanCard.vue";
 import RaceNutritionPlanner from "@/components/RaceNutritionPlanner.vue";
 import "@/assets/nutrition-plans.css";
 
 const router = useRouter();
+const route = useRoute();
 const plans = ref([]);
 const listPage = ref(1);
 const hasMore = ref(false);
@@ -16,7 +18,7 @@ const error = ref("");
 const selectedPlan = ref(null);
 
 // Load one page of saved plans.
-async function loadPlans(number = listPage.value) {
+async function loadPlans(number) {
   if (loading.value) {
     return;
   }
@@ -34,11 +36,9 @@ async function loadPlans(number = listPage.value) {
   }
 }
 
-// Start a new plan with an empty race form.
-function newPlan() {
-  selectedPlan.value = null;
-  error.value = "";
-  page.value = "planner";
+// Ouvre un plan depuis la liste.
+function selectPlan(id) {
+  router.push({ query: { plan: id } });
 }
 
 // Open the saved plan in its matching view.
@@ -85,13 +85,6 @@ async function deletePlan(id) {
   await loadPlans(nextPage);
 }
 
-// Return to the first page of saved plans.
-function showPlans() {
-  page.value = "list";
-  selectedPlan.value = null;
-  loadPlans(1);
-}
-
 // Check flask capacity in older saved plans.
 function hasHydrationProblem(plan) {
   for (let i = 0; i < plan.segments.length; i++) {
@@ -118,29 +111,39 @@ function formatTime(minutes) {
   return Math.floor(total / 60) + " h " + (total % 60) + " min";
 }
 
-// Load the plan list when the page opens.
-onMounted(function () {
+// Ouvre le formulaire, un plan précis ou la liste.
+onMounted(() => {
+  if (route.query.new === "1") {
+    page.value = "planner";
+    return;
+  }
+
+  const planId = Number(route.query.plan);
+  if (Number.isSafeInteger(planId) && planId > 0) {
+    openPlan(planId);
+    return;
+  }
+
   loadPlans(1);
 });
 </script>
 
 <template>
   <div class="nutrition-page">
+    <RouterLink
+      v-if="route.query.new || route.query.plan"
+      :to="{ name: 'nutrition-plans' }"
+      class="nutrition-back race-no-print"
+    >
+      <ArrowLeft :size="16" aria-hidden="true" />
+      Back to my plans
+    </RouterLink>
+
     <header class="nutrition-header race-no-print">
-      <div>
-        <h1>Nutrition Plans</h1>
-      </div>
-      <div class="nutrition-actions">
-        <button v-if="page !== 'list'" class="button button-outline" :disabled="loading" @click="showPlans">
-          My Plans
-        </button>
-        <button v-if="page === 'list'" class="button button-outline" :disabled="loading" @click="loadPlans()">
-          Refresh
-        </button>
-        <button v-if="page !== 'planner'" class="button button-dark" :disabled="loading" @click="newPlan">
-          + New Nutrition Plan
-        </button>
-      </div>
+      <h1>Nutrition Plans</h1>
+      <RouterLink v-if="page !== 'planner'" :to="{ name: 'nutrition-plans', query: { new: '1' } }" class="button button-dark">
+        + New Nutrition Plan
+      </RouterLink>
     </header>
     <p v-if="error" class="nutrition-error" role="alert">{{ error }}</p>
     <p v-if="loading && page !== 'planner'" class="nutrition-message">Loading...</p>
@@ -148,14 +151,14 @@ onMounted(function () {
       <div v-if="plans.length === 0 && !error" class="nutrition-empty">
         <h2>No plans yet</h2>
         <p>Create your first race nutrition plan.</p>
-        <button class="button button-dark" @click="newPlan">Create a Plan</button>
+        <RouterLink :to="{ name: 'nutrition-plans', query: { new: '1' } }" class="button button-dark">Create a plan</RouterLink>
       </div>
       <div v-else class="nutrition-grid">
         <NutritionPlanCard
           v-for="plan in plans"
           :key="plan.id_nutplan"
           :plan="plan"
-          @open="openPlan"
+          @open="selectPlan"
           @delete="deletePlan"
         />
       </div>

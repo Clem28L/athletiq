@@ -1327,12 +1327,12 @@ function printRoadbook() {
   list-style: none;
   padding: 0;
   margin: 0;
-  color: #68686d;
+  color: var(--muted);
   font-size: 14px;
 }
 
 .race-steps .active {
-  color: #33322f;
+  color: var(--ink);
   font-weight: 700;
 }
 
@@ -1370,7 +1370,7 @@ function printRoadbook() {
 
 .race-toolbar p {
   margin: 7px 0 0;
-  color: #68686d;
+  color: var(--muted);
 }
 
 .race-inline-actions {
@@ -1379,7 +1379,7 @@ function printRoadbook() {
 
 .race-help {
   margin: 12px 0 20px;
-  color: #68686d;
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -1393,7 +1393,7 @@ function printRoadbook() {
 .race-product-form {
   margin-top: 24px;
   padding-top: 22px;
-  border-top: 1px solid #e5e5e0;
+  border-top: 1px solid var(--line);
 }
 
 .race-product-inputs {
@@ -1405,9 +1405,9 @@ function printRoadbook() {
 
 .race-product-inputs select {
   padding: 12px;
-  border: 1px solid #d6d5d1;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--surface);
   color: inherit;
   font: inherit;
   width: 100%;
@@ -1420,7 +1420,7 @@ function printRoadbook() {
   padding: 4px 0;
   border: 0;
   background: transparent;
-  color: #55544f;
+  color: var(--muted);
   text-decoration: underline;
   text-underline-offset: 4px;
   cursor: pointer;
@@ -1444,8 +1444,8 @@ function printRoadbook() {
 
 .race-inventory {
   margin: 22px 0;
-  border-top: 1px solid #e5e5e0;
-  border-bottom: 1px solid #e5e5e0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   padding: 14px 0;
 }
 
@@ -1460,7 +1460,7 @@ function printRoadbook() {
 .race-planner summary {
   cursor: pointer;
   font-size: 14px;
-  color: #55544f;
+  color: var(--muted);
 }
 
 /* Scroll the race line when the screen is narrow. */
@@ -1468,8 +1468,8 @@ function printRoadbook() {
   overflow-x: auto;
   margin-top: 24px;
   padding: 20px 78px;
-  border-radius: 12px;
-  background: #fbfaf7;
+  border-radius: 6px;
+  background: var(--page);
 }
 
 .race-timeline {
@@ -1496,12 +1496,12 @@ function printRoadbook() {
   gap: 7px;
   margin: 22px 0 8px;
   font-size: 14px;
-  color: #55544f;
+  color: var(--muted);
 }
 
 .race-food-track, .race-drink-track, .race-stop-track {
   position: relative;
-  border-top: 1px solid #dedfd7;
+  border-top: 1px solid var(--line);
 }
 
 .race-food-pin {
@@ -1516,7 +1516,7 @@ function printRoadbook() {
   height: 76px;
   padding: 10px 12px;
   border: 1px solid #bdcbb8;
-  border-radius: 9px;
+  border-radius: 4px;
   background: #eef3e9;
   color: #354c36;
   cursor: grab;
@@ -1559,7 +1559,7 @@ function printRoadbook() {
   justify-content: center;
   gap: 3px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 8px;
   background: #deebf1;
   color: #345468;
@@ -1590,7 +1590,7 @@ function printRoadbook() {
   align-items: center;
   gap: 4px;
   border: 1px solid #d7c8ab;
-  border-radius: 8px;
+  border-radius: 4px;
   background: #f5efe2;
   padding: 9px 12px;
   color: #665434;
@@ -1609,7 +1609,7 @@ function printRoadbook() {
 
 .race-empty-track {
   padding: 24px 0;
-  color: #68686d;
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -1618,18 +1618,18 @@ function printRoadbook() {
   justify-content: space-between;
   padding-top: 16px;
   margin-top: 14px;
-  border-top: 1px solid #dedfd7;
+  border-top: 1px solid var(--line);
   font-size: 13px;
-  color: #55544f;
+  color: var(--muted);
 }
 
 /* Keep the selected item close to the timeline. */
 .race-entry-editor {
   margin-top: 24px;
   padding: 22px;
-  background: #fbfaf7;
-  border: 1px solid #dedfd7;
-  border-radius: 10px;
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: 4px;
 }
 
 .race-entry-editor h3 {
@@ -1657,7 +1657,7 @@ function printRoadbook() {
 
 .race-plan-summary > div > span {
   display: block;
-  color: #68686d;
+  color: var(--muted);
   font-size: 13px;
   margin-bottom: 7px;
 }
@@ -1690,7 +1690,7 @@ function printRoadbook() {
 .race-capacity-note {
   margin-top: 20px;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 4px;
   background: #fff8eb;
   color: #805016;
 }
@@ -1714,7 +1714,7 @@ function printRoadbook() {
 .race-check-details {
   margin-top: 22px;
   padding-top: 16px;
-  border-top: 1px solid #e5e5e0;
+  border-top: 1px solid var(--line);
 }
 
 .race-check-details .race-help {
@@ -1757,7 +1757,7 @@ function printRoadbook() {
   padding-top: 20px;
   font-size: 18px;
   font-weight: 600;
-  color: #55544f;
+  color: var(--muted);
   text-align: right;
 }
 
@@ -1784,8 +1784,8 @@ function printRoadbook() {
 }
 
 .race-step-card {
-  border: 1px solid #dedfd7;
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
   overflow: hidden;
   min-width: 0;
 }
@@ -1799,7 +1799,7 @@ function printRoadbook() {
   text-align: left;
   color: inherit;
   border: 0;
-  background: #fbfaf7;
+  background: var(--page);
   padding: 18px 22px;
   cursor: pointer;
   font: inherit;
@@ -1814,14 +1814,14 @@ function printRoadbook() {
 
 .race-step-fluid {
   display: block;
-  color: #68686d;
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.5;
 }
 
 .race-step-body {
   padding: 4px 22px 18px;
-  border-top: 1px solid #e5e5e0;
+  border-top: 1px solid var(--line);
 }
 
 .race-step-detail {
@@ -1845,7 +1845,7 @@ function printRoadbook() {
   gap: 8px 20px;
   margin-top: 18px;
   padding-top: 14px;
-  border-top: 1px solid #e5e5e0;
+  border-top: 1px solid var(--line);
   font-size: 14px;
 }
 

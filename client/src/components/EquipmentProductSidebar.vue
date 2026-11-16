@@ -143,10 +143,9 @@ function specValue(name, value) {
   padding: 0;
   border: 0;
   background: #fff;
-  color: #33322f;
+  color: var(--ink);
   overflow-y: auto;
   overscroll-behavior: contain;
-  box-shadow: -10px 0 40px rgb(36 34 24 / 15%);
 }
 
 .product-sidebar::backdrop {
@@ -175,7 +174,7 @@ function specValue(name, value) {
   gap: 16px;
   padding: 20px 24px;
   background: #fff;
-  border-bottom: 1px solid #e9e7df;
+  border-bottom: 1px solid var(--line);
 }
 
 .product-header h2 {
@@ -186,7 +185,7 @@ function specValue(name, value) {
 
 .product-brand {
   margin: 0 0 4px;
-  color: #676458;
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -234,7 +233,7 @@ function specValue(name, value) {
   grid-template-columns: 1fr auto;
   gap: 12px;
   padding: 11px 0;
-  border-bottom: 1px solid #e9e7df;
+  border-bottom: 1px solid var(--line);
   overflow-wrap: anywhere;
 }
 
@@ -248,7 +247,7 @@ function specValue(name, value) {
 }
 
 .product-offers small {
-  color: #676458;
+  color: var(--muted);
   font-weight: normal;
 }
 
@@ -257,7 +256,7 @@ function specValue(name, value) {
 }
 
 .product-specs dt {
-  color: #676458;
+  color: var(--muted);
   font-size: 13px;
 }
 

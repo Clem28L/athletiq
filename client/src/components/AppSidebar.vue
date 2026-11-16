@@ -1,300 +1,232 @@
-<template>
-  <div>
-    <!-- Fond assombri sur mobile -->
-    <div
-      v-if="isMobileOpen"
-      class="sidebar-overlay"
-      @click="isMobileOpen = false"
-    ></div>
-
-    <aside
-      class="sidebar"
-      :class="{ 'mobile-open': isMobileOpen }"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
-    >
-      <div class="sidebar-top">
-        <RouterLink to="/" class="sidebar-logo" @click="closeMobile">
-          <span class="logo-icon">A</span>
-          <span class="sidebar-label">AthletiQ</span>
-        </RouterLink>
-
-        <!-- Bouton d'ouverture uniquement sur mobile -->
-        <button
-          class="mobile-toggle"
-          @click="isMobileOpen = !isMobileOpen"
-          :aria-label="isMobileOpen ? 'Close menu' : 'Open menu'"
-        >
-          <ChevronLeft v-if="isMobileOpen" :size="20" aria-hidden="true" />
-          <Menu v-else :size="20" aria-hidden="true" />
-        </button>
-      </div>
-
-      <nav class="sidebar-nav">
-        <RouterLink
-          to="/"
-          class="sidebar-link"
-          title="Home"
-          @click="closeMobile"
-        >
-          <House class="sidebar-icon" :size="20" aria-hidden="true" />
-          <span class="sidebar-label">Home</span>
-        </RouterLink>
-
-        <RouterLink
-          :to="quizLink"
-          class="sidebar-link"
-          :title="quizLabel"
-          @click="closeMobile"
-        >
-          <ClipboardList class="sidebar-icon" :size="20" aria-hidden="true" />
-          <span class="sidebar-label">{{ quizLabel }}</span>
-        </RouterLink>
-
-        <RouterLink to="/injuries" class="sidebar-link" title="Find your pain" @click="closeMobile">
-          <Crosshair class="sidebar-icon" :size="20" aria-hidden="true" />
-          <span class="sidebar-label">Injuries</span>
-        </RouterLink>
-
-        <RouterLink
-          to="/nutrition"
-          class="sidebar-link"
-          title="Nutrition"
-          @click="closeMobile"
-        >
-          <Salad class="sidebar-icon" :size="20" aria-hidden="true" />
-          <span class="sidebar-label">Nutrition</span>
-        </RouterLink>
-
-        <RouterLink
-          to="/prevention"
-          class="sidebar-link"
-          title="Prevention"
-          @click="closeMobile"
-        >
-          <ShieldPlus class="sidebar-icon" :size="20" aria-hidden="true" />
-          <span class="sidebar-label">Prevention</span>
-        </RouterLink>
-
-        <RouterLink
-          to="/equipment"
-          class="sidebar-link"
-          title="Equipment"
-          @click="closeMobile"
-        >
-          <Backpack class="sidebar-icon" :size="20" aria-hidden="true" />
-          <span class="sidebar-label">Equipment</span>
-        </RouterLink>
-      </nav>
-    </aside>
-  </div>
-</template>
-
 <script setup>
-import { ChevronLeft, Menu, House, ClipboardList, Crosshair, Salad, ShieldPlus, Backpack } from "@lucide/vue";
-import { ref, computed } from "vue";
-import { RouterLink } from "vue-router";
+import { ref, computed, watch } from "vue";
+import { useRoute } from "vue-router";
+import { Activity, Backpack, ClipboardList, Crosshair, LayoutDashboard, Menu, Salad, X } from "@lucide/vue";
 import { user } from "@/stores/auth";
 
-const isMobileOpen = ref(false);
+const route = useRoute();
+const mobileOpen = ref(false);
+const isAthlete = computed(() => user.value?.role === "athlete");
+const isExpert = computed(() => user.value?.role === "expert");
 
-// Utilisateur connecté
-// Reactive user state updates the sidebar immediately after login
-
-// Lien Quiz selon le rôle
-const quizLink = computed(() => {
-  if (!user.value) return "/login";
-  if (user.value.role === "expert") return "/expert/quizzes";
-  return "/athlete/quizzes";
-});
-
-// Texte du lien Quiz selon le rôle
-const quizLabel = computed(() => {
-  if (user.value?.role === "expert") return "Manage quizzes";
-  return "Quizzes";
-});
-
-// Détecte si on est sur mobile
-const isMobile = () => window.matchMedia("(max-width: 560px)").matches;
-
-// Gestion du survol sur ordinateur
-const handleMouseEnter = () => {
-  // Sur ordinateur, le CSS gère l'ouverture
-};
-
-const handleMouseLeave = () => {
-  // Sur ordinateur, le CSS gère la fermeture
-};
-
-// Ferme le menu après une navigation sur mobile
-const closeMobile = () => {
-  if (isMobile()) {
-    isMobileOpen.value = false;
+const links = computed(() => {
+  const home = { path: "/", label: "Home", icon: LayoutDashboard };
+  if (user.value) {
+    home.label = "Dashboard";
   }
-};
+  if (isExpert.value) {
+    return [home, { path: "/expert/quizzes", label: "Manage quizzes", icon: ClipboardList }];
+  }
+
+  return [
+    home,
+    { path: "/equipment", label: "Equipment", icon: Backpack },
+    { path: "/nutrition", label: "Nutrition", icon: Salad },
+    { path: "/injuries", label: "Injuries", icon: Crosshair },
+    { path: "/athlete/quizzes", label: "Quizzes", icon: ClipboardList },
+  ];
+});
+
+// Ferme le menu mobile après une navigation.
+watch(() => route.fullPath, () => {
+  mobileOpen.value = false;
+});
+
+// Garde la rubrique active quand une fiche est ouverte.
+function isActive(path) {
+  return route.path === path || route.path.startsWith(path + "/");
+}
+
+// Les outils personnels demandent un compte athlète.
+function destination(path) {
+  if (!isAthlete.value && !isExpert.value && path !== "/" && path !== "/injuries") {
+    return "/login";
+  }
+  return path;
+}
 </script>
+
+<template>
+  <button
+    type="button"
+    class="mobile-menu"
+    aria-controls="site-sidebar"
+    :aria-expanded="mobileOpen"
+    :aria-label="mobileOpen ? 'Close menu' : 'Open menu'"
+    @click="mobileOpen = !mobileOpen"
+  >
+    <X v-if="mobileOpen" :size="21" aria-hidden="true" />
+    <Menu v-else :size="21" aria-hidden="true" />
+  </button>
+
+  <div v-if="mobileOpen" class="sidebar-overlay" @click="mobileOpen = false"></div>
+
+  <aside
+    id="site-sidebar"
+    class="sidebar"
+    :class="{ 'mobile-open': mobileOpen }"
+    @keydown.esc="mobileOpen = false"
+  >
+    <RouterLink to="/" class="sidebar-logo" aria-label="AthletiQ" @click="mobileOpen = false">
+      <span class="logo-icon"><Activity :size="23" aria-hidden="true" /></span>
+      <span class="sidebar-label">AthletiQ</span>
+    </RouterLink>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <RouterLink
+        v-for="link in links"
+        :key="link.path"
+        :to="destination(link.path)"
+        :title="link.label"
+        :aria-label="link.label"
+        class="sidebar-link"
+        :class="{ 'is-active': isActive(link.path) }"
+        @click="mobileOpen = false"
+      >
+        <component :is="link.icon" :size="20" aria-hidden="true" />
+        <span class="sidebar-label">{{ link.label }}</span>
+      </RouterLink>
+    </nav>
+  </aside>
+</template>
 
 <style scoped>
 .sidebar {
   position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  box-sizing: border-box;
-  width: 72px;
-  height: 100vh;
-  height: 100dvh;
-  padding: 18px 10px;
-  display: flex;
-  flex-direction: column;
-  background: #f7f7f4;
-  border-right: 1px solid #d6d5d1;
-  overflow: hidden;
-  transition:
-    width 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
-/* Ordinateur : ouverture uniquement au survol */
-@media (min-width: 561px) {
-  .sidebar:hover {
-    width: 240px;
-    box-shadow: 8px 0 24px rgb(0 0 0 / 8%);
-  }
-
-  .sidebar:hover .sidebar-label {
-    opacity: 1;
-  }
-
-  .mobile-toggle {
-    display: none;
-  }
-}
-
-/* En-tête */
-.sidebar-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 42px;
-  margin-bottom: 32px;
+  inset: 0 auto 0 0;
+  z-index: 20;
+  width: var(--sidebar-width);
+  padding: 22px 14px;
+  background: var(--panel);
 }
 
 .sidebar-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: #33322f;
-  text-decoration: none;
-  font-size: 19px;
+  gap: 11px;
+  width: fit-content;
+  margin: 0 6px 42px;
+  color: var(--ink);
+  font-size: 22px;
   font-weight: 700;
+  text-decoration: none;
 }
 
 .logo-icon {
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
   display: grid;
+  width: 40px;
+  height: 40px;
+  flex: none;
   place-items: center;
-  border-radius: 8px;
-  background: #373631;
-  color: white;
+  border-radius: 4px;
+  background: var(--primary);
+  color: #fff;
 }
 
-.sidebar-label {
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  white-space: nowrap;
-}
-
-/* Navigation */
 .sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  gap: 5px;
 }
 
 .sidebar-link {
-  min-height: 44px;
-  box-sizing: border-box;
   display: flex;
+  min-height: 45px;
   align-items: center;
-  gap: 14px;
-  padding: 10px 12px;
-  border: none;
-  border-radius: 6px;
-  color: #55544f;
-  background: transparent;
-  text-decoration: none;
-  white-space: nowrap;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: var(--muted);
   font-size: 14px;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.sidebar-link svg {
+  flex: none;
 }
 
 .sidebar-link:hover,
-.sidebar-link.router-link-active {
-  background: #e9e8e3;
-  color: #25241f;
+.sidebar-link.is-active {
+  background: var(--page);
+  color: var(--primary-deep);
 }
 
-.sidebar-icon {
-  width: 26px;
-  flex-shrink: 0;
+.sidebar-link.is-active {
+  font-weight: 700;
 }
 
-/* Bouton réservé aux petits écrans */
-.mobile-toggle {
-  display: none;
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  border: none;
-  border-radius: 5px;
-  background: transparent;
-  color: #373631;
-  font-size: 22px;
-  cursor: pointer;
-}
-
+.mobile-menu,
 .sidebar-overlay {
   display: none;
 }
 
-/* Mobile et petits écrans tactiles */
-@media (max-width: 560px) {
+@media (min-width: 661px) and (max-width: 980px) {
   .sidebar {
-    width: 72px;
-    box-shadow: none;
+    padding-inline: 10px;
   }
 
-  .sidebar.mobile-open {
-    width: min(260px, 85vw);
-    box-shadow: 8px 0 24px rgb(0 0 0 / 12%);
+  .sidebar-logo {
+    margin-inline: auto;
   }
 
-  .sidebar.mobile-open .sidebar-label {
-    opacity: 1;
+  .sidebar-link {
+    justify-content: center;
   }
 
-  .mobile-toggle {
-    display: block;
-  }
-
-  .sidebar-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-    background: rgb(0 0 0 / 35%);
+  .sidebar-label {
+    display: none;
   }
 }
 
-/* Respecte les préférences de réduction des animations */
+@media (max-width: 660px) {
+  .sidebar {
+    width: min(270px, 82vw);
+    padding-top: 71px;
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: transform 200ms ease, visibility 200ms;
+  }
+
+  .sidebar.mobile-open {
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .sidebar-logo {
+    display: none;
+  }
+
+  .mobile-menu {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    z-index: 21;
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 0;
+    border-radius: 4px;
+    background: var(--page);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .mobile-menu[aria-expanded="true"] {
+    background: var(--panel);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 19;
+    display: block;
+    background: rgb(26 20 50 / 45%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sidebar,
-  .sidebar-label,
   .sidebar-link {
     transition: none;
   }

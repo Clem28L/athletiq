@@ -1,7 +1,7 @@
 function validateQuestion(data) {
   // Check the received data
   if (!data || typeof data !== "object" || Array.isArray(data)) {
-    return "Les données de la question sont invalides.";
+    return "Invalid question data.";
   }
 
   const {
@@ -19,11 +19,11 @@ function validateQuestion(data) {
 
   // Check common fields
   if (typeof text !== "string" || !text.trim()) {
-    return "Le texte de la question est requis.";
+    return "Enter the question text.";
   }
 
   if (!Number.isInteger(points) || points < 1) {
-    return "Les points doivent être un entier supérieur à 0.";
+    return "Points must be a positive whole number.";
   }
 
   const types = [
@@ -39,20 +39,20 @@ function validateQuestion(data) {
   ];
 
   if (!types.includes(type_answer)) {
-    return "Le type de question est invalide.";
+    return "Invalid question type.";
   }
 
   // Check numeric answers
   if (type_answer === "numeric" || type_answer === "slider") {
     if (!Number.isFinite(correct_number)) {
-      return "La réponse attendue doit être un nombre.";
+      return "The correct answer must be a number.";
     }
 
     if (
       tolerance !== undefined &&
       (!Number.isFinite(tolerance) || tolerance < 0)
     ) {
-      return "La tolérance doit être positive ou nulle.";
+      return "Tolerance must be zero or greater.";
     }
   }
 
@@ -63,34 +63,34 @@ function validateQuestion(data) {
       !Number.isFinite(max_value) ||
       min_value >= max_value
     ) {
-      return "Le maximum doit être supérieur au minimum.";
+      return "The maximum must be greater than the minimum.";
     }
 
     if (!Number.isFinite(step_value) || step_value <= 0) {
-      return "Le pas du curseur doit être supérieur à 0.";
+      return "The slider step must be greater than zero.";
     }
 
     if (correct_number < min_value || correct_number > max_value) {
-      return "La réponse doit être comprise entre le minimum et le maximum.";
+      return "The answer must be within the slider range.";
     }
 
     // The answer must be reachable with the slider
     const steps = (correct_number - min_value) / step_value;
 
     if (Math.abs(steps - Math.round(steps)) > 0.000001) {
-      return "La réponse attendue ne correspond pas au pas du curseur.";
+      return "The correct answer must match a slider step.";
     }
   }
 
   // Check accepted text answers
   if (type_answer === "short_text") {
     if (!Array.isArray(accepted_texts) || accepted_texts.length === 0) {
-      return "Ajoute au moins une réponse acceptée.";
+      return "Add at least one accepted answer.";
     }
 
     for (const answer of accepted_texts) {
       if (typeof answer !== "string" || !answer.trim()) {
-        return "Chaque réponse acceptée doit contenir du texte.";
+        return "Every accepted answer needs text.";
       }
     }
   }
@@ -102,7 +102,7 @@ function validateQuestion(data) {
     type_answer === "short_text"
   ) {
     if (options !== undefined && (!Array.isArray(options) || options.length > 0)) {
-      return "Ce type de question ne doit pas contenir d’options.";
+      return "This question type does not use options.";
     }
 
     return null;
@@ -110,7 +110,7 @@ function validateQuestion(data) {
 
   // Check options
   if (!Array.isArray(options) || options.length < 2) {
-    return "Ajoute au moins deux options.";
+    return "Add at least two options.";
   }
 
   for (const option of options) {
@@ -119,7 +119,7 @@ function validateQuestion(data) {
       typeof option.text !== "string" ||
       !option.text.trim()
     ) {
-      return "Chaque option doit contenir du texte.";
+      return "Every option needs text.";
     }
   }
 
@@ -131,7 +131,7 @@ function validateQuestion(data) {
   ) {
     for (const option of options) {
       if (typeof option.is_correct !== "boolean") {
-        return "Chaque option doit préciser si elle est correcte.";
+        return "Mark whether each option is correct.";
       }
     }
 
@@ -139,10 +139,10 @@ function validateQuestion(data) {
 
     if (type_answer === "multiple_choice") {
       if (correctOptions.length < 2) {
-        return "Un choix multiple doit avoir au moins deux bonnes réponses.";
+        return "Multiple-choice questions need at least two correct answers.";
       }
     } else if (correctOptions.length !== 1) {
-      return "Cette question doit avoir exactement une bonne réponse.";
+      return "This question needs exactly one correct answer.";
     }
 
     if (type_answer === "true_false") {
@@ -155,7 +155,7 @@ function validateQuestion(data) {
         !labels.includes("vrai") ||
         !labels.includes("faux")
       ) {
-        return "Les options doivent être Vrai et Faux.";
+        return "True/False questions need one True option and one False option.";
       }
     }
   }
@@ -170,11 +170,11 @@ function validateQuestion(data) {
         option.correct_position < 1 ||
         option.correct_position > options.length
       ) {
-        return "Chaque position doit être comprise entre 1 et le nombre d’options.";
+        return "Each position must be within the number of options, starting at 1.";
       }
 
       if (positions.includes(option.correct_position)) {
-        return "Deux options ne peuvent pas avoir la même position.";
+        return "Each option needs a different position.";
       }
 
       positions.push(option.correct_position);
@@ -191,11 +191,11 @@ function validateQuestion(data) {
         !option.pair_key.trim() ||
         option.pair_key.length > 50
       ) {
-        return "Chaque élément doit avoir une clé de paire de 1 à 50 caractères.";
+        return "Each item needs a pair key of 1 to 50 characters.";
       }
 
       if (option.pair_side !== "left" && option.pair_side !== "right") {
-        return "Le côté d’une paire doit être left ou right.";
+        return "Each item needs a left or right side.";
       }
 
       // Prefix the key to keep a plain object safe
@@ -206,19 +206,19 @@ function validateQuestion(data) {
       }
 
       if (pairs[key].includes(option.pair_side)) {
-        return "Une paire ne peut pas avoir deux éléments du même côté.";
+        return "Each pair can have only one item on each side.";
       }
 
       pairs[key].push(option.pair_side);
     }
 
     if (Object.keys(pairs).length < 2) {
-      return "Ajoute au moins deux paires.";
+      return "Add at least two pairs.";
     }
 
     for (const key of Object.keys(pairs)) {
       if (pairs[key].length !== 2) {
-        return "Chaque paire doit avoir un élément à gauche et un à droite.";
+        return "Each pair needs a left item and a right item.";
       }
     }
   }
@@ -231,7 +231,7 @@ function validateQuestion(data) {
         !option.correct_category.trim() ||
         option.correct_category.length > 100
       ) {
-        return "Chaque élément doit avoir une catégorie de 1 à 100 caractères.";
+        return "Each item needs a category of 1 to 100 characters.";
       }
     }
   }

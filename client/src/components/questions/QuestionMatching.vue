@@ -38,7 +38,7 @@ function removePair(index) {
     <label>Paires correctes</label>
 
     <p class="field-help">
-      Chaque ligne contient deux éléments à associer.
+      Enter one matching pair per row.
     </p>
 
     <div
@@ -48,8 +48,8 @@ function removePair(index) {
     >
       <input
         :value="pair.left"
-        :aria-label="'Paire ' + (index + 1) + ', élément de gauche'"
-        placeholder="Ex : Un kilomètre"
+        :aria-label="'Pair ' + (index + 1) + ', left item'"
+        placeholder="e.g. One kilometre"
         required
         @input="updatePair(index, 'left', $event.target.value)"
       />
@@ -58,8 +58,8 @@ function removePair(index) {
 
       <input
         :value="pair.right"
-        :aria-label="'Paire ' + (index + 1) + ', élément de droite'"
-        placeholder="Ex : 1000 mètres"
+        :aria-label="'Pair ' + (index + 1) + ', right item'"
+        placeholder="e.g. 1,000 metres"
         required
         @input="updatePair(index, 'right', $event.target.value)"
       />
@@ -68,7 +68,7 @@ function removePair(index) {
         v-if="modelValue.length > 2"
         type="button"
         class="btn-remove"
-        aria-label="Supprimer cette paire"
+        aria-label="Remove pair"
         @click="removePair(index)"
       >
         <X :size="16" aria-hidden="true" />
@@ -76,7 +76,7 @@ function removePair(index) {
     </div>
 
     <button type="button" class="btn-add" @click="addPair">
-      + Ajouter une paire
+      + Add pair
     </button>
   </div>
 </template>

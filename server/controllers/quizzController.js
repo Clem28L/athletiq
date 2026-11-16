@@ -124,7 +124,7 @@ exports.createQuiz = (req, res) => {
 
   // Check if all required fields are provided
   if (!title || !description || !module || !category) {
-    return res.status(400).json({ error: "Tous les champs sont requis" });
+    return res.status(400).json({ error: "All fields are required." });
   }
 
   // Create the quiz with published set to false
@@ -144,7 +144,7 @@ exports.createQuiz = (req, res) => {
 
       // Return the success message and the new quiz ID
       res.status(201).json({
-        message: "Quiz créé avec succès",
+        message: "Quiz created.",
         quizId: result.insertId,
       });
     },
@@ -166,7 +166,7 @@ exports.updateQuiz = (req, res) => {
     !category ||
     typeof published !== "boolean"
   ) {
-    return res.status(400).json({ error: "Tous les champs sont requis" });
+    return res.status(400).json({ error: "All fields are required." });
   }
 
   // Check if the quiz exists
@@ -184,7 +184,7 @@ exports.updateQuiz = (req, res) => {
 
     // Check if the quiz was found
     if (results.length === 0) {
-      return res.status(404).json({ error: "Quiz non trouvé" });
+      return res.status(404).json({ error: "Quiz not found." });
     }
 
     // Update the quiz in the database
@@ -204,7 +204,7 @@ exports.updateQuiz = (req, res) => {
         }
 
         // Return the success message
-        res.json({ message: "Quiz mis à jour avec succès" });
+        res.json({ message: "Quiz updated." });
       },
     );
   });
@@ -228,11 +228,11 @@ exports.deleteQuiz = (req, res) => {
 
     // Check if the quiz was found
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: "Quiz non trouvé" });
+      return res.status(404).json({ error: "Quiz not found." });
     }
 
     // Return the success message
-    res.json({ message: "Quiz supprimé avec succès" });
+    res.json({ message: "Quiz deleted." });
   });
 };
 
@@ -255,7 +255,7 @@ exports.publishQuiz = (req, res) => {
 
     // Check if the quiz was found
     if (results.length === 0) {
-      return res.status(404).json({ error: "Quiz non trouvé" });
+      return res.status(404).json({ error: "Quiz not found." });
     }
 
     // Publish the quiz
@@ -272,7 +272,7 @@ exports.publishQuiz = (req, res) => {
       }
 
       // Return the success message
-      return res.json({ message: "Quiz publié avec succès" });
+      return res.json({ message: "Quiz published." });
     });
   });
 };
@@ -295,7 +295,7 @@ exports.unpublishQuiz = (req, res) => {
 
     // Check if the quiz was found
     if (results.length === 0) {
-      return res.status(404).json({ error: "Quiz non trouvé" });
+      return res.status(404).json({ error: "Quiz not found." });
     }
 
     // Unpublish the quiz
@@ -312,7 +312,7 @@ exports.unpublishQuiz = (req, res) => {
       }
 
       // Return the success message
-      return res.json({ message: "Quiz dépublié avec succès" });
+      return res.json({ message: "Quiz unpublished." });
     });
   });
 };
@@ -322,7 +322,7 @@ exports.addQuestionToQuiz = async (req, res) => {
   const quizId = Number(req.params.id);
 
   if (!Number.isInteger(quizId) || quizId < 1) {
-    return res.status(400).json({ error: "ID du quiz invalide." });
+    return res.status(400).json({ error: "Invalid quiz ID." });
   }
 
   // Validate the question
@@ -352,7 +352,7 @@ exports.addQuestionToQuiz = async (req, res) => {
     (typeof unit !== "string" || unit.length > 30)
   ) {
     return res.status(400).json({
-      error: "L’unité doit être un texte de 30 caractères maximum.",
+      error: "The unit must be text with at most 30 characters.",
     });
   }
 
@@ -383,14 +383,14 @@ exports.addQuestionToQuiz = async (req, res) => {
     if (quizzes.length === 0) {
       await connection.rollback();
 
-      return res.status(404).json({ error: "Quiz non trouvé." });
+      return res.status(404).json({ error: "Quiz not found." });
     }
 
     if (quizzes[0].id_user !== req.user.id_user) {
       await connection.rollback();
 
       return res.status(403).json({
-        error: "Tu peux seulement modifier tes propres quiz.",
+        error: "You can only edit your own quizzes.",
       });
     }
 
@@ -476,7 +476,7 @@ exports.addQuestionToQuiz = async (req, res) => {
     await connection.commit();
 
     return res.status(201).json({
-      message: "Question ajoutée avec succès.",
+      message: "Question added.",
       questionId: questionId,
     });
   } catch (err) {
@@ -488,7 +488,7 @@ exports.addQuestionToQuiz = async (req, res) => {
     console.error(err);
 
     return res.status(500).json({
-      error: "Impossible d’ajouter la question.",
+      error: "Unable to add the question.",
     });
   } finally {
     // Always close this connection

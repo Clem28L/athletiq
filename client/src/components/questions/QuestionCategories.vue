@@ -35,11 +35,11 @@ function removeItem(index) {
 
 <template>
   <div class="form-group">
-    <label>Éléments et catégories correctes</label>
+    <label>Items and their categories</label>
 
     <p class="field-help">
-      Plusieurs éléments peuvent avoir la même catégorie.
-      Utilise exactement le même nom.
+      Items can share a category.
+      Use the same spelling for each category.
     </p>
 
     <div
@@ -49,16 +49,16 @@ function removeItem(index) {
     >
       <input
         :value="item.text"
-        :aria-label="'Élément ' + (index + 1)"
-        placeholder="Ex : Football"
+        :aria-label="'Item ' + (index + 1)"
+        placeholder="e.g. Football"
         required
         @input="updateItem(index, 'text', $event.target.value)"
       />
 
       <input
         :value="item.category"
-        :aria-label="'Catégorie de l’élément ' + (index + 1)"
-        placeholder="Ex : Sport collectif"
+        :aria-label="'Category for item ' + (index + 1)"
+        placeholder="e.g. Team sport"
         maxlength="100"
         required
         @input="updateItem(index, 'category', $event.target.value)"
@@ -68,7 +68,7 @@ function removeItem(index) {
         v-if="modelValue.length > 2"
         type="button"
         class="btn-remove"
-        aria-label="Supprimer cet élément"
+        aria-label="Remove item"
         @click="removeItem(index)"
       >
         <X :size="16" aria-hidden="true" />
@@ -76,7 +76,7 @@ function removeItem(index) {
     </div>
 
     <button type="button" class="btn-add" @click="addItem">
-      + Ajouter un élément
+      + Add item
     </button>
   </div>
 </template>

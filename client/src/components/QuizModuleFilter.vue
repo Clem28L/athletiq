@@ -50,16 +50,16 @@ function changeModule(event) {
 .quiz-module-filter select {
   min-width: 210px;
   padding: 11px 14px;
-  border: 1px solid #d2d2d7;
-  border-radius: 8px;
-  background: white;
-  color: #33322f;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink);
   font: inherit;
   font-size: 14px;
 }
 
 .quiz-module-filter select:focus {
-  outline: 2px solid #55544f;
+  outline: 2px solid var(--muted);
   outline-offset: 2px;
 }
 

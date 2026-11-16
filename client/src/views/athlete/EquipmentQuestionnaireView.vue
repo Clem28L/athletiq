@@ -151,7 +151,7 @@ watch(isAuthenticated, (authenticated) => {
 
       <template v-else-if="currentQuestion">
         <header class="athlete-page-header">
-          <h1 lang="fr">{{ questionnaire.title }}</h1>
+          <h1>{{ questionnaire.title }}</h1>
         </header>
 
         <div class="quiz-question-card">
@@ -161,7 +161,7 @@ watch(isAuthenticated, (authenticated) => {
             </p>
           </div>
 
-          <h2 id="equipment-question-title" ref="questionTitle" tabindex="-1" lang="fr">
+          <h2 id="equipment-question-title" ref="questionTitle" tabindex="-1">
             {{ currentQuestion.text }}
           </h2>
 
@@ -234,9 +234,4 @@ watch(isAuthenticated, (authenticated) => {
   margin-left: auto;
 }
 
-@media (max-width: 560px) {
-  .equipment-questionnaire {
-    padding-left: 88px;
-  }
-}
 </style>

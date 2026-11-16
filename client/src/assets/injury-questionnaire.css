@@ -1,6 +1,6 @@
 .app:has(.injury-flow) {
   position: fixed;
-  inset: 0 0 0 72px;
+  inset: 0 0 0 var(--sidebar-width);
   margin-left: 0;
   min-height: 0;
   overflow: hidden;
@@ -30,9 +30,9 @@
   inset: 0;
   overflow-y: auto;
 
-  color: #343434;
-  background-color: #f3f3f1;
-  background-image: radial-gradient(#c9c9c5 0.8px, transparent 0.8px);
+  color: var(--ink);
+  background-color: var(--page);
+  background-image: radial-gradient(#d7cdef 0.8px, transparent 0.8px);
   background-size: 20px 20px;
 }
 
@@ -50,7 +50,7 @@
   gap: 12px;
 
   padding-bottom: 16px;
-  border-bottom: 1px solid #d0cfca;
+  border-bottom: 1px solid var(--line);
   font-size: 14px;
   color: #66645e;
 }
@@ -145,7 +145,7 @@
   padding: 28px 24px 32px 38px;
   overflow-y: auto;
   pointer-events: auto;
-  background: linear-gradient(to right, #f3f3f1, #f3f3f1ed);
+  background: linear-gradient(to right, var(--page), #f3f3f1ed);
 }
 
 .injury-result {
@@ -218,8 +218,8 @@
     width: 100%;
     max-width: none;
     padding: 18px 20px 28px;
-    border-top: 1px solid #d0cfca;
-    background: #f3f3f1;
+    border-top: 1px solid var(--line);
+    background: var(--page);
   }
 
 }

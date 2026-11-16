@@ -11,15 +11,15 @@ const emit = defineEmits(["update:modelValue"]);
 
 <template>
   <div class="form-group">
-    <label for="correct-boolean">Bonne réponse</label>
+    <label for="correct-boolean">Correct answer</label>
 
     <select
       id="correct-boolean"
       :value="modelValue"
       @change="emit('update:modelValue', $event.target.value)"
     >
-      <option value="true">Vrai</option>
-      <option value="false">Faux</option>
+      <option value="true">True</option>
+      <option value="false">False</option>
     </select>
   </div>
 </template>

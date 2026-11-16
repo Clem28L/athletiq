@@ -1,11 +1,37 @@
 <script setup>
-import { RouterLink } from "vue-router";
-import { onMounted } from "vue";
+import { RouterLink, useRoute, useRouter } from "vue-router";
+import { computed, onMounted } from "vue";
 import {
   isAuthenticated,
   user,
   logoutUser
 } from "@/stores/auth";
+
+const route = useRoute();
+const router = useRouter();
+const title = computed(() => {
+  if (route.name === "home") {
+    if (user.value) return "Dashboard";
+    return "Home";
+  }
+  const titles = {
+    equipment: "Equipment",
+    nutrition: "Nutrition",
+    injuries: "Injuries",
+    blessures: "Injuries",
+    athlete: "Athlete",
+    expert: "Quizzes",
+    login: "Log in",
+    register: "Sign up",
+  };
+  return titles[route.path.split("/")[1]] || "AthletiQ";
+});
+
+// Retour à l'accueil public après la déconnexion.
+function signOut() {
+  logoutUser();
+  router.replace("/");
+}
 
 // Restore session on page load
 onMounted(async () => {
@@ -41,7 +67,8 @@ onMounted(async () => {
 
 <template>
   <header class="header">
-    <RouterLink to="/" class="logo">
+    <span class="header-title">{{ title }}</span>
+    <RouterLink to="/" class="header-brand">
       AthletiQ
     </RouterLink>
 
@@ -58,34 +85,14 @@ onMounted(async () => {
       </template>
 
       <template v-else>
-        <span class="nav-link">Welcome, {{ user.name }}</span>
-
         <RouterLink v-if="user.role === 'athlete'" to="/athlete/profile" class="button button-outline">
-          My Profile
+          My profile
         </RouterLink>
 
-        <button class="button button-dark" @click="logoutUser">
+        <button type="button" class="button button-outline" @click="signOut">
           Log out
         </button>
       </template>
     </nav>
   </header>
 </template>
-
-<style scoped>
-/* Let account buttons wrap on small screens. */
-.header,
-.header-nav {
-  flex-wrap: wrap;
-}
-
-.header-nav {
-  justify-content: flex-end;
-}
-
-@media (max-width: 560px) {
-  .header {
-    padding-left: 88px;
-  }
-}
-</style>

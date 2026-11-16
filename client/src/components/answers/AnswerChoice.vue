@@ -104,7 +104,7 @@ function selectOption(id, checked) {
 
 .answer-help {
   margin: 0;
-  color: #68686d;
+  color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
 }
@@ -114,9 +114,9 @@ function selectOption(id, checked) {
   align-items: center;
   gap: 12px;
   padding: 16px;
-  border: 1px solid #d2d2d7;
-  border-radius: 8px;
-  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
   font-size: 14px;
   line-height: 1.5;
   cursor: pointer;
@@ -127,7 +127,7 @@ function selectOption(id, checked) {
 }
 
 .answer-option-selected {
-  border-color: #373631;
+  border-color: var(--primary);
   background: #f7f7f3;
 }
 
@@ -139,6 +139,6 @@ function selectOption(id, checked) {
   flex-shrink: 0;
   width: 18px;
   height: 18px;
-  accent-color: #373631;
+  accent-color: var(--primary);
 }
 </style>

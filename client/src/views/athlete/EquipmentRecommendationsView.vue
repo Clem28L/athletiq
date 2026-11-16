@@ -147,7 +147,7 @@ watch(isAuthenticated, (authenticated) => {
 .selection-back {
   display: inline-block;
   margin-bottom: 20px;
-  color: #55544f;
+  color: var(--muted);
   font-size: 14px;
   text-decoration: none;
 }
@@ -164,9 +164,9 @@ watch(isAuthenticated, (authenticated) => {
   gap: 16px;
   margin-bottom: 24px;
   padding: clamp(18px, 4vw, 36px);
-  border: 1px solid #e3e1d8;
-  border-radius: 16px;
-  background: linear-gradient(120deg, #fbfaf7, var(--selection-art));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: linear-gradient(120deg, var(--surface), var(--selection-art));
 }
 
 .selection-header h1 {
@@ -179,7 +179,7 @@ watch(isAuthenticated, (authenticated) => {
 
 .selection-header p {
   margin: 0;
-  color: #55544f;
+  color: var(--muted);
 }
 
 .selection-budget {
@@ -210,21 +210,28 @@ watch(isAuthenticated, (authenticated) => {
   min-width: 0;
   padding: 0;
   overflow: hidden;
-  border: 1px solid #dddbd4;
-  border-radius: 16px;
-  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
   color: inherit;
   text-align: left;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgb(40 36 24 / 5%);
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  transition: border-color 160ms ease;
 }
 
 @media (hover: hover) {
   .selection-card:hover {
-    transform: translateY(-3px);
-    border-color: var(--selection-ink);
-    box-shadow: 0 10px 24px rgb(40 36 24 / 12%);
+    border-color: #aaa69a;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .selection-image img {
+    transition: transform 160ms ease;
+  }
+
+  .selection-card:hover .selection-image img {
+    transform: scale(1.035);
   }
 }
 
@@ -235,6 +242,7 @@ watch(isAuthenticated, (authenticated) => {
 
 .selection-image {
   width: 100%;
+  overflow: hidden;
   isolation: isolate;
   background: var(--selection-art);
 }
@@ -257,7 +265,7 @@ watch(isAuthenticated, (authenticated) => {
 .selection-brand {
   display: block;
   margin: 0 0 5px;
-  color: #66645c;
+  color: var(--muted);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -281,9 +289,9 @@ watch(isAuthenticated, (authenticated) => {
 .selection-message {
   margin: 0;
   padding: clamp(18px, 4vw, 32px);
-  border: 1px solid #e3e1d8;
-  border-radius: 16px;
-  background: #fbfaf7;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--page);
 }
 
 .selection-message h2 {
@@ -291,20 +299,15 @@ watch(isAuthenticated, (authenticated) => {
   font-size: 20px;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 660px) {
   .selection-page {
-    width: auto;
-    margin-inline: 88px 16px;
+    width: calc(100% - 28px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .selection-card {
     transition: none;
-  }
-
-  .selection-card:hover {
-    transform: none;
   }
 }
 </style>

@@ -10,7 +10,12 @@ import AppSidebar from "./components/AppSidebar.vue";
   <div class="app">
     <AppHeader />
     <main class="main-content">
-      <RouterView />
+      <RouterView v-slot="{ Component, route }">
+        <component
+          :is="Component"
+          :key="route.name === 'nutrition-plans' ? route.fullPath : route.name"
+        />
+      </RouterView>
     </main>
     <AppFooter />
   </div>

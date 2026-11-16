@@ -30,7 +30,7 @@ function updateNumber(field, value) {
 
 <template>
   <div class="form-group">
-    <label for="correct-number">Réponse attendue</label>
+    <label for="correct-number">Correct answer</label>
     <input
       id="correct-number"
       type="number"
@@ -40,7 +40,7 @@ function updateNumber(field, value) {
       @input="updateNumber('correct_number', $event.target.value)"
     />
 
-    <label for="number-tolerance">Tolérance acceptée</label>
+    <label for="number-tolerance">Allowed tolerance</label>
     <input
       id="number-tolerance"
       type="number"
@@ -52,15 +52,15 @@ function updateNumber(field, value) {
     />
 
     <p class="field-help">
-      Mets 0 pour une réponse exacte.
-      Ex : 10 avec une tolérance de 1 accepte les valeurs de 9 à 11.
+      Use 0 to require an exact answer.
+      For an answer of 10, a tolerance of 1 accepts 9 to 11.
     </p>
 
-    <label for="number-unit">Unité (facultatif)</label>
+    <label for="number-unit">Unit (optional)</label>
     <input
       id="number-unit"
       maxlength="30"
-      placeholder="Ex : minutes, km, g"
+      placeholder="e.g. minutes, km, g"
       :value="modelValue.unit"
       @input="updateField('unit', $event.target.value)"
     />

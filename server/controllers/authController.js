@@ -8,7 +8,7 @@ exports.register = async (req, res) => {
 
   // Vérifie que rien n'est vide
   if (!name || !email || !password || !role) {
-    return res.status(400).json({ error: "Champs manquants" });
+    return res.status(400).json({ error: "All fields are required." });
   }
 
   // Transforme le mot de passe en hash
@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
         return res.status(500).json({ error: err.message });
       }
 
-      res.json({ message: "Compte créé !", id: result.insertId });
+      res.json({ message: "Account created.", id: result.insertId });
     },
   );
 };
@@ -42,7 +42,7 @@ exports.login = (req, res) => {
       }
 
       if (results.length === 0) {
-        return res.status(401).json({ error: "Email inconnu" });
+        return res.status(401).json({ error: "Email address not found." });
       }
 
       const user = results[0];
@@ -51,7 +51,7 @@ exports.login = (req, res) => {
       const ok = await bcrypt.compare(password, user.password_hash);
 
       if (!ok) {
-        return res.status(401).json({ error: "Mauvais mot de passe" });
+        return res.status(401).json({ error: "Incorrect password." });
       }
 
       // Génère le token (valable 2h)
@@ -62,7 +62,7 @@ exports.login = (req, res) => {
       );
 
       res.json({
-        message: "Connecté !",
+        message: "Logged in.",
         token: token,
         user: { id: user.id_user, name: user.name, role: user.role },
       });
@@ -72,5 +72,5 @@ exports.login = (req, res) => {
 
 // PROFIL CONNECTÉ (utilisé après verifyToken)
 exports.me = (req, res) => {
-  res.json({ message: "Tu es connecté", user: req.user });
+  res.json({ message: "Logged in.", user: req.user });
 };

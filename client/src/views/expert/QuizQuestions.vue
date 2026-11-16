@@ -43,15 +43,15 @@ const editorOpen = ref(false);
 const editorPanel = ref(null);
 
 const typeLabels = {
-  single_choice: "Choix unique",
-  multiple_choice: "Choix multiple",
-  true_false: "Vrai / Faux",
-  numeric: "Réponse numérique",
-  slider: "Curseur",
-  short_text: "Réponse textuelle courte",
-  ordering: "Classement",
-  matching: "Association de paires",
-  categorization: "Classement par catégorie",
+  single_choice: "Single choice",
+  multiple_choice: "Multiple choice",
+  true_false: "True / False",
+  numeric: "Numeric answer",
+  slider: "Slider",
+  short_text: "Short answer",
+  ordering: "Ordering",
+  matching: "Matching",
+  categorization: "Categorization",
 };
 
 // Send a request to the API
@@ -76,7 +76,7 @@ async function request(path, method = "GET", body = null) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "La requête a échoué.");
+    throw new Error(data.error || "The request failed.");
   }
 
   return data;
@@ -151,7 +151,7 @@ async function saveQuestion() {
   success.value = "";
 
   if (!form.value.text.trim()) {
-    formError.value = "Écris le texte de la question.";
+    formError.value = "Enter the question text.";
     return;
   }
 
@@ -183,7 +183,7 @@ async function saveQuestion() {
 
 // Delete the selected question
 async function deleteQuestion(id) {
-  const confirmed = confirm("Supprimer cette question ?");
+  const confirmed = confirm("Delete this question?");
 
   if (!confirmed) {
     return;
@@ -228,17 +228,17 @@ function getAnswerLines(question) {
       answer = answers.slider;
     }
 
-    lines.push("Réponse : " + answer.correct_number + " " + answer.unit);
+    lines.push("Answer: " + answer.correct_number + " " + answer.unit);
 
     if (questionForm.type === "slider") {
       lines.push(
-        "Minimum : " + answer.min_value +
-        " / Maximum : " + answer.max_value +
-        " / Pas : " + answer.step_value
+        "Minimum: " + answer.min_value +
+        " / Maximum: " + answer.max_value +
+        " / Step: " + answer.step_value
       );
     }
 
-    lines.push("Tolérance : " + answer.tolerance);
+    lines.push("Tolerance: " + answer.tolerance);
   }
 
   if (questionForm.type === "short_text") {
@@ -281,13 +281,21 @@ function getAnswerLines(question) {
 
     for (let i = 0; i < options.length; i++) {
       const option = options[i];
-      let marker = "Incorrect : ";
+      let marker = "Incorrect: ";
 
       if (Number(option.is_correct) === 1) {
-        marker = "Correct : ";
+        marker = "Correct: ";
       }
 
-      lines.push(marker + option.text);
+      let label = option.text;
+      if (questionForm.type === "true_false") {
+        if (label.trim().toLowerCase() === "vrai") {
+          label = "True";
+        } else {
+          label = "False";
+        }
+      }
+      lines.push(marker + label);
     }
   }
 
@@ -309,12 +317,12 @@ onMounted(loadQuiz);
         :disabled="saving || deleting"
         @click="goBack"
       >
-        <ArrowLeft :size="16" aria-hidden="true" /> Retour aux quiz
+        <ArrowLeft :size="16" aria-hidden="true" /> Back to quizzes
       </button>
 
       <div class="page-heading">
         <div>
-          <h1>Questions du quiz</h1>
+          <h1>Quiz questions</h1>
 
           <p v-if="quiz" class="subtitle">
             {{ quiz.title }}
@@ -327,12 +335,12 @@ onMounted(loadQuiz);
           :disabled="saving || deleting"
           @click="startNewQuestion"
         >
-          + Nouvelle question
+          + New question
         </button>
       </div>
     </header>
 
-    <p v-if="loading">Chargement...</p>
+    <p v-if="loading">Loading…</p>
 
     <p v-else-if="error" class="error-msg" role="alert">
       {{ error }}
@@ -348,13 +356,13 @@ onMounted(loadQuiz);
         <section class="questions-panel">
           <div class="section-header">
             <h2>
-              Questions existantes ({{ questions.length }})
+              Questions ({{ questions.length }})
             </h2>
           </div>
 
           <div v-if="questions.length === 0" class="empty-list">
-            Aucune question pour l’instant.
-            Clique sur « Nouvelle question » pour commencer.
+            No questions yet.
+            Add a question to get started.
           </div>
 
           <article
@@ -378,7 +386,7 @@ onMounted(loadQuiz);
                   :disabled="saving || deleting"
                   @click="startEdit(question)"
                 >
-                  Modifier
+                  Edit
                 </button>
 
                 <button
@@ -386,7 +394,7 @@ onMounted(loadQuiz);
                   :disabled="saving || deleting"
                   @click="deleteQuestion(question.id_question)"
                 >
-                  Supprimer
+                  Delete
                 </button>
               </div>
             </div>
@@ -400,7 +408,7 @@ onMounted(loadQuiz);
             </p>
 
             <p class="correction-label">
-              Correction
+              Answer key
             </p>
 
             <ul class="answers-list">
@@ -418,14 +426,14 @@ onMounted(loadQuiz);
         <aside
           ref="editorPanel"
           class="editor-panel"
-          aria-label="Éditeur de question"
+          aria-label="Question editor"
         >
           <div v-if="!editorOpen" class="editor-placeholder">
-            <h2>Éditeur de question</h2>
+            <h2>Question editor</h2>
 
             <p>
-              Sélectionne une question à modifier
-              ou crée une nouvelle question.
+              Select a question to edit
+              or add a new one.
             </p>
 
             <button
@@ -433,24 +441,24 @@ onMounted(loadQuiz);
               :disabled="saving || deleting"
               @click="startNewQuestion"
             >
-              + Nouvelle question
+              + New question
             </button>
           </div>
 
           <div v-else>
             <div class="section-header">
               <h2 v-if="editingId !== null">
-                Modifier la question
+                Edit question
               </h2>
 
               <h2 v-else>
-                Nouvelle question
+                New question
               </h2>
 
               <button
                 class="btn-close"
                 :disabled="saving || deleting"
-                aria-label="Fermer le formulaire"
+                aria-label="Close question editor"
                 @click="closeEditor"
               >
                 <X :size="16" aria-hidden="true" />
@@ -461,14 +469,14 @@ onMounted(loadQuiz);
               <fieldset :disabled="saving || deleting">
                 <div class="form-group">
                   <label for="question-text">
-                    Texte de la question
+                    Question text
                   </label>
 
                   <textarea
                     id="question-text"
                     v-model="form.text"
                     rows="3"
-                    placeholder="Écris ta question"
+                    placeholder="Enter your question"
                     required
                   ></textarea>
                 </div>
@@ -476,7 +484,7 @@ onMounted(loadQuiz);
                 <div class="form-row">
                   <div class="form-group">
                     <label for="question-type">
-                      Type de réponse
+                      Answer type
                     </label>
 
                     <select
@@ -485,35 +493,35 @@ onMounted(loadQuiz);
                       @change="formError = ''"
                     >
                       <option value="choice">
-                        Questionnaire à choix
+                        Choice
                       </option>
 
                       <option value="true_false">
-                        Vrai / Faux
+                        True / False
                       </option>
 
                       <option value="numeric">
-                        Réponse numérique
+                        Numeric answer
                       </option>
 
                       <option value="slider">
-                        Curseur
+                        Slider
                       </option>
 
                       <option value="short_text">
-                        Réponse textuelle courte
+                        Short answer
                       </option>
 
                       <option value="ordering">
-                        Classement dans le bon ordre
+                        Ordering
                       </option>
 
                       <option value="matching">
-                        Association de paires
+                        Matching
                       </option>
 
                       <option value="categorization">
-                        Classement par catégorie
+                        Categorization
                       </option>
                     </select>
                   </div>
@@ -584,20 +592,20 @@ onMounted(loadQuiz);
                     class="btn-secondary"
                     @click="closeEditor"
                   >
-                    Annuler
+                    Cancel
                   </button>
 
                   <button type="submit" class="btn-primary">
                     <span v-if="saving">
-                      Enregistrement...
+                      Saving…
                     </span>
 
                     <span v-else-if="editingId !== null">
-                      Enregistrer
+                      Save
                     </span>
 
                     <span v-else>
-                      Ajouter la question
+                      Add question
                     </span>
                   </button>
                 </div>

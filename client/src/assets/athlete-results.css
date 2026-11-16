@@ -9,9 +9,9 @@
 /* Results table */
 .athlete-quizzes-page .results-table-container {
   overflow-x: auto;
-  border: 1px solid #d2d2d7;
-  border-radius: 12px;
-  background: white;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
 }
 
 .athlete-quizzes-page .results-table {
@@ -23,23 +23,23 @@
 
 .athlete-quizzes-page .results-table caption {
   padding: 18px 20px;
-  color: #68686d;
+  color: var(--muted);
   font-size: 14px;
   text-align: left;
 }
 
 .athlete-quizzes-page .results-table th {
   padding: 16px 20px;
-  border-bottom: 1px solid #d2d2d7;
-  background: #f7f7f4;
-  color: #33322f;
+  border-bottom: 1px solid var(--line);
+  background: var(--page);
+  color: var(--ink);
   font-size: 13px;
 }
 
 .athlete-quizzes-page .results-table td {
   padding: 18px 20px;
-  border-bottom: 1px solid #e5e5e0;
-  color: #55544f;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.5;
 }
@@ -58,7 +58,7 @@
 }
 
 .athlete-quizzes-page .results-table .result-score {
-  color: #33322f;
+  color: var(--ink);
   font-size: 18px;
   font-weight: bold;
   white-space: nowrap;

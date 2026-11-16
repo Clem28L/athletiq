@@ -62,10 +62,10 @@ const emit = defineEmits(["place", "remove", "drag"]);
 
 .nutrition-product-tile {
   position: relative;
-  border: 1px solid #d6d5d1;
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
   padding: 16px;
-  background: #fbfaf7;
+  background: var(--page);
   min-width: 0;
 }
 
@@ -83,7 +83,7 @@ const emit = defineEmits(["place", "remove", "drag"]);
 
 .nutrition-product-name svg {
   flex-shrink: 0;
-  color: #55544f;
+  color: var(--muted);
 }
 
 .nutrition-product-name strong {
@@ -103,7 +103,7 @@ const emit = defineEmits(["place", "remove", "drag"]);
   border: 0;
   padding: 0;
   background: transparent;
-  color: #55544f;
+  color: var(--muted);
   font: inherit;
   font-size: 13px;
   cursor: pointer;

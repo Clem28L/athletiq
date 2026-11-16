@@ -35,11 +35,11 @@ function removeOption(index) {
 
 <template>
   <div class="form-group">
-    <label>Options de réponse</label>
+    <label>Answer options</label>
 
     <p class="field-help">
-      Coche une bonne réponse pour un choix unique,
-      ou plusieurs pour un choix multiple.
+      Mark one correct answer for single choice,
+      or more than one for multiple choice.
     </p>
 
     <div
@@ -50,14 +50,14 @@ function removeOption(index) {
       <input
         type="checkbox"
         :checked="option.is_correct"
-        :aria-label="'Option ' + (index + 1) + ' correcte'"
+        :aria-label="'Option ' + (index + 1) + ' is correct'"
         @change="updateOption(index, 'is_correct', $event.target.checked)"
       />
 
       <input
         :value="option.text"
         :aria-label="'Option ' + (index + 1)"
-        placeholder="Texte de l’option"
+        placeholder="Option text"
         required
         @input="updateOption(index, 'text', $event.target.value)"
       />
@@ -66,7 +66,7 @@ function removeOption(index) {
         v-if="modelValue.length > 2"
         type="button"
         class="btn-remove"
-        aria-label="Supprimer cette option"
+        aria-label="Remove option"
         @click="removeOption(index)"
       >
         <X :size="16" aria-hidden="true" />
@@ -74,7 +74,7 @@ function removeOption(index) {
     </div>
 
     <button type="button" class="btn-add" @click="addOption">
-      + Ajouter une option
+      + Add option
     </button>
   </div>
 </template>
